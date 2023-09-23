@@ -6,6 +6,7 @@ import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntit
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.repository.MovieRepository;
 import com.medialistmaker.movie.utils.CustomEntityValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
+@Slf4j
 public class MovieServiceImpl implements MovieService {
 
     @Autowired
@@ -36,6 +38,7 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = this.movieRepository.getReferenceById(movieId);
 
         if (isNull(movie)) {
+            log.error("Movie with id {} not found", movieId);
             throw new CustomNotFoundException("NOT FOUND");
         }
 
@@ -49,6 +52,7 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = this.movieRepository.getByApiCode(apiCode);
 
         if (isNull(movie)) {
+            log.error("Movie with api code {} not found", apiCode);
             throw new CustomNotFoundException("NOT FOUND");
         }
 
@@ -61,12 +65,14 @@ public class MovieServiceImpl implements MovieService {
         List<String> movieErrors = this.movieValidator.validateEntity(movie);
 
         if (Boolean.FALSE.equals(movieErrors.isEmpty())) {
+            log.error("Movie not valid: {}", movieErrors);
             throw new CustomBadRequestException("Bad request", movieErrors);
         }
 
         Movie isApiCodeAlreadyUsed = this.movieRepository.getByApiCode(movie.getApiCode());
 
         if (nonNull(isApiCodeAlreadyUsed)) {
+            log.error("Movie {} already exists", movie.getApiCode());
             throw new CustomEntityDuplicationException("Api code already exists");
         }
 
@@ -79,6 +85,7 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = this.movieRepository.getReferenceById(movieId);
 
         if (isNull(movie)) {
+            log.error("Error on deleting movie with id {}: Movie not exists", movieId);
             throw new CustomNotFoundException("Not found");
         }
 
