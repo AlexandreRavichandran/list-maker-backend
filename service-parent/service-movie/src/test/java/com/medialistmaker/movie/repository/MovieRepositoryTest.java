@@ -1,7 +1,6 @@
 package com.medialistmaker.movie.repository;
 
 import com.medialistmaker.movie.domain.Movie;
-import com.netflix.discovery.converters.Auto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,8 +9,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ExtendWith(MockitoExtension.class)
@@ -23,7 +23,7 @@ class MovieRepositoryTest {
     MovieRepository movieRepository;
 
     @Test
-    void whenGetByApiCodeGivenApiCodeShouldReturnRelatedMovie() {
+    void givenApiCodeWhenGetByApiCodeShouldReturnRelatedMovie() {
 
         Movie firstMovie = Movie
                 .builder()
@@ -47,5 +47,32 @@ class MovieRepositoryTest {
 
         assertNotNull(testGetByApiCode);
         assertEquals(testGetByApiCode, firstMovie);
+    }
+
+    @Test
+    void givenIdListWhenGetByIdListShouldReturnRelatedMovieList() {
+
+        Movie firstMovie = Movie
+                .builder()
+                .apiCode("Api code 1")
+                .title("Movie 1")
+                .releasedAt(2020)
+                .pictureUrl("http://test.com")
+                .build();
+
+        Movie secondMovie = Movie
+                .builder()
+                .apiCode("Api code 2")
+                .title("Movie 2")
+                .releasedAt(2020)
+                .pictureUrl("http://test.com")
+                .build();
+
+        this.movieRepository.saveAll(List.of(firstMovie, secondMovie));
+
+        List<Movie> testGetByIdList = this.movieRepository.getByIds(List.of(firstMovie.getId(), secondMovie.getId()));
+
+        assertEquals(2, testGetByIdList.size());
+        assertTrue(testGetByIdList.containsAll(List.of(firstMovie, secondMovie)));
     }
 }
