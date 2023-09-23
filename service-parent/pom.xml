@@ -11,6 +11,7 @@
     <modules>
         <module>service-registry</module>
         <module>service-movie</module>
+        <module>service-gateway</module>
     </modules>
 
     <properties>
