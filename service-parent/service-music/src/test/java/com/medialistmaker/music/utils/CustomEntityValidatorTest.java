@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CustomEntityValidatorTest {
 
     @Autowired
-    CustomEntityValidator<Music> movieEntityValidator;
+    CustomEntityValidator<Music> musicEntityValidator;
 
     @BeforeEach
     void beforeAllTests() {
-        this.movieEntityValidator = new CustomEntityValidator<>();
+        this.musicEntityValidator = new CustomEntityValidator<>();
     }
 
     @Test
@@ -33,7 +33,7 @@ class CustomEntityValidatorTest {
                 .releasedAt(2000)
                 .build();
 
-        List<String> testValidEntity = this.movieEntityValidator.validateEntity(validMusic);
+        List<String> testValidEntity = this.musicEntityValidator.validateEntity(validMusic);
 
         assertEquals(0, testValidEntity.size());
 
@@ -47,7 +47,7 @@ class CustomEntityValidatorTest {
                 .title("Music")
                 .build();
 
-        List<String> testInvalidEntity = this.movieEntityValidator.validateEntity(invalidMusic);
+        List<String> testInvalidEntity = this.musicEntityValidator.validateEntity(invalidMusic);
 
         assertTrue(testInvalidEntity.size() > 0);
 
