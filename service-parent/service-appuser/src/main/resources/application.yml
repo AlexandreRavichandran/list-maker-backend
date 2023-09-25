@@ -1,0 +1,24 @@
+server:
+  port: 8083
+application:
+  title: 'Media list maker'
+  version: 1.0.0
+spring:
+  application:
+    name: appuser
+  datasource:
+    username: "medialistmaker"
+    url: jdbc:postgresql://localhost:5432/appuser
+    password: "medialistmaker"
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: "true"
+    hibernate:
+      ddl-auto: create
+    show-sql: "true"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

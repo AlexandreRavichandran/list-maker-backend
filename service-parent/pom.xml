@@ -13,6 +13,7 @@
         <module>service-movie</module>
         <module>service-gateway</module>
         <module>service-music</module>
+        <module>service-appuser</module>
     </modules>
 
     <properties>
