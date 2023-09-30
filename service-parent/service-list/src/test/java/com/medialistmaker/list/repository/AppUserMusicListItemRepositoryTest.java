@@ -12,7 +12,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ExtendWith(MockitoExtension.class)
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppUserMusicListItemRepositoryTest {
 
     @Autowired
-    AppUserMusicListRepository appUserMusicListRepository;
+    AppUserMusicListItemRepository appUserMusicListItemRepository;
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMusicListItemOrderedBySortingOrderAsc() {
@@ -52,13 +53,36 @@ class AppUserMusicListItemRepositoryTest {
 
         List<AppUserMusicListItem> musicList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
 
-        this.appUserMusicListRepository.saveAll(musicList);
+        this.appUserMusicListItemRepository.saveAll(musicList);
 
-        List<AppUserMusicListItem> testGetByAppUserId = this.appUserMusicListRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
+        List<AppUserMusicListItem> testGetByAppUserId = this.appUserMusicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
 
         assertEquals(3, musicList.size());
         assertEquals(firstMusicListItem, testGetByAppUserId.get(0));
         assertEquals(secondMusicListItem, testGetByAppUserId.get(1));
         assertEquals(thirdMusicListItem, testGetByAppUserId.get(2));
+    }
+
+    @Test
+    void givenAppUserIdAndMusicIdWhenGetByAppUserIdAndMusicIdShouldReturnRelatedMusicListItem() {
+
+        AppUserMusicListItem musicListItem = AppUserMusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(2L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        this.appUserMusicListItemRepository.save(musicListItem);
+
+        AppUserMusicListItem testGetByAppUserIdAndMusicId =
+                this.appUserMusicListItemRepository.getByAppUserIdAndMusicId(
+                        musicListItem.getAppUserId(), musicListItem.getMusicId()
+                );
+
+        assertNotNull(testGetByAppUserIdAndMusicId);
+        assertEquals(musicListItem, testGetByAppUserIdAndMusicId);
+
     }
 }

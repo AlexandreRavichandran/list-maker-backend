@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ExtendWith(MockitoExtension.class)
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AppUserMovieListItemRepositoryTest {
 
     @Autowired
-    AppUserMovieListRepository appUserMovieListRepository;
+    AppUserMovieListItemRepository appUserMovieListItemRepository;
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMovieListItemOrderedBySortingOrderAsc() {
@@ -52,14 +53,37 @@ class AppUserMovieListItemRepositoryTest {
 
         List<AppUserMovieListItem> movieList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
 
-        this.appUserMovieListRepository.saveAll(movieList);
+        this.appUserMovieListItemRepository.saveAll(movieList);
 
-        List<AppUserMovieListItem> testGetByAppUserId = this.appUserMovieListRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
+        List<AppUserMovieListItem> testGetByAppUserId = this.appUserMovieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
 
         assertEquals(3, movieList.size());
         assertEquals(firstMovieListItem, testGetByAppUserId.get(0));
         assertEquals(secondMovieListItem, testGetByAppUserId.get(1));
         assertEquals(thirdMovieListItem, testGetByAppUserId.get(2));
 
+    }
+
+    @Test
+    void givenAppUserIdAndMovieIdWhenGetByAppUserIdAndMusicIdShouldReturnRelatedMusicListItem() {
+
+
+        AppUserMovieListItem movieListItem = AppUserMovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(2L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        this.appUserMovieListItemRepository.save(movieListItem);
+
+        AppUserMovieListItem testGetByAppUserIdAndMovieId = this.
+                appUserMovieListItemRepository.getByAppUserIdAndMovieId(
+                        movieListItem.getAppUserId(), movieListItem.getMovieId()
+                );
+
+        assertNotNull(testGetByAppUserIdAndMovieId);
+        assertEquals(movieListItem, testGetByAppUserIdAndMovieId);
     }
 }
