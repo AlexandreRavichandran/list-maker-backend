@@ -14,6 +14,9 @@ public interface AppUserMovieListItemService {
     AppUserMovieListItem add(AppUserMovieListItem appUserMovieListItem)
             throws CustomBadRequestException, CustomEntityDuplicationException;
 
+    List<AppUserMovieListItem> changeSortingOrder(Long movieListItemId, Integer newOrder)
+            throws CustomNotFoundException, CustomBadRequestException;
+
     AppUserMovieListItem deleteById(Long movieListId) throws CustomNotFoundException;
 
 }

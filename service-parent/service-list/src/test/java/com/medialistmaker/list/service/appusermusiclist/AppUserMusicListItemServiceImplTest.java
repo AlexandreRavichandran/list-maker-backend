@@ -18,6 +18,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 @ExtendWith(MockitoExtension.class)
@@ -164,5 +165,114 @@ class AppUserMusicListItemServiceImplTest {
         assertThrows(CustomNotFoundException.class, () -> this.appUserMusicListService.deleteById(1L));
 
         Mockito.verify(this.appUserMusicListItemRepository).getReferenceById(anyLong());
+    }
+
+
+    @Test
+    void givenListItemIdAndAppUserIdAndSortingNumberWhenChangeSortingOrderShouldChangeSortingOrderAndSaveAndReturnBothEditedMovieListItem()
+            throws CustomBadRequestException, CustomNotFoundException {
+
+        AppUserMusicListItem musicListItemToEdit = AppUserMusicListItem
+                .builder()
+                .id(1L)
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        AppUserMusicListItem musicListItemWithNewSortingOrderEdited = AppUserMusicListItem
+                .builder()
+                .id(1L)
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        AppUserMusicListItem musicListItemWithSameNewSortingOrder = AppUserMusicListItem
+                .builder()
+                .id(2L)
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        AppUserMusicListItem musicListItemWithSameNewSortingOrderEdited = AppUserMusicListItem
+                .builder()
+                .id(2L)
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        Mockito
+                .when(this.appUserMusicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .thenReturn(List.of(musicListItemToEdit, musicListItemWithSameNewSortingOrder));
+
+        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItemToEdit);
+        Mockito
+                .when(this.appUserMusicListItemRepository.getByAppUserIdAndSortingOrder(anyLong(), anyInt()))
+                .thenReturn(musicListItemWithSameNewSortingOrder);
+
+        List<AppUserMusicListItem> testChangeSortingNumber =
+                this.appUserMusicListService.changeSortingOrder(1L, 2);
+
+        Mockito
+                .verify(this.appUserMusicListItemRepository)
+                .saveAll(List.of(musicListItemWithNewSortingOrderEdited, musicListItemWithSameNewSortingOrderEdited));
+        Mockito.verify(this.appUserMusicListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.appUserMusicListItemRepository).getByAppUserIdAndSortingOrder(anyLong(), anyInt());
+
+
+        assertFalse(testChangeSortingNumber.isEmpty());
+
+        assertEquals(musicListItemWithSameNewSortingOrder.getSortingOrder(), testChangeSortingNumber.get(1).getSortingOrder());
+        assertEquals(musicListItemToEdit.getSortingOrder(), testChangeSortingNumber.get(0).getSortingOrder());
+
+        assertNotEquals(testChangeSortingNumber.get(0).getSortingOrder(), testChangeSortingNumber.get(1).getSortingOrder());
+    }
+
+    @Test
+    void givenMovieListItemIdAndAppUserIdAndInvalidSortingNumberWhenChangeSortingOrderShouldThrowBadRequestException() {
+
+        AppUserMusicListItem musicListItem = AppUserMusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
+
+        assertThrows(
+                CustomBadRequestException.class,
+                () -> this.appUserMusicListService.changeSortingOrder(1L, 0)
+        );
+
+        assertThrows(
+                CustomBadRequestException.class,
+                () -> this.appUserMusicListService.changeSortingOrder(1L, -1)
+        );
+
+        assertThrows(
+                CustomBadRequestException.class,
+                () -> this.appUserMusicListService.changeSortingOrder(1L, 6)
+        );
+
+    }
+
+    @Test
+    void givenInvalidMovieListItemAndAppUserIdAndSortingNumberWhenChangeSortingOrderShouldThrowNotFoundException() {
+
+        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+
+        assertThrows(
+                CustomNotFoundException.class,
+                () -> this.appUserMusicListService.changeSortingOrder(1L, 2)
+        );
     }
 }

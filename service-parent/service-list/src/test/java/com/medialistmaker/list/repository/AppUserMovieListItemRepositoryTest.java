@@ -86,4 +86,26 @@ class AppUserMovieListItemRepositoryTest {
         assertNotNull(testGetByAppUserIdAndMovieId);
         assertEquals(movieListItem, testGetByAppUserIdAndMovieId);
     }
+
+    @Test
+    void givenAppUserIdAndSortingOrderWhenGetByAppUserIdAndSortingOrderShouldReturnRelatedMovieListItem() {
+
+        AppUserMovieListItem movieListItem = AppUserMovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(2L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        this.appUserMovieListItemRepository.save(movieListItem);
+
+        AppUserMovieListItem testGetByAppUserIdAndSortingOrder = this.
+                appUserMovieListItemRepository.getByAppUserIdAndSortingOrder(
+                        movieListItem.getAppUserId(), movieListItem.getSortingOrder()
+                );
+
+        assertNotNull(testGetByAppUserIdAndSortingOrder);
+        assertEquals(movieListItem, testGetByAppUserIdAndSortingOrder);
+    }
 }

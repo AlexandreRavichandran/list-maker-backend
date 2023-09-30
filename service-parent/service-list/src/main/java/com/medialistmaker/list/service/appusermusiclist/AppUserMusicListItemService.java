@@ -14,6 +14,9 @@ public interface AppUserMusicListItemService {
     AppUserMusicListItem add(AppUserMusicListItem appUserMusicListItem)
             throws CustomBadRequestException, CustomEntityDuplicationException;
 
+    List<AppUserMusicListItem> changeSortingOrder(Long musicListItemId, Integer newOrder)
+            throws CustomNotFoundException, CustomBadRequestException;
+
     AppUserMusicListItem deleteById(Long musicListId) throws CustomNotFoundException;
 
 }

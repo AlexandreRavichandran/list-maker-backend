@@ -85,4 +85,26 @@ class AppUserMusicListItemRepositoryTest {
         assertEquals(musicListItem, testGetByAppUserIdAndMusicId);
 
     }
+
+    @Test
+    void givenAppUserIdAndSortingOrderWhenGetByAppUserIdAndSortingOrderShouldReturnRelatedMusicListItem() {
+
+        AppUserMusicListItem musicListItem = AppUserMusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(2L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        this.appUserMusicListItemRepository.save(musicListItem);
+
+        AppUserMusicListItem testGetByAppUserIdAndSortingOrder = this.
+                appUserMusicListItemRepository.getByAppUserIdAndSortingOrder(
+                        musicListItem.getAppUserId(), musicListItem.getSortingOrder()
+                );
+
+        assertNotNull(testGetByAppUserIdAndSortingOrder);
+        assertEquals(musicListItem, testGetByAppUserIdAndSortingOrder);
+    }
 }

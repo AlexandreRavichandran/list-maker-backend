@@ -9,6 +9,7 @@ import com.medialistmaker.list.utils.CustomEntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -48,6 +49,37 @@ public class AppUserMovieListItemServiceImpl implements AppUserMovieListItemServ
         }
 
         return this.appUserMovieListItemRepository.save(appUserMovieListItem);
+    }
+
+    @Override
+    public List<AppUserMovieListItem> changeSortingOrder(Long movieListItemId, Integer newOrder)
+            throws CustomNotFoundException, CustomBadRequestException {
+
+        AppUserMovieListItem itemToChange = this.appUserMovieListItemRepository.getReferenceById(movieListItemId);
+
+        if (isNull(itemToChange)) {
+            throw new CustomNotFoundException("Not found");
+        }
+
+        if (newOrder <= 0) {
+            throw new CustomBadRequestException("New order not valid", new ArrayList<>());
+        }
+
+        List<AppUserMovieListItem> userMovieListItems = this.appUserMovieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
+
+        if (userMovieListItems.size() < newOrder) {
+            throw new CustomBadRequestException("New order not valid", new ArrayList<>());
+        }
+
+        AppUserMovieListItem itemWithSameOrder = this.appUserMovieListItemRepository.getByAppUserIdAndSortingOrder(1L, newOrder);
+
+        itemWithSameOrder.setSortingOrder(itemToChange.getSortingOrder());
+        itemToChange.setSortingOrder(newOrder);
+
+        this.appUserMovieListItemRepository.saveAll(List.of(itemToChange, itemWithSameOrder));
+
+        return List.of(itemToChange, itemWithSameOrder);
+
     }
 
     @Override

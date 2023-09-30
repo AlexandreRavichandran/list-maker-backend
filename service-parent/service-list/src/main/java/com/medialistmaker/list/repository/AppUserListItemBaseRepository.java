@@ -10,4 +10,5 @@ public interface AppUserListItemBaseRepository<A extends AppUserListItem> {
 
     List<A> getByAppUserIdOrderBySortingOrderAsc(Long appUserId);
 
+    A getByAppUserIdAndSortingOrder(Long appUserId, Integer order);
 }
