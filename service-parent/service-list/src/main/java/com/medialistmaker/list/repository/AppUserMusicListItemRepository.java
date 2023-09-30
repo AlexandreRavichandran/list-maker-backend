@@ -4,12 +4,8 @@ import com.medialistmaker.list.domain.AppUserMusicListItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface AppUserMusicListItemRepository extends JpaRepository<AppUserMusicListItem, Long> {
-
-    List<AppUserMusicListItem> getByAppUserIdOrderBySortingOrderAsc(Long appUserId);
+public interface AppUserMusicListItemRepository extends JpaRepository<AppUserMusicListItem, Long>, AppUserListItemBaseRepository<AppUserMusicListItem> {
 
     AppUserMusicListItem getByAppUserIdAndMusicId(Long appUserId, Long musicId);
 }

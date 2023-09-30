@@ -2,20 +2,26 @@ package com.medialistmaker.list.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
-@Entity
 @Data
-@Builder
-@AllArgsConstructor
-public class AppUserMovieListItem {
+@Entity
+@EqualsAndHashCode(callSuper = true)
+public class AppUserMovieListItem extends AppUserListItem {
 
     public AppUserMovieListItem() {
         //Private constructor
+    }
+
+    @Builder
+    public AppUserMovieListItem(Long appUserId, Integer sortingOrder, Date addedAt, Long id, Long movieId) {
+        super(appUserId, sortingOrder, addedAt);
+        this.id = id;
+        this.movieId = movieId;
     }
 
     @Id
@@ -26,11 +32,4 @@ public class AppUserMovieListItem {
     @NotNull(message = "Movie id is mandatory")
     private Long movieId;
 
-    @NotNull(message = "User id is mandatory")
-    private Long appUserId;
-
-    @NotNull(message = "Sorting order is mandatory")
-    private Integer sortingOrder;
-
-    private Date addedAt;
 }
