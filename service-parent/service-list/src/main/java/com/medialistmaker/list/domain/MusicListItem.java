@@ -8,19 +8,17 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
-
-
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-public class AppUserMusicListItem extends AppUserListItem {
+public class MusicListItem extends ListItem {
 
-    public AppUserMusicListItem() {
+    public MusicListItem() {
         //Private constructor
     }
 
     @Builder
-    public AppUserMusicListItem(Long appUserId, Integer sortingOrder, Date addedAt, Long id, Long musicId) {
+    public MusicListItem(Long appUserId, Integer sortingOrder, Date addedAt, Long id, Long musicId) {
         super(appUserId, sortingOrder, addedAt);
         this.id = id;
         this.musicId = musicId;

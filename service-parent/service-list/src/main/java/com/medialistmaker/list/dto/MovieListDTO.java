@@ -9,20 +9,19 @@ import java.util.Date;
 @Data
 @Builder
 @AllArgsConstructor
-public class AppUserMusicListDTO {
+public class MovieListDTO {
 
-    public AppUserMusicListDTO() {
+    public MovieListDTO() {
         //Private constructor
     }
 
     private Long id;
 
-    private Long musicId;
+    private Long movieId;
 
     private Long appUserId;
 
     private Integer sortingOrder;
 
     private Date addedAt;
-
 }

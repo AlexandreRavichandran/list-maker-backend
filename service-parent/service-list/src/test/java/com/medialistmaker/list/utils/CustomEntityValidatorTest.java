@@ -1,6 +1,6 @@
 package com.medialistmaker.list.utils;
 
-import com.medialistmaker.list.domain.AppUserMusicListItem;
+import com.medialistmaker.list.domain.MusicListItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CustomEntityValidatorTest {
 
     @Autowired
-    CustomEntityValidator<AppUserMusicListItem> movieEntityValidator;
+    CustomEntityValidator<MusicListItem> movieEntityValidator;
 
     @BeforeEach
     void beforeAllTests() {
@@ -24,7 +24,7 @@ class CustomEntityValidatorTest {
     @Test
     void givenValidEntityWhenValidateEntityShouldReturnEmptyList() {
 
-        AppUserMusicListItem validMusicListItem = AppUserMusicListItem
+        MusicListItem validMusicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -41,7 +41,7 @@ class CustomEntityValidatorTest {
     @Test
     void givenInvalidEntityWhenValidateEntityShouldReturnErrorList() {
 
-        AppUserMusicListItem invalidMusicListItem = AppUserMusicListItem
+        MusicListItem invalidMusicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .build();

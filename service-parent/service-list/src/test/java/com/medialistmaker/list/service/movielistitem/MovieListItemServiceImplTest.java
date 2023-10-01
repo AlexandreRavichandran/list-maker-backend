@@ -1,10 +1,10 @@
-package com.medialistmaker.list.service.appusermovielist;
+package com.medialistmaker.list.service.movielistitem;
 
-import com.medialistmaker.list.domain.AppUserMovieListItem;
+import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
-import com.medialistmaker.list.repository.AppUserMovieListItemRepository;
+import com.medialistmaker.list.repository.MovieListItemRepository;
 import com.medialistmaker.list.utils.CustomEntityValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,21 +22,21 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 @ExtendWith(MockitoExtension.class)
-class AppUserMovieListItemServiceImplTest {
+class MovieListItemServiceImplTest {
 
     @Mock
-    AppUserMovieListItemRepository appUserMovieListItemRepository;
+    MovieListItemRepository movieListItemRepository;
 
     @Mock
-    CustomEntityValidator<AppUserMovieListItem> movieListEntityValidator;
+    CustomEntityValidator<MovieListItem> movieListEntityValidator;
 
     @InjectMocks
-    AppUserMovieListItemServiceImpl appUserMovieListService;
+    MovieListItemServiceImpl movieListService;
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMovieListItemList() {
 
-        AppUserMovieListItem firstMovieListItem = AppUserMovieListItem
+        MovieListItem firstMovieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -44,7 +44,7 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        AppUserMovieListItem secondMovieListItem = AppUserMovieListItem
+        MovieListItem secondMovieListItem = MovieListItem
                 .builder()
                 .movieId(2L)
                 .appUserId(1L)
@@ -52,7 +52,7 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMovieListItem thirdMovieListItem = AppUserMovieListItem
+        MovieListItem thirdMovieListItem = MovieListItem
                 .builder()
                 .movieId(3L)
                 .appUserId(1L)
@@ -60,13 +60,13 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(3)
                 .build();
 
-        List<AppUserMovieListItem> movieListItemList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+        List<MovieListItem> movieListItemList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
 
-        Mockito.when(this.appUserMovieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(movieListItemList);
+        Mockito.when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(movieListItemList);
 
-        List<AppUserMovieListItem> testGetByAppUserId = this.appUserMovieListService.getByAppUserId(1L);
+        List<MovieListItem> testGetByAppUserId = this.movieListService.getByAppUserId(1L);
 
-        Mockito.verify(this.appUserMovieListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
         assertEquals(3, testGetByAppUserId.size());
         assertTrue(testGetByAppUserId.containsAll(movieListItemList));
     }
@@ -75,7 +75,7 @@ class AppUserMovieListItemServiceImplTest {
     void givenMovieListItemWhenAddMovieListItemShouldSaveAndReturnMovieListItem()
             throws CustomBadRequestException, CustomEntityDuplicationException {
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -84,14 +84,14 @@ class AppUserMovieListItemServiceImplTest {
                 .build();
 
         Mockito.when(this.movieListEntityValidator.validateEntity(movieListItem)).thenReturn(emptyList());
-        Mockito.when(this.appUserMovieListItemRepository.getByAppUserIdAndMovieId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.appUserMovieListItemRepository.save(movieListItem)).thenReturn(movieListItem);
+        Mockito.when(this.movieListItemRepository.getByAppUserIdAndMovieId(anyLong(), anyLong())).thenReturn(null);
+        Mockito.when(this.movieListItemRepository.save(movieListItem)).thenReturn(movieListItem);
 
-        AppUserMovieListItem testAddMovieListItem = this.appUserMovieListService.add(movieListItem);
+        MovieListItem testAddMovieListItem = this.movieListService.add(movieListItem);
 
         Mockito.verify(this.movieListEntityValidator).validateEntity(movieListItem);
-        Mockito.verify(this.appUserMovieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
-        Mockito.verify(this.appUserMovieListItemRepository).save(movieListItem);
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
+        Mockito.verify(this.movieListItemRepository).save(movieListItem);
 
         assertEquals(testAddMovieListItem, movieListItem);
     }
@@ -99,7 +99,7 @@ class AppUserMovieListItemServiceImplTest {
     @Test
     void givenInvalidMovieListItemWhenAddMovieListItemShouldThrowBadRequestException() {
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -110,7 +110,7 @@ class AppUserMovieListItemServiceImplTest {
         List<String> errorList = List.of("Error 1", "Error 2");
         Mockito.when(this.movieListEntityValidator.validateEntity(movieListItem)).thenReturn(errorList);
 
-        assertThrows(CustomBadRequestException.class, () -> this.appUserMovieListService.add(movieListItem));
+        assertThrows(CustomBadRequestException.class, () -> this.movieListService.add(movieListItem));
 
         Mockito.verify(this.movieListEntityValidator).validateEntity(movieListItem);
 
@@ -119,7 +119,7 @@ class AppUserMovieListItemServiceImplTest {
     @Test
     void givenMovieListItemWithAlreadyExistingMovieIdShouldThrowEntityDuplicationException() {
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -128,20 +128,20 @@ class AppUserMovieListItemServiceImplTest {
                 .build();
 
         Mockito.when(this.movieListEntityValidator.validateEntity(movieListItem)).thenReturn(emptyList());
-        Mockito.when(this.appUserMovieListItemRepository
+        Mockito.when(this.movieListItemRepository
                         .getByAppUserIdAndMovieId(anyLong(), anyLong()))
                 .thenReturn(movieListItem);
 
-        assertThrows(CustomEntityDuplicationException.class, () -> this.appUserMovieListService.add(movieListItem));
+        assertThrows(CustomEntityDuplicationException.class, () -> this.movieListService.add(movieListItem));
 
         Mockito.verify(this.movieListEntityValidator).validateEntity(movieListItem);
-        Mockito.verify(this.appUserMovieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
     }
 
     @Test
     void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMovieListItem() throws CustomNotFoundException {
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -149,29 +149,29 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.appUserMovieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItem);
+        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItem);
 
-        AppUserMovieListItem testDeleteById = this.appUserMovieListService.deleteById(1L);
+        MovieListItem testDeleteById = this.movieListService.deleteById(1L);
 
-        Mockito.verify(this.appUserMovieListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
         assertEquals(movieListItem, testDeleteById);
     }
 
     @Test
     void givenInvalidIdWhenDeleteByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.appUserMovieListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(null);
 
-        assertThrows(CustomNotFoundException.class, () -> this.appUserMovieListService.deleteById(1L));
+        assertThrows(CustomNotFoundException.class, () -> this.movieListService.deleteById(1L));
 
-        Mockito.verify(this.appUserMovieListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
     }
 
     @Test
     void givenListItemIdAndAppUserIdAndSortingNumberWhenChangeSortingOrderShouldChangeSortingOrderAndSaveAndReturnBothEditedMovieListItem()
             throws CustomBadRequestException, CustomNotFoundException {
 
-        AppUserMovieListItem movieListItemToEdit = AppUserMovieListItem
+        MovieListItem movieListItemToEdit = MovieListItem
                 .builder()
                 .id(1L)
                 .movieId(1L)
@@ -180,7 +180,7 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        AppUserMovieListItem movieListItemWithNewSortingOrderEdited = AppUserMovieListItem
+        MovieListItem movieListItemWithNewSortingOrderEdited = MovieListItem
                 .builder()
                 .id(1L)
                 .movieId(1L)
@@ -189,7 +189,7 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMovieListItem movieListItemWithSameNewSortingOrder = AppUserMovieListItem
+        MovieListItem movieListItemWithSameNewSortingOrder = MovieListItem
                 .builder()
                 .id(2L)
                 .movieId(2L)
@@ -198,7 +198,7 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMovieListItem movieListItemWithSameNewSortingOrderEdited = AppUserMovieListItem
+        MovieListItem movieListItemWithSameNewSortingOrderEdited = MovieListItem
                 .builder()
                 .id(2L)
                 .movieId(2L)
@@ -209,22 +209,22 @@ class AppUserMovieListItemServiceImplTest {
 
 
         Mockito
-                .when(this.appUserMovieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
                 .thenReturn(List.of(movieListItemToEdit, movieListItemWithSameNewSortingOrder));
 
-        Mockito.when(this.appUserMovieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItemToEdit);
+        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItemToEdit);
         Mockito
-                .when(this.appUserMovieListItemRepository.getByAppUserIdAndSortingOrder(anyLong(), anyInt()))
+                .when(this.movieListItemRepository.getByAppUserIdAndSortingOrder(anyLong(), anyInt()))
                 .thenReturn(movieListItemWithSameNewSortingOrder);
 
-        List<AppUserMovieListItem> testChangeSortingNumber =
-                this.appUserMovieListService.changeSortingOrder(1L, 2);
+        List<MovieListItem> testChangeSortingNumber =
+                this.movieListService.changeSortingOrder(1L, 2);
 
         Mockito
-                .verify(this.appUserMovieListItemRepository)
+                .verify(this.movieListItemRepository)
                 .saveAll(List.of(movieListItemWithNewSortingOrderEdited, movieListItemWithSameNewSortingOrderEdited));
-        Mockito.verify(this.appUserMovieListItemRepository).getReferenceById(anyLong());
-        Mockito.verify(this.appUserMovieListItemRepository).getByAppUserIdAndSortingOrder(anyLong(), anyInt());
+        Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdAndSortingOrder(anyLong(), anyInt());
 
 
         assertFalse(testChangeSortingNumber.isEmpty());
@@ -238,7 +238,7 @@ class AppUserMovieListItemServiceImplTest {
     @Test
     void givenMovieListItemIdAndAppUserIdAndInvalidSortingNumberWhenChangeSortingOrderShouldThrowBadRequestException() {
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -246,22 +246,22 @@ class AppUserMovieListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.appUserMovieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItem);
+        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItem);
 
         assertThrows(
                 CustomBadRequestException.class,
-                () -> this.appUserMovieListService.changeSortingOrder(1L, 0)
+                () -> this.movieListService.changeSortingOrder(1L, 0)
         );
 
 
         assertThrows(
                 CustomBadRequestException.class,
-                () -> this.appUserMovieListService.changeSortingOrder(1L, -1)
+                () -> this.movieListService.changeSortingOrder(1L, -1)
         );
 
         assertThrows(
                 CustomBadRequestException.class,
-                () -> this.appUserMovieListService.changeSortingOrder(1L, 6)
+                () -> this.movieListService.changeSortingOrder(1L, 6)
         );
 
     }
@@ -269,11 +269,11 @@ class AppUserMovieListItemServiceImplTest {
     @Test
     void givenInvalidMovieListItemAndAppUserIdAndSortingNumberWhenChangeSortingOrderShouldThrowNotFoundException() {
 
-        Mockito.when(this.appUserMovieListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(null);
 
         assertThrows(
                 CustomNotFoundException.class,
-                () -> this.appUserMovieListService.changeSortingOrder(1L, 2)
+                () -> this.movieListService.changeSortingOrder(1L, 2)
         );
     }
 }

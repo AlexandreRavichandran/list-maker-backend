@@ -11,14 +11,14 @@ import java.util.Date;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-public class AppUserMovieListItem extends AppUserListItem {
+public class MovieListItem extends ListItem {
 
-    public AppUserMovieListItem() {
+    public MovieListItem() {
         //Private constructor
     }
 
     @Builder
-    public AppUserMovieListItem(Long appUserId, Integer sortingOrder, Date addedAt, Long id, Long movieId) {
+    public MovieListItem(Long appUserId, Integer sortingOrder, Date addedAt, Long id, Long movieId) {
         super(appUserId, sortingOrder, addedAt);
         this.id = id;
         this.movieId = movieId;

@@ -10,9 +10,9 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @MappedSuperclass
-public class AppUserListItem {
+public class ListItem {
 
-    public AppUserListItem() {
+    public ListItem() {
         //private constructor
     }
 

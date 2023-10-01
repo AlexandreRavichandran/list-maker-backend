@@ -1,10 +1,10 @@
-package com.medialistmaker.list.service.appusermusiclist;
+package com.medialistmaker.list.service.musiclistitem;
 
-import com.medialistmaker.list.domain.AppUserMusicListItem;
+import com.medialistmaker.list.domain.MusicListItem;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
-import com.medialistmaker.list.repository.AppUserMusicListItemRepository;
+import com.medialistmaker.list.repository.MusicListItemRepository;
 import com.medialistmaker.list.utils.CustomEntityValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,21 +22,21 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 @ExtendWith(MockitoExtension.class)
-class AppUserMusicListItemServiceImplTest {
+class MusicListItemServiceImplTest {
 
     @Mock
-    AppUserMusicListItemRepository appUserMusicListItemRepository;
+    MusicListItemRepository musicListItemRepository;
 
     @Mock
-    CustomEntityValidator<AppUserMusicListItem> musicListEntityValidator;
+    CustomEntityValidator<MusicListItem> musicListEntityValidator;
 
     @InjectMocks
-    AppUserMusicListItemServiceImpl appUserMusicListService;
+    MusicListItemServiceImpl musicListService;
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMusicListItemList() {
 
-        AppUserMusicListItem firstMusicListItem = AppUserMusicListItem
+        MusicListItem firstMusicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -44,7 +44,7 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        AppUserMusicListItem secondMusicListItem = AppUserMusicListItem
+        MusicListItem secondMusicListItem = MusicListItem
                 .builder()
                 .musicId(2L)
                 .appUserId(1L)
@@ -52,7 +52,7 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMusicListItem thirdMusicListItem = AppUserMusicListItem
+        MusicListItem thirdMusicListItem = MusicListItem
                 .builder()
                 .musicId(3L)
                 .appUserId(1L)
@@ -60,13 +60,13 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(3)
                 .build();
 
-        List<AppUserMusicListItem> musicListItemList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+        List<MusicListItem> musicListItemList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
 
-        Mockito.when(this.appUserMusicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(musicListItemList);
+        Mockito.when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(musicListItemList);
 
-        List<AppUserMusicListItem> testGetByAppUserId = this.appUserMusicListService.getByAppUserId(1L);
+        List<MusicListItem> testGetByAppUserId = this.musicListService.getByAppUserId(1L);
 
-        Mockito.verify(this.appUserMusicListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
         assertEquals(3, testGetByAppUserId.size());
         assertTrue(testGetByAppUserId.containsAll(musicListItemList));
     }
@@ -75,7 +75,7 @@ class AppUserMusicListItemServiceImplTest {
     void givenMusicListItemWhenAddMusicListItemShouldSaveAndReturnMusicListItem()
             throws CustomBadRequestException, CustomEntityDuplicationException {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -84,14 +84,14 @@ class AppUserMusicListItemServiceImplTest {
                 .build();
 
         Mockito.when(this.musicListEntityValidator.validateEntity(musicListItem)).thenReturn(emptyList());
-        Mockito.when(this.appUserMusicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.appUserMusicListItemRepository.save(musicListItem)).thenReturn(musicListItem);
+        Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
+        Mockito.when(this.musicListItemRepository.save(musicListItem)).thenReturn(musicListItem);
 
-        AppUserMusicListItem testAddMusicListItem = this.appUserMusicListService.add(musicListItem);
+        MusicListItem testAddMusicListItem = this.musicListService.add(musicListItem);
 
         Mockito.verify(this.musicListEntityValidator).validateEntity(musicListItem);
-        Mockito.verify(this.appUserMusicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
-        Mockito.verify(this.appUserMusicListItemRepository).save(musicListItem);
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
+        Mockito.verify(this.musicListItemRepository).save(musicListItem);
 
         assertEquals(testAddMusicListItem, musicListItem);
     }
@@ -99,7 +99,7 @@ class AppUserMusicListItemServiceImplTest {
     @Test
     void givenInvalidMusicListItemWhenAddMusicListItemShouldThrowBadRequestException() {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -110,7 +110,7 @@ class AppUserMusicListItemServiceImplTest {
         List<String> errorList = List.of("Error 1", "Error 2");
         Mockito.when(this.musicListEntityValidator.validateEntity(musicListItem)).thenReturn(errorList);
 
-        assertThrows(CustomBadRequestException.class, () -> this.appUserMusicListService.add(musicListItem));
+        assertThrows(CustomBadRequestException.class, () -> this.musicListService.add(musicListItem));
 
         Mockito.verify(this.musicListEntityValidator).validateEntity(musicListItem);
 
@@ -119,7 +119,7 @@ class AppUserMusicListItemServiceImplTest {
     @Test
     void givenMusicListItemWithAlreadyExistingMusicIdShouldThrowEntityDuplicationException() {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -128,20 +128,20 @@ class AppUserMusicListItemServiceImplTest {
                 .build();
 
         Mockito.when(this.musicListEntityValidator.validateEntity(musicListItem)).thenReturn(emptyList());
-        Mockito.when(this.appUserMusicListItemRepository
+        Mockito.when(this.musicListItemRepository
                         .getByAppUserIdAndMusicId(anyLong(), anyLong()))
                 .thenReturn(musicListItem);
 
-        assertThrows(CustomEntityDuplicationException.class, () -> this.appUserMusicListService.add(musicListItem));
+        assertThrows(CustomEntityDuplicationException.class, () -> this.musicListService.add(musicListItem));
 
         Mockito.verify(this.musicListEntityValidator).validateEntity(musicListItem);
-        Mockito.verify(this.appUserMusicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
     }
 
     @Test
     void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMusicListItem() throws CustomNotFoundException {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -149,22 +149,22 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
+        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
 
-        AppUserMusicListItem testDeleteById = this.appUserMusicListService.deleteById(1L);
+        MusicListItem testDeleteById = this.musicListService.deleteById(1L);
 
-        Mockito.verify(this.appUserMusicListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
         assertEquals(musicListItem, testDeleteById);
     }
 
     @Test
     void givenInvalidIdWhenDeleteByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
 
-        assertThrows(CustomNotFoundException.class, () -> this.appUserMusicListService.deleteById(1L));
+        assertThrows(CustomNotFoundException.class, () -> this.musicListService.deleteById(1L));
 
-        Mockito.verify(this.appUserMusicListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
     }
 
 
@@ -172,7 +172,7 @@ class AppUserMusicListItemServiceImplTest {
     void givenListItemIdAndAppUserIdAndSortingNumberWhenChangeSortingOrderShouldChangeSortingOrderAndSaveAndReturnBothEditedMovieListItem()
             throws CustomBadRequestException, CustomNotFoundException {
 
-        AppUserMusicListItem musicListItemToEdit = AppUserMusicListItem
+        MusicListItem musicListItemToEdit = MusicListItem
                 .builder()
                 .id(1L)
                 .musicId(1L)
@@ -181,7 +181,7 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        AppUserMusicListItem musicListItemWithNewSortingOrderEdited = AppUserMusicListItem
+        MusicListItem musicListItemWithNewSortingOrderEdited = MusicListItem
                 .builder()
                 .id(1L)
                 .musicId(1L)
@@ -190,7 +190,7 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMusicListItem musicListItemWithSameNewSortingOrder = AppUserMusicListItem
+        MusicListItem musicListItemWithSameNewSortingOrder = MusicListItem
                 .builder()
                 .id(2L)
                 .musicId(2L)
@@ -199,7 +199,7 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMusicListItem musicListItemWithSameNewSortingOrderEdited = AppUserMusicListItem
+        MusicListItem musicListItemWithSameNewSortingOrderEdited = MusicListItem
                 .builder()
                 .id(2L)
                 .musicId(2L)
@@ -209,22 +209,22 @@ class AppUserMusicListItemServiceImplTest {
                 .build();
 
         Mockito
-                .when(this.appUserMusicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
                 .thenReturn(List.of(musicListItemToEdit, musicListItemWithSameNewSortingOrder));
 
-        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItemToEdit);
+        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItemToEdit);
         Mockito
-                .when(this.appUserMusicListItemRepository.getByAppUserIdAndSortingOrder(anyLong(), anyInt()))
+                .when(this.musicListItemRepository.getByAppUserIdAndSortingOrder(anyLong(), anyInt()))
                 .thenReturn(musicListItemWithSameNewSortingOrder);
 
-        List<AppUserMusicListItem> testChangeSortingNumber =
-                this.appUserMusicListService.changeSortingOrder(1L, 2);
+        List<MusicListItem> testChangeSortingNumber =
+                this.musicListService.changeSortingOrder(1L, 2);
 
         Mockito
-                .verify(this.appUserMusicListItemRepository)
+                .verify(this.musicListItemRepository)
                 .saveAll(List.of(musicListItemWithNewSortingOrderEdited, musicListItemWithSameNewSortingOrderEdited));
-        Mockito.verify(this.appUserMusicListItemRepository).getReferenceById(anyLong());
-        Mockito.verify(this.appUserMusicListItemRepository).getByAppUserIdAndSortingOrder(anyLong(), anyInt());
+        Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdAndSortingOrder(anyLong(), anyInt());
 
 
         assertFalse(testChangeSortingNumber.isEmpty());
@@ -238,7 +238,7 @@ class AppUserMusicListItemServiceImplTest {
     @Test
     void givenMovieListItemIdAndAppUserIdAndInvalidSortingNumberWhenChangeSortingOrderShouldThrowBadRequestException() {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -246,21 +246,21 @@ class AppUserMusicListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
+        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
 
         assertThrows(
                 CustomBadRequestException.class,
-                () -> this.appUserMusicListService.changeSortingOrder(1L, 0)
+                () -> this.musicListService.changeSortingOrder(1L, 0)
         );
 
         assertThrows(
                 CustomBadRequestException.class,
-                () -> this.appUserMusicListService.changeSortingOrder(1L, -1)
+                () -> this.musicListService.changeSortingOrder(1L, -1)
         );
 
         assertThrows(
                 CustomBadRequestException.class,
-                () -> this.appUserMusicListService.changeSortingOrder(1L, 6)
+                () -> this.musicListService.changeSortingOrder(1L, 6)
         );
 
     }
@@ -268,11 +268,11 @@ class AppUserMusicListItemServiceImplTest {
     @Test
     void givenInvalidMovieListItemAndAppUserIdAndSortingNumberWhenChangeSortingOrderShouldThrowNotFoundException() {
 
-        Mockito.when(this.appUserMusicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
 
         assertThrows(
                 CustomNotFoundException.class,
-                () -> this.appUserMusicListService.changeSortingOrder(1L, 2)
+                () -> this.musicListService.changeSortingOrder(1L, 2)
         );
     }
 }

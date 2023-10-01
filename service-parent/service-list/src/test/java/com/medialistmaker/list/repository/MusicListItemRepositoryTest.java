@@ -1,6 +1,6 @@
 package com.medialistmaker.list.repository;
 
-import com.medialistmaker.list.domain.AppUserMusicListItem;
+import com.medialistmaker.list.domain.MusicListItem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,15 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AppUserMusicListItemRepositoryTest {
+class MusicListItemRepositoryTest {
 
     @Autowired
-    AppUserMusicListItemRepository appUserMusicListItemRepository;
+    MusicListItemRepository musicListItemRepository;
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMusicListItemOrderedBySortingOrderAsc() {
 
-        AppUserMusicListItem firstMusicListItem = AppUserMusicListItem
+        MusicListItem firstMusicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(1L)
@@ -35,7 +35,7 @@ class AppUserMusicListItemRepositoryTest {
                 .sortingOrder(1)
                 .build();
 
-        AppUserMusicListItem secondMusicListItem = AppUserMusicListItem
+        MusicListItem secondMusicListItem = MusicListItem
                 .builder()
                 .musicId(2L)
                 .appUserId(1L)
@@ -43,7 +43,7 @@ class AppUserMusicListItemRepositoryTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMusicListItem thirdMusicListItem = AppUserMusicListItem
+        MusicListItem thirdMusicListItem = MusicListItem
                 .builder()
                 .musicId(3L)
                 .appUserId(1L)
@@ -51,11 +51,11 @@ class AppUserMusicListItemRepositoryTest {
                 .sortingOrder(3)
                 .build();
 
-        List<AppUserMusicListItem> musicList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+        List<MusicListItem> musicList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
 
-        this.appUserMusicListItemRepository.saveAll(musicList);
+        this.musicListItemRepository.saveAll(musicList);
 
-        List<AppUserMusicListItem> testGetByAppUserId = this.appUserMusicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
+        List<MusicListItem> testGetByAppUserId = this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
 
         assertEquals(3, musicList.size());
         assertEquals(firstMusicListItem, testGetByAppUserId.get(0));
@@ -66,7 +66,7 @@ class AppUserMusicListItemRepositoryTest {
     @Test
     void givenAppUserIdAndMusicIdWhenGetByAppUserIdAndMusicIdShouldReturnRelatedMusicListItem() {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(2L)
@@ -74,10 +74,10 @@ class AppUserMusicListItemRepositoryTest {
                 .sortingOrder(1)
                 .build();
 
-        this.appUserMusicListItemRepository.save(musicListItem);
+        this.musicListItemRepository.save(musicListItem);
 
-        AppUserMusicListItem testGetByAppUserIdAndMusicId =
-                this.appUserMusicListItemRepository.getByAppUserIdAndMusicId(
+        MusicListItem testGetByAppUserIdAndMusicId =
+                this.musicListItemRepository.getByAppUserIdAndMusicId(
                         musicListItem.getAppUserId(), musicListItem.getMusicId()
                 );
 
@@ -89,7 +89,7 @@ class AppUserMusicListItemRepositoryTest {
     @Test
     void givenAppUserIdAndSortingOrderWhenGetByAppUserIdAndSortingOrderShouldReturnRelatedMusicListItem() {
 
-        AppUserMusicListItem musicListItem = AppUserMusicListItem
+        MusicListItem musicListItem = MusicListItem
                 .builder()
                 .musicId(1L)
                 .appUserId(2L)
@@ -97,10 +97,10 @@ class AppUserMusicListItemRepositoryTest {
                 .sortingOrder(1)
                 .build();
 
-        this.appUserMusicListItemRepository.save(musicListItem);
+        this.musicListItemRepository.save(musicListItem);
 
-        AppUserMusicListItem testGetByAppUserIdAndSortingOrder = this.
-                appUserMusicListItemRepository.getByAppUserIdAndSortingOrder(
+        MusicListItem testGetByAppUserIdAndSortingOrder = this.
+                musicListItemRepository.getByAppUserIdAndSortingOrder(
                         musicListItem.getAppUserId(), musicListItem.getSortingOrder()
                 );
 

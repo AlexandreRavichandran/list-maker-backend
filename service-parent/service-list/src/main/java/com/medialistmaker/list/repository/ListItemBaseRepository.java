@@ -1,12 +1,12 @@
 package com.medialistmaker.list.repository;
 
-import com.medialistmaker.list.domain.AppUserListItem;
+import com.medialistmaker.list.domain.ListItem;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface AppUserListItemBaseRepository<A extends AppUserListItem> {
+public interface ListItemBaseRepository<A extends ListItem> {
 
     List<A> getByAppUserIdOrderBySortingOrderAsc(Long appUserId);
 

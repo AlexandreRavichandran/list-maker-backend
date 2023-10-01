@@ -1,6 +1,6 @@
 package com.medialistmaker.list.repository;
 
-import com.medialistmaker.list.domain.AppUserMovieListItem;
+import com.medialistmaker.list.domain.MovieListItem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,15 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AppUserMovieListItemRepositoryTest {
+class MovieListItemRepositoryTest {
 
     @Autowired
-    AppUserMovieListItemRepository appUserMovieListItemRepository;
+    MovieListItemRepository movieListItemRepository;
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMovieListItemOrderedBySortingOrderAsc() {
 
-        AppUserMovieListItem firstMovieListItem = AppUserMovieListItem
+        MovieListItem firstMovieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(1L)
@@ -35,7 +35,7 @@ class AppUserMovieListItemRepositoryTest {
                 .sortingOrder(1)
                 .build();
 
-        AppUserMovieListItem secondMovieListItem = AppUserMovieListItem
+        MovieListItem secondMovieListItem = MovieListItem
                 .builder()
                 .movieId(2L)
                 .appUserId(1L)
@@ -43,7 +43,7 @@ class AppUserMovieListItemRepositoryTest {
                 .sortingOrder(2)
                 .build();
 
-        AppUserMovieListItem thirdMovieListItem = AppUserMovieListItem
+        MovieListItem thirdMovieListItem = MovieListItem
                 .builder()
                 .movieId(3L)
                 .appUserId(1L)
@@ -51,11 +51,11 @@ class AppUserMovieListItemRepositoryTest {
                 .sortingOrder(3)
                 .build();
 
-        List<AppUserMovieListItem> movieList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+        List<MovieListItem> movieList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
 
-        this.appUserMovieListItemRepository.saveAll(movieList);
+        this.movieListItemRepository.saveAll(movieList);
 
-        List<AppUserMovieListItem> testGetByAppUserId = this.appUserMovieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
+        List<MovieListItem> testGetByAppUserId = this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(1L);
 
         assertEquals(3, movieList.size());
         assertEquals(firstMovieListItem, testGetByAppUserId.get(0));
@@ -68,7 +68,7 @@ class AppUserMovieListItemRepositoryTest {
     void givenAppUserIdAndMovieIdWhenGetByAppUserIdAndMusicIdShouldReturnRelatedMusicListItem() {
 
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(2L)
@@ -76,10 +76,10 @@ class AppUserMovieListItemRepositoryTest {
                 .sortingOrder(1)
                 .build();
 
-        this.appUserMovieListItemRepository.save(movieListItem);
+        this.movieListItemRepository.save(movieListItem);
 
-        AppUserMovieListItem testGetByAppUserIdAndMovieId = this.
-                appUserMovieListItemRepository.getByAppUserIdAndMovieId(
+        MovieListItem testGetByAppUserIdAndMovieId = this.
+                movieListItemRepository.getByAppUserIdAndMovieId(
                         movieListItem.getAppUserId(), movieListItem.getMovieId()
                 );
 
@@ -90,7 +90,7 @@ class AppUserMovieListItemRepositoryTest {
     @Test
     void givenAppUserIdAndSortingOrderWhenGetByAppUserIdAndSortingOrderShouldReturnRelatedMovieListItem() {
 
-        AppUserMovieListItem movieListItem = AppUserMovieListItem
+        MovieListItem movieListItem = MovieListItem
                 .builder()
                 .movieId(1L)
                 .appUserId(2L)
@@ -98,10 +98,10 @@ class AppUserMovieListItemRepositoryTest {
                 .sortingOrder(1)
                 .build();
 
-        this.appUserMovieListItemRepository.save(movieListItem);
+        this.movieListItemRepository.save(movieListItem);
 
-        AppUserMovieListItem testGetByAppUserIdAndSortingOrder = this.
-                appUserMovieListItemRepository.getByAppUserIdAndSortingOrder(
+        MovieListItem testGetByAppUserIdAndSortingOrder = this.
+                movieListItemRepository.getByAppUserIdAndSortingOrder(
                         movieListItem.getAppUserId(), movieListItem.getSortingOrder()
                 );
 
