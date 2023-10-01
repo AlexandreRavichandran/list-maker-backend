@@ -14,9 +14,6 @@ public interface MusicListItemService {
     MusicListItem add(MusicListItem musicListItem)
             throws CustomBadRequestException, CustomEntityDuplicationException;
 
-    List<MusicListItem> changeSortingOrder(Long musicListItemId, Integer newOrder)
-            throws CustomNotFoundException, CustomBadRequestException;
-
     MusicListItem deleteById(Long musicListId) throws CustomNotFoundException;
 
 }
