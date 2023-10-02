@@ -7,12 +7,16 @@ import com.medialistmaker.appuser.exception.notfoundexception.CustomNotFoundExce
 import com.medialistmaker.appuser.repository.AppUserRepository;
 import com.medialistmaker.appuser.utils.CustomEntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-
-import java.util.List;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
@@ -46,7 +50,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         AppUser isUsernameAlreadyUsed = this.appUserRepository.getByUsername(appUser.getUsername());
 
-        if(nonNull(isUsernameAlreadyUsed)) {
+        if (nonNull(isUsernameAlreadyUsed)) {
             throw new CustomEntityDuplicationException("Already used");
         }
 
@@ -54,4 +58,16 @@ public class AppUserServiceImpl implements AppUserService {
 
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        AppUser appUser = this.appUserRepository.getByUsername(username);
+
+        if (isNull(appUser)) {
+            throw new UsernameNotFoundException("Bad credentials");
+        }
+
+        return new User(appUser.getUsername(), appUser.getPassword(), new ArrayList<>());
+
+    }
 }

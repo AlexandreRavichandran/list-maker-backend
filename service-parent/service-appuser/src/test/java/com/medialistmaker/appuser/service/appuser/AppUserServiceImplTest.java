@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
@@ -116,4 +118,32 @@ class AppUserServiceImplTest {
         Mockito.verify(this.appUserEntityValidator).validateEntity(user);
     }
 
+    @Test
+    void givenUsernameWhenLoadByUsernameShouldReturnRelatedUser() {
+
+        AppUser user = AppUser
+                .builder()
+                .id(1L)
+                .username("test")
+                .password("test")
+                .build();
+
+        Mockito.when(this.appUserRepository.getByUsername(anyString())).thenReturn(user);
+
+        UserDetails testLoadByUsername = this.appUserService.loadUserByUsername(user.getUsername());
+
+        Mockito.verify(this.appUserRepository).getByUsername(anyString());
+        assertEquals(user.getUsername(), testLoadByUsername.getUsername());
+        assertEquals(user.getPassword(), testLoadByUsername.getPassword());
+    }
+
+    @Test
+    void givenInvalidUsernameWhenLoadByUsernameShouldThrowUsernameNotFoundException() {
+
+        Mockito.when(this.appUserRepository.getByUsername(anyString())).thenReturn(null);
+
+        assertThrows(UsernameNotFoundException.class, () -> this.appUserService.loadUserByUsername("test"));
+
+        Mockito.verify(this.appUserRepository).getByUsername(anyString());
+    }
 }
