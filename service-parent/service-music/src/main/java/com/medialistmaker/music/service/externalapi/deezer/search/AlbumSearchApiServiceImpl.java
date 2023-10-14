@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class AlbumSearchApiServiceImpl extends AbstractSearchApiService<AlbumSearchListDTO> {
 
     @Override
-    public String getSubResource() {
+    protected String getSubResource() {
         return "album";
     }
 

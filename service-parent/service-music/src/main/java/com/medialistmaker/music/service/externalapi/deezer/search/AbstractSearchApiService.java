@@ -14,7 +14,7 @@ public abstract class AbstractSearchApiService<T> extends AbstractExternalApiSer
         return "/search/" + this.getSubResource();
     }
 
-    public abstract String getSubResource();
+    protected abstract String getSubResource();
 
     @Override
     protected abstract Class<T> getItemClassType();

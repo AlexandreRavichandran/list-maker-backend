@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class SongSearchApiServiceImpl extends AbstractSearchApiService<SongSearchListDTO> {
 
     @Override
-    public String getSubResource() {
+    protected String getSubResource() {
         return "track";
     }
 
