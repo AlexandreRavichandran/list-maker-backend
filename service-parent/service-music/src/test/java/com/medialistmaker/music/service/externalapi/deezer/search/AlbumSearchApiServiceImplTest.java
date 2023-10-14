@@ -43,8 +43,8 @@ class AlbumSearchApiServiceImplTest {
         firstAlbum.setArtist(artist);
 
         AlbumSearchElementDTO secondAlbum = new AlbumSearchElementDTO();
-        secondAlbum.setId("1L");
-        secondAlbum.setTitle("Album 1");
+        secondAlbum.setId("2L");
+        secondAlbum.setTitle("Album 2");
         secondAlbum.setPictureUrl("test.com");
         secondAlbum.setArtist(artist);
 
