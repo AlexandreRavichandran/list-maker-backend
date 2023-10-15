@@ -19,9 +19,9 @@ public abstract class AbstractExternalApiService<T> {
     @Autowired
     private RestTemplate restTemplate;
 
-    private HashMap<String, String> parameters;
+    private HashMap<String, String> parameters = new HashMap<>();
 
-    public T executeRequestItem() throws RestClientException, CustomBadRequestException {
+    protected T executeRequestItem() throws RestClientException, CustomBadRequestException {
 
         try {
             ResponseEntity<T> response = this.restTemplate.getForEntity(this.addUrlParameters(), this.getItemClassType());
