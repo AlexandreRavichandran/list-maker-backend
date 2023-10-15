@@ -213,7 +213,6 @@ class MusicListItemControllerTest {
                                                 .writeValueAsString(musicListItemDTO)
                                 )
                 )
-                .andDo(print())
                 .andExpectAll(
                         status().isBadRequest(),
                         result -> assertTrue(result.getResolvedException() instanceof CustomEntityDuplicationException)
