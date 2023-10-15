@@ -3,7 +3,7 @@ package com.medialistmaker.movie.controller;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.service.movie.externalapi.omdb.OmdbExternalApiServiceImpl;
+import com.medialistmaker.movie.service.externalapi.omdb.OmdbExternalApiServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

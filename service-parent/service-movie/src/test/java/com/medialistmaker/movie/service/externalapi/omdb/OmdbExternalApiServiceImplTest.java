@@ -1,4 +1,4 @@
-package com.medialistmaker.movie.service.movie.externalapi.omdb;
+package com.medialistmaker.movie.service.externalapi.omdb;
 
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListItemDTO;

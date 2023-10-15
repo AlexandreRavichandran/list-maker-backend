@@ -1,9 +1,9 @@
-package com.medialistmaker.movie.service.movie.externalapi.omdb;
+package com.medialistmaker.movie.service.externalapi.omdb;
 
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.service.movie.externalapi.AbstractExternalApiService;
+import com.medialistmaker.movie.service.externalapi.AbstractExternalApiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

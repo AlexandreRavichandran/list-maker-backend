@@ -4,7 +4,7 @@ import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementL
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListItemDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.service.movie.externalapi.omdb.OmdbExternalApiServiceImpl;
+import com.medialistmaker.movie.service.externalapi.omdb.OmdbExternalApiServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

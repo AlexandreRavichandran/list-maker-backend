@@ -1,4 +1,4 @@
-package com.medialistmaker.movie.service.movie.externalapi;
+package com.medialistmaker.movie.service.externalapi;
 
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
