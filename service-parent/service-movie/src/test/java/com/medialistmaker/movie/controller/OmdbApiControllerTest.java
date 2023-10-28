@@ -1,10 +1,10 @@
 package com.medialistmaker.movie.controller;
 
+import com.medialistmaker.movie.connector.OmdbConnectorProxy;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListItemDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.service.externalapi.omdb.OmdbExternalApiServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ class OmdbApiControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    OmdbExternalApiServiceImpl omdbExternalApiService;
+    OmdbConnectorProxy omdbConnectorProxy;
 
     @Test
     void givenMovieNameWhenGetByMovieNameShouldReturnRelatedMovieListAndReturn200() throws Exception {
@@ -54,7 +54,7 @@ class OmdbApiControllerTest {
         listDTO.setMovieElementList(List.of(firstListItemDTO, secondListItemDTO));
 
         Mockito
-                .when(this.omdbExternalApiService.getByMovieName(anyString()))
+                .when(this.omdbConnectorProxy.getByQuery(anyString()))
                 .thenReturn(listDTO);
 
         this.mockMvc.perform(
@@ -77,7 +77,7 @@ class OmdbApiControllerTest {
     void givenMovieNameWhenGetByMovieNameAndApiNotAvailableShouldReturn400() throws Exception {
 
         Mockito
-                .when(this.omdbExternalApiService.getByMovieName(anyString()))
+                .when(this.omdbConnectorProxy.getByQuery(anyString()))
                 .thenThrow(new CustomBadRequestException("Test", new ArrayList<>()));
 
         this.mockMvc.perform(
@@ -106,7 +106,7 @@ class OmdbApiControllerTest {
         movieElement.setReleasedAt("2000");
 
         Mockito
-                .when(this.omdbExternalApiService.getByApiCode(anyString()))
+                .when(this.omdbConnectorProxy.getByApiCode(anyString()))
                 .thenReturn(movieElement);
 
         this.mockMvc.perform(
@@ -127,7 +127,7 @@ class OmdbApiControllerTest {
     void givenApiCodeWhenGetByApiCodeAndAPiNotAvailableShouldReturn400() throws Exception {
 
         Mockito
-                .when(this.omdbExternalApiService.getByApiCode(anyString()))
+                .when(this.omdbConnectorProxy.getByApiCode(anyString()))
                 .thenThrow(new CustomBadRequestException("Test", new ArrayList<>()));
 
         this.mockMvc.perform(
