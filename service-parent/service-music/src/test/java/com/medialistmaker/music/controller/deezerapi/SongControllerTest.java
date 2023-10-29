@@ -1,12 +1,12 @@
 package com.medialistmaker.music.controller.deezerapi;
 
+import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
+import com.medialistmaker.music.connector.deezer.song.DeezerSongConnector;
 import com.medialistmaker.music.dto.externalapi.deezerapi.ArtistElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.item.SongSearchElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.SongSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.music.service.externalapi.deezer.SongApiServiceImpl;
-import com.medialistmaker.music.service.externalapi.deezer.search.SongSearchApiServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SongControllerTest {
 
     @MockBean
-    SongSearchApiServiceImpl songSearchApiService;
+    DeezerSearchConnectorProxy searchConnectorProxy;
 
     @MockBean
-    SongApiServiceImpl songApiService;
+    DeezerSongConnector songConnector;
 
     @Autowired
     MockMvc mockMvc;
@@ -61,7 +61,7 @@ class SongControllerTest {
         songSearchListDTO.setData(List.of(firstSong, secondSong));
 
         Mockito
-                .when(this.songSearchApiService.getBySongName(anyString()))
+                .when(this.searchConnectorProxy.getSongByQuery(anyString()))
                 .thenReturn(songSearchListDTO);
 
         this.mockMvc.perform(
@@ -82,7 +82,7 @@ class SongControllerTest {
     void givenSongNameWhenGetBySongNameAndApiErrorShouldThrowBadRequestExceptionAndReturn400() throws Exception {
 
         Mockito
-                .when(this.songSearchApiService.getBySongName(anyString()))
+                .when(this.searchConnectorProxy.getSongByQuery(anyString()))
                 .thenThrow(new CustomBadRequestException("Bad request", new ArrayList<>()));
 
         this.mockMvc.perform(
@@ -112,7 +112,7 @@ class SongControllerTest {
         song.setArtist(artist);
 
         Mockito
-                .when(this.songApiService.getByApiCode(anyString()))
+                .when(this.songConnector.getByApiCode(anyString()))
                 .thenReturn(song);
 
         this.mockMvc.perform(
@@ -132,7 +132,7 @@ class SongControllerTest {
     void givenApiCodeWhenGetByApiCodeAndApiErrorShouldThrowBadRequestExceptionAndReturn400() throws Exception {
 
         Mockito
-                .when(this.songApiService.getByApiCode(anyString()))
+                .when(this.songConnector.getByApiCode(anyString()))
                 .thenThrow(new CustomBadRequestException("Bad request", new ArrayList<>()));
 
         this.mockMvc.perform(

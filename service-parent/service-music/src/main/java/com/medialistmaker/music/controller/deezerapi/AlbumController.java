@@ -1,10 +1,10 @@
 package com.medialistmaker.music.controller.deezerapi;
 
+import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
+import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.music.service.externalapi.deezer.AlbumApiServiceImpl;
-import com.medialistmaker.music.service.externalapi.deezer.search.AlbumSearchApiServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.*;
 public class AlbumController {
 
     @Autowired
-    AlbumSearchApiServiceImpl albumSearchApiService;
+    DeezerSearchConnectorProxy albumSearchConnectorProxy;
 
     @Autowired
-    AlbumApiServiceImpl albumApiService;
+    DeezerAlbumConnectorProxy albumConnectorProxy;
 
     @GetMapping
     public ResponseEntity<AlbumSearchListDTO> getByAlbumName(@RequestParam("name") String albumName)
             throws CustomBadRequestException {
 
         return new ResponseEntity<>(
-                this.albumSearchApiService.getByAlbumName(albumName),
+                this.albumSearchConnectorProxy.getAlbumByQuery(albumName),
                 HttpStatus.OK
         );
 
@@ -35,7 +35,7 @@ public class AlbumController {
     public ResponseEntity<AlbumElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException {
 
-        return new ResponseEntity<>(this.albumApiService.getByApiCode(apiCode), HttpStatus.OK);
+        return new ResponseEntity<>(this.albumConnectorProxy.getByApiCode(apiCode), HttpStatus.OK);
 
     }
 }

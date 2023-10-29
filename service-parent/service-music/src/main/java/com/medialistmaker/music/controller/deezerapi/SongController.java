@@ -1,10 +1,10 @@
 package com.medialistmaker.music.controller.deezerapi;
 
+import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
+import com.medialistmaker.music.connector.deezer.song.DeezerSongConnector;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.SongSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.music.service.externalapi.deezer.SongApiServiceImpl;
-import com.medialistmaker.music.service.externalapi.deezer.search.SongSearchApiServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.*;
 public class SongController {
 
     @Autowired
-    SongSearchApiServiceImpl songSearchApiService;
+    DeezerSearchConnectorProxy songConnectorProxy;
 
     @Autowired
-    SongApiServiceImpl songApiService;
+    DeezerSongConnector deezerSongConnector;
 
     @GetMapping
     public ResponseEntity<SongSearchListDTO> getBySongName(@RequestParam("name") String songName)
             throws CustomBadRequestException {
 
         return new ResponseEntity<>(
-                this.songSearchApiService.getBySongName(songName),
+                this.songConnectorProxy.getSongByQuery(songName),
                 HttpStatus.OK
         );
 
@@ -34,7 +34,7 @@ public class SongController {
     @GetMapping("/{apicode}")
     public ResponseEntity<SongElementDTO> getByApiCode(@PathVariable("apicode") String apiCode) throws CustomBadRequestException {
 
-        return new ResponseEntity<>(this.songApiService.getByApiCode(apiCode), HttpStatus.OK);
+        return new ResponseEntity<>(this.deezerSongConnector.getByApiCode(apiCode), HttpStatus.OK);
 
     }
 }
