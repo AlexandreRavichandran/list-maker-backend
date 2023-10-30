@@ -7,6 +7,7 @@ import com.medialistmaker.movie.dto.MovieDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.service.movie.MovieServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -342,5 +343,63 @@ class MovieControllerTest {
                 .andExpect(
                         status().isNotFound()
                 );
+    }
+
+    @Test
+    void givenApiCodeWhenAddByApiCodeShouldSaveAndReturnRelatedMovieAndReturn200() throws Exception {
+
+        Movie movie = Movie.builder().id(1L).apiCode("test").pictureUrl("test.com").releasedAt(1993).build();
+
+        Mockito.when(this.movieService.addByApiCode(anyString())).thenReturn(movie);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/movies/apicode/{apicode}",
+                                        "test"
+                                )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isCreated(),
+                        jsonPath("$.apiCode", equalTo(movie.getApiCode()))
+                );
+
+    }
+
+    @Test
+    void givenInvalidApiCodeWhenAddByApiCodeShouldThrowNotFoundExceptionAndReturn400() throws Exception {
+
+        Mockito.when(this.movieService.addByApiCode(anyString())).thenThrow(CustomBadRequestException.class);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/movies/apicode/{apicode}",
+                                        "test"
+                                )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isBadRequest(),
+                        result -> assertTrue(result.getResolvedException() instanceof CustomBadRequestException)
+                );
+    }
+
+    @Test
+    void givenApiCodeWhenAddByApiCodeAndApiNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn503() throws Exception {
+
+        Mockito.when(this.movieService.addByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/movies/apicode/{apicode}",
+                                        "test"
+                                )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isServiceUnavailable(),
+                        result -> assertTrue(result.getResolvedException() instanceof ServiceNotAvailableException)
+                );
+
     }
 }

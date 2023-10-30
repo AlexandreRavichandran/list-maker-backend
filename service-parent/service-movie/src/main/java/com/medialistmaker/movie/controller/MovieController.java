@@ -5,6 +5,7 @@ import com.medialistmaker.movie.dto.MovieDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.service.movie.MovieServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +77,16 @@ public class MovieController {
                 this.modelMapper.map(this.movieService.deleteById(movieId), MovieDTO.class),
                 HttpStatus.OK
         );
+    }
+
+    @PostMapping("/apicode/{apicode}")
+    public ResponseEntity<MovieDTO> addFromApiCode(@PathVariable("apicode") String apiCode)
+            throws CustomBadRequestException, ServiceNotAvailableException {
+
+        return new ResponseEntity<>(
+                this.modelMapper.map(this.movieService.addByApiCode(apiCode), MovieDTO.class),
+                HttpStatus.CREATED
+        );
+
     }
 }

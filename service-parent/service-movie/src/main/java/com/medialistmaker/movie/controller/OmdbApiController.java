@@ -4,6 +4,7 @@ import com.medialistmaker.movie.connector.OmdbConnectorProxy;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
+import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ public class OmdbApiController {
     OmdbConnectorProxy omdbConnectorProxy;
 
     @GetMapping("/names/{name}")
-    public ResponseEntity<MovieElementListDTO> getByMovieName(@PathVariable("name") String name) throws CustomBadRequestException {
+    public ResponseEntity<MovieElementListDTO> getByMovieName(@PathVariable("name") String name)
+            throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
                 this.omdbConnectorProxy.getByQuery(name),
@@ -30,7 +32,8 @@ public class OmdbApiController {
     }
 
     @GetMapping("/apicodes/{apicode}")
-    public ResponseEntity<MovieElementDTO> getByApiCode(@PathVariable("apicode") String apiCode) throws CustomBadRequestException {
+    public ResponseEntity<MovieElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
+            throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
                 this.omdbConnectorProxy.getByApiCode(apiCode),

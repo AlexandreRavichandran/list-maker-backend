@@ -1,9 +1,12 @@
 package com.medialistmaker.movie.service.movie;
 
+import com.medialistmaker.movie.connector.OmdbConnectorProxy;
 import com.medialistmaker.movie.domain.Movie;
+import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.repository.MovieRepository;
 import com.medialistmaker.movie.utils.CustomEntityValidator;
 import org.junit.jupiter.api.Test;
@@ -11,7 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
@@ -25,21 +30,22 @@ class MovieServiceImplTest {
     @Mock
     MovieRepository movieRepository;
 
-    @InjectMocks
-    MovieServiceImpl movieService;
-
     @Mock
     CustomEntityValidator<Movie> movieEntityValidator;
+
+    @Mock
+    OmdbConnectorProxy connectorProxy;
+
+    @Spy
+    ModelMapper modelMapper;
+
+    @InjectMocks
+    MovieServiceImpl movieService;
 
     @Test
     void givenIdListWhenBrowseByIdsShouldReturnRelatedMovieList() {
 
-        Movie firstMovie = Movie
-                .builder()
-                .id(1L)
-                .title("First movie")
-                .releasedAt(2000)
-                .pictureUrl("http://movie1.jpg")
+        Movie firstMovie = Movie.builder().id(1L).title("First movie").releasedAt(2000).pictureUrl("http://movie1.jpg")
                 .apiCode("MOVIE1")
                 .build();
 
@@ -217,6 +223,70 @@ class MovieServiceImplTest {
         assertThrows(CustomNotFoundException.class, () -> this.movieService.deleteById(1L));
 
         Mockito.verify(this.movieRepository).getReferenceById(anyLong());
+
+    }
+
+    @Test
+    void givenApiCodeWhenAddByApiCodeShouldSaveAndReturnRelatedMovie() throws Exception {
+
+        MovieElementDTO elementDTO = new MovieElementDTO();
+        elementDTO.setTitle("Movie title");
+        elementDTO.setApiCode("0001");
+        elementDTO.setDuration("120m");
+        elementDTO.setDirector("Realisator");
+        elementDTO.setSynopsis("Synopsis");
+        elementDTO.setPictureUrl("www.picture.com");
+
+
+        Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.connectorProxy.getByApiCode(anyString())).thenReturn(elementDTO);
+
+
+        Movie testAddByApiCode = this.movieService.addByApiCode("test");
+
+        Mockito.verify(this.movieRepository).getByApiCode(anyString());
+        Mockito.verify(this.connectorProxy).getByApiCode(anyString());
+        assertNotNull(testAddByApiCode);
+        assertEquals(elementDTO.getApiCode(), testAddByApiCode.getApiCode());
+
+    }
+
+    @Test
+    void givenInvalidApiCodeWhenAddByApiCodeShouldThrowBadRequestException() throws Exception {
+
+        Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.connectorProxy.getByApiCode(anyString())).thenReturn(null);
+
+        assertThrows(CustomBadRequestException.class, () -> this.movieService.addByApiCode("test"));
+        Mockito.verify(this.movieRepository).getByApiCode(anyString());
+        Mockito.verify(this.connectorProxy).getByApiCode(anyString());
+
+    }
+
+    @Test
+    void givenApiCodeWhenAddByApiCodeAndApiNotAvailableShouldThrowServiceNotAvailableException() throws Exception {
+
+        Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.connectorProxy.getByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class, () -> this.movieService.addByApiCode("test"));
+        Mockito.verify(this.movieRepository).getByApiCode(anyString());
+        Mockito.verify(this.connectorProxy).getByApiCode(anyString());
+
+    }
+
+    @Test
+    void givenExistingApiCodeWhenAddByApiCodeShouldGetMovieFromDatabase() throws Exception {
+
+        Movie movie = Movie.builder().id(1L).apiCode("test").pictureUrl("test.com").releasedAt(1993).build();
+        Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(movie);
+
+        Movie testAddByApiCode = this.movieService.addByApiCode("test");
+
+        Mockito.verify(this.movieRepository).getByApiCode(anyString());
+
+        assertNotNull(testAddByApiCode);
+        assertEquals(movie.getApiCode(), testAddByApiCode.getApiCode());
 
     }
 }

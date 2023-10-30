@@ -1,12 +1,16 @@
 package com.medialistmaker.movie.service.movie;
 
+import com.medialistmaker.movie.connector.OmdbConnectorProxy;
 import com.medialistmaker.movie.domain.Movie;
+import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.repository.MovieRepository;
 import com.medialistmaker.movie.utils.CustomEntityValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +24,13 @@ import static java.util.Objects.nonNull;
 public class MovieServiceImpl implements MovieService {
 
     @Autowired
+    ModelMapper modelMapper;
+
+    @Autowired
     MovieRepository movieRepository;
+
+    @Autowired
+    OmdbConnectorProxy omdbConnectorProxy;
 
     @Autowired
     CustomEntityValidator<Movie> movieValidator;
@@ -92,6 +102,24 @@ public class MovieServiceImpl implements MovieService {
         this.movieRepository.delete(movie);
 
         return movie;
+
+    }
+    @Override
+    public Movie addByApiCode(String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
+
+        Movie isMovieAlreadyExist = this.movieRepository.getByApiCode(apiCode);
+
+        if(nonNull(isMovieAlreadyExist)) {
+            return isMovieAlreadyExist;
+        }
+
+        MovieElementDTO movieElementDTO = this.omdbConnectorProxy.getByApiCode(apiCode);
+
+        if(isNull(movieElementDTO)) {
+            throw new CustomBadRequestException("Movie not exists");
+        }
+
+        return this.modelMapper.map(movieElementDTO, Movie.class);
 
     }
 }
