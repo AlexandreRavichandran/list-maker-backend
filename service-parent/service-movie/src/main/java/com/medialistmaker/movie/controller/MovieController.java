@@ -1,9 +1,7 @@
 package com.medialistmaker.movie.controller;
 
-import com.medialistmaker.movie.domain.Movie;
 import com.medialistmaker.movie.dto.MovieDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.service.movie.MovieServiceImpl;
@@ -57,13 +55,12 @@ public class MovieController {
         );
     }
 
-    @PostMapping
-    public ResponseEntity<MovieDTO> add(@RequestBody MovieDTO movieDTO)
-            throws CustomBadRequestException, CustomEntityDuplicationException {
-        Movie movieToAdd = this.modelMapper.map(movieDTO, Movie.class);
+    @PostMapping("/apicode/{apicode}")
+    public ResponseEntity<MovieDTO> addFromApiCode(@PathVariable("apicode") String apiCode)
+            throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.modelMapper.map(this.movieService.add(movieToAdd), MovieDTO.class),
+                this.modelMapper.map(this.movieService.addByApiCode(apiCode), MovieDTO.class),
                 HttpStatus.CREATED
         );
 
@@ -77,16 +74,5 @@ public class MovieController {
                 this.modelMapper.map(this.movieService.deleteById(movieId), MovieDTO.class),
                 HttpStatus.OK
         );
-    }
-
-    @PostMapping("/apicode/{apicode}")
-    public ResponseEntity<MovieDTO> addFromApiCode(@PathVariable("apicode") String apiCode)
-            throws CustomBadRequestException, ServiceNotAvailableException {
-
-        return new ResponseEntity<>(
-                this.modelMapper.map(this.movieService.addByApiCode(apiCode), MovieDTO.class),
-                HttpStatus.CREATED
-        );
-
     }
 }

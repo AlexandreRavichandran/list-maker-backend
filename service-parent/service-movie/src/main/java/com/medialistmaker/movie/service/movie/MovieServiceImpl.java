@@ -70,20 +70,32 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie add(Movie movie) throws CustomBadRequestException, CustomEntityDuplicationException {
+    public Movie addByApiCode(String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
+
+        Movie isMovieAlreadyExist = this.movieRepository.getByApiCode(apiCode);
+
+        if(nonNull(isMovieAlreadyExist)) {
+            return isMovieAlreadyExist;
+        }
+
+        MovieElementDTO movieElementDTO = this.omdbConnectorProxy.getByApiCode(apiCode);
+
+        if(isNull(movieElementDTO)) {
+            throw new CustomBadRequestException("Movie not exists");
+        }
+
+        Movie movie = this.modelMapper.map(movieElementDTO, Movie.class);
+
+        return this.add(movie);
+    }
+
+    private Movie add(Movie movie) throws CustomBadRequestException {
 
         List<String> movieErrors = this.movieValidator.validateEntity(movie);
 
         if (Boolean.FALSE.equals(movieErrors.isEmpty())) {
             log.error("Movie not valid: {}", movieErrors);
             throw new CustomBadRequestException("Bad request", movieErrors);
-        }
-
-        Movie isApiCodeAlreadyUsed = this.movieRepository.getByApiCode(movie.getApiCode());
-
-        if (nonNull(isApiCodeAlreadyUsed)) {
-            log.error("Movie {} already exists", movie.getApiCode());
-            throw new CustomEntityDuplicationException("Api code already exists");
         }
 
         return this.movieRepository.save(movie);
@@ -102,24 +114,6 @@ public class MovieServiceImpl implements MovieService {
         this.movieRepository.delete(movie);
 
         return movie;
-
-    }
-    @Override
-    public Movie addByApiCode(String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
-
-        Movie isMovieAlreadyExist = this.movieRepository.getByApiCode(apiCode);
-
-        if(nonNull(isMovieAlreadyExist)) {
-            return isMovieAlreadyExist;
-        }
-
-        MovieElementDTO movieElementDTO = this.omdbConnectorProxy.getByApiCode(apiCode);
-
-        if(isNull(movieElementDTO)) {
-            throw new CustomBadRequestException("Movie not exists");
-        }
-
-        return this.modelMapper.map(movieElementDTO, Movie.class);
 
     }
 }

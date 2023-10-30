@@ -132,67 +132,6 @@ class MovieServiceImplTest {
     }
 
     @Test
-    void givenMovieWhenAddMovieShouldSaveAndReturnMovie()
-            throws CustomBadRequestException, CustomEntityDuplicationException {
-
-        Movie movie = Movie
-                .builder()
-                .title("movie")
-                .releasedAt(2000)
-                .pictureUrl("http://movie.jpg")
-                .apiCode("MOVIE")
-                .build();
-
-        Mockito.when(this.movieRepository.save(movie)).thenReturn(movie);
-        Mockito.when(this.movieEntityValidator.validateEntity(movie)).thenReturn(emptyList());
-        Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(null);
-        this.movieService.add(movie);
-
-        Mockito.verify(this.movieRepository).save(movie);
-        Mockito.verify(this.movieEntityValidator).validateEntity(movie);
-        Mockito.verify(this.movieRepository).getByApiCode(anyString());
-    }
-
-    @Test
-    void givenInvalidMovieWhenAddMovieShouldThrowBadRequestException() {
-
-        Movie movie = Movie
-                .builder()
-                .title("movie")
-                .releasedAt(2000)
-                .pictureUrl("http://movie.jpg")
-                .apiCode("MOVIE")
-                .build();
-
-        List<String> errorList = List.of("Error 1", "Error 2");
-        Mockito.when(this.movieEntityValidator.validateEntity(movie)).thenReturn(errorList);
-
-        assertThrows(CustomBadRequestException.class, () -> this.movieService.add(movie));
-
-        Mockito.verify(this.movieEntityValidator).validateEntity(movie);
-    }
-
-    @Test
-    void givenMovieWithExistingApiCodeWhenAddMovieShouldThrowEntityDuplicationException() {
-
-        Movie movie = Movie
-                .builder()
-                .title("movie")
-                .releasedAt(2000)
-                .pictureUrl("http://movie.jpg")
-                .apiCode("MOVIE")
-                .build();
-
-        Mockito.when(this.movieEntityValidator.validateEntity(movie)).thenReturn(emptyList());
-        Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(movie);
-
-        assertThrows(CustomEntityDuplicationException.class, () -> this.movieService.add(movie));
-
-        Mockito.verify(this.movieRepository).getByApiCode(anyString());
-        Mockito.verify(this.movieEntityValidator).validateEntity(movie);
-    }
-
-    @Test
     void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMovie() throws CustomNotFoundException {
 
         Movie movie = Movie
@@ -237,15 +176,21 @@ class MovieServiceImplTest {
         elementDTO.setSynopsis("Synopsis");
         elementDTO.setPictureUrl("www.picture.com");
 
+        Movie movie = Movie.builder()
+                .title(elementDTO.getTitle())
+                .apiCode(elementDTO.getApiCode())
+                .pictureUrl(elementDTO.getPictureUrl())
+                .build();
 
         Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(null);
         Mockito.when(this.connectorProxy.getByApiCode(anyString())).thenReturn(elementDTO);
-
+        Mockito.when(this.movieRepository.save(any())).thenReturn(movie);
 
         Movie testAddByApiCode = this.movieService.addByApiCode("test");
 
         Mockito.verify(this.movieRepository).getByApiCode(anyString());
         Mockito.verify(this.connectorProxy).getByApiCode(anyString());
+        Mockito.verify(this.movieRepository).save(any());
         assertNotNull(testAddByApiCode);
         assertEquals(elementDTO.getApiCode(), testAddByApiCode.getApiCode());
 
