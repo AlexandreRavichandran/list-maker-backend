@@ -5,6 +5,7 @@ import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorPro
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
+import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class AlbumController {
 
     @GetMapping("/{apicode}")
     public ResponseEntity<AlbumElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
-            throws CustomBadRequestException {
+            throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(this.albumConnectorProxy.getByApiCode(apiCode), HttpStatus.OK);
 

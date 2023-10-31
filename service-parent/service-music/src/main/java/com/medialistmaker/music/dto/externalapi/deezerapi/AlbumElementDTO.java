@@ -2,11 +2,12 @@ package com.medialistmaker.music.dto.externalapi.deezerapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 
 @Data
-public class AlbumElementDTO {
-
-    private String id;
+@EqualsAndHashCode(callSuper = true)
+public class AlbumElementDTO extends MusicElementDTO {
 
     private String title;
 

@@ -1,11 +1,12 @@
 package com.medialistmaker.music.dto.externalapi.deezerapi;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 
 @Data
-public class SongElementDTO {
-
-    private String id;
+@EqualsAndHashCode(callSuper = true)
+public class SongElementDTO extends MusicElementDTO {
 
     private String title;
 

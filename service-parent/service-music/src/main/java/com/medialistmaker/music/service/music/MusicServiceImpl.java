@@ -1,12 +1,18 @@
 package com.medialistmaker.music.service.music;
 
+import com.medialistmaker.music.connector.deezer.DeezerConnector;
+import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
+import com.medialistmaker.music.connector.deezer.song.DeezerSongConnectorProxy;
 import com.medialistmaker.music.domain.Music;
+import com.medialistmaker.music.dto.externalapi.deezerapi.MusicElementDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.music.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
+import com.medialistmaker.music.exception.unsupportedtypeexception.UnsupportedTypeException;
 import com.medialistmaker.music.repository.MusicRepository;
 import com.medialistmaker.music.utils.CustomEntityValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +27,15 @@ public class MusicServiceImpl implements MusicService {
 
     @Autowired
     MusicRepository musicRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    @Autowired
+    DeezerAlbumConnectorProxy deezerAlbumConnectorProxy;
+
+    @Autowired
+    DeezerSongConnectorProxy deezerSongConnectorProxy;
 
     @Autowired
     CustomEntityValidator<Music> musicEntityValidator;
@@ -63,21 +78,44 @@ public class MusicServiceImpl implements MusicService {
 
     }
 
+
     @Override
-    public Music add(Music music) throws CustomBadRequestException, CustomEntityDuplicationException {
+    public Music addByApiCode(Integer type, String apiCode)
+            throws CustomBadRequestException, ServiceNotAvailableException {
+        MusicElementDTO musicElementDTO;
+
+        Music isMovieAlreadyExist = this.musicRepository.getByApiCode(apiCode);
+
+        if(nonNull(isMovieAlreadyExist)) {
+            return isMovieAlreadyExist;
+        }
+
+        try {
+            musicElementDTO = this.getConnectorByType(type).getByApiCode(apiCode);
+        } catch (UnsupportedTypeException e) {
+            throw new CustomBadRequestException(e.getMessage());
+        }
+
+        if(isNull(musicElementDTO)) {
+            throw new CustomBadRequestException("Music not exists");
+        }
+
+        //TODO Find alternative
+        Music music = this.modelMapper.map(musicElementDTO, Music.class);
+        music.setApiCode(musicElementDTO.getId());
+        music.setId(null);
+        music.setType(type);
+
+        return this.add(music);
+    }
+
+    private Music add(Music music) throws CustomBadRequestException  {
 
         List<String> musicList = this.musicEntityValidator.validateEntity(music);
 
         if(Boolean.FALSE.equals(musicList.isEmpty())) {
             log.error("Music not valid: {}", musicList);
             throw new CustomBadRequestException("Bad request", musicList);
-        }
-
-        Music isApiCodeAlreadyUsed = this.musicRepository.getByApiCode(music.getApiCode());
-
-        if(nonNull(isApiCodeAlreadyUsed)) {
-            log.error("Music {} already exists", music.getApiCode());
-            throw new CustomEntityDuplicationException("Already exists");
         }
 
         return this.musicRepository.save(music);
@@ -97,4 +135,18 @@ public class MusicServiceImpl implements MusicService {
 
         return music;
     }
+
+    private DeezerConnector getConnectorByType(Integer type) throws UnsupportedTypeException {
+
+        DeezerConnector connector;
+
+        connector = switch (type) {
+            case 1 -> this.deezerAlbumConnectorProxy;
+            case 2 -> this.deezerSongConnectorProxy;
+            default -> throw new UnsupportedTypeException();
+        };
+
+        return connector;
+    }
+
 }

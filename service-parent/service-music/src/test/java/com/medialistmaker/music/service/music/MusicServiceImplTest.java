@@ -1,9 +1,15 @@
 package com.medialistmaker.music.service.music;
 
+import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
+import com.medialistmaker.music.connector.deezer.song.DeezerSongConnectorProxy;
+import com.medialistmaker.music.constant.MusicTypeConstant;
 import com.medialistmaker.music.domain.Music;
+import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.ArtistElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.music.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.music.repository.MusicRepository;
 import com.medialistmaker.music.utils.CustomEntityValidator;
 import org.junit.jupiter.api.Test;
@@ -11,11 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -27,6 +34,15 @@ class MusicServiceImplTest {
 
     @Mock
     CustomEntityValidator<Music> musicEntityValidator;
+
+    @Mock
+    DeezerAlbumConnectorProxy albumConnectorProxy;
+
+    @Mock
+    DeezerSongConnectorProxy songConnectorProxy;
+
+    @Spy
+    ModelMapper modelMapper;
 
     @InjectMocks
     MusicServiceImpl musicService;
@@ -166,75 +182,126 @@ class MusicServiceImplTest {
     }
 
     @Test
-    void givenMusicWhenAddMusicShouldSaveAndReturnNewMusic()
-            throws CustomBadRequestException, CustomEntityDuplicationException {
+    void givenAlbumApiCodeAndTypeWhenAddByApiCodeShouldSaveAndReturnMovie() throws Exception {
+
+        ArtistElementDTO artistElementDTO = new ArtistElementDTO();
+        artistElementDTO.setId("0002");
+        artistElementDTO.setName("Artist");
+
+        AlbumElementDTO albumElementDTO = new AlbumElementDTO();
+        albumElementDTO.setId("0001");
+        albumElementDTO.setTitle("Title");
+        albumElementDTO.setPictureUrl("www.google.fr");
+        albumElementDTO.setArtist(artistElementDTO);
 
         Music music = Music
                 .builder()
-                .title("Music")
+                .title("Title")
                 .artistName("Artist")
                 .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
+                .apiCode("0001")
+                .pictureUrl("www.google.fr")
                 .build();
 
         Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
-        Mockito.when(this.musicEntityValidator.validateEntity(music)).thenReturn(emptyList());
+        Mockito.when(this.albumConnectorProxy.getByApiCode(anyString())).thenReturn(albumElementDTO);
         Mockito.when(this.musicRepository.save(music)).thenReturn(music);
 
-        Music testAdd = this.musicService.add(music);
+        Music testAddByApiCode = this.musicService.addByApiCode(1, "test");
 
+        assertNotNull(testAddByApiCode);
+        assertEquals(albumElementDTO.getId(), testAddByApiCode.getApiCode());
+        assertEquals(MusicTypeConstant.TYPE_ALBUM, testAddByApiCode.getType());
         Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.albumConnectorProxy).getByApiCode(anyString());
         Mockito.verify(this.musicRepository).save(music);
-        Mockito.verify(this.musicEntityValidator).validateEntity(music);
-
-        assertEquals(testAdd, music);
-
     }
 
     @Test
-    void givenInvalidMusicWhenAddMusicShouldThrowBadRequestException() {
+    void givenSongApiCodeAndTypeWhenAddByApiCodeShouldSaveAndReturnMovie() throws Exception {
+
+        ArtistElementDTO artistElementDTO = new ArtistElementDTO();
+        artistElementDTO.setId("0002");
+        artistElementDTO.setName("Artist");
+
+        SongElementDTO songElementDTO = new SongElementDTO();
+        songElementDTO.setId("0001");
+        songElementDTO.setTitle("Title");
+        songElementDTO.setPreview("www.google.fr");
+        songElementDTO.setArtist(artistElementDTO);
 
         Music music = Music
                 .builder()
-                .title("Music")
+                .title("Title")
                 .artistName("Artist")
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
+                .type(2)
+                .apiCode("0001")
                 .build();
 
-        List<String> errorList = List.of("Error 1", "Error 2");
-        Mockito.when(this.musicEntityValidator.validateEntity(music)).thenReturn(errorList);
+        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenReturn(songElementDTO);
+        Mockito.when(this.musicRepository.save(music)).thenReturn(music);
 
-        assertThrows(CustomBadRequestException.class, () -> this.musicService.add(music));
+        Music testAddByApiCode = this.musicService.addByApiCode(2, "test");
 
-        Mockito.verify(this.musicEntityValidator).validateEntity(music);
-
+        assertNotNull(testAddByApiCode);
+        assertEquals(songElementDTO.getId(), testAddByApiCode.getApiCode());
+        assertEquals(MusicTypeConstant.TYPE_SONG, testAddByApiCode.getType());
+        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).save(music);
     }
 
     @Test
-    void givenExistingMusicWithExistingApiCodeWhenAddMusicShouldThrowEntityDuplicationException() {
+    void givenExistingApiCodeAndTypeWhenAddByApiCodeShouldReturnMovie() throws Exception {
 
         Music music = Music
                 .builder()
-                .title("Music")
+                .title("Title")
                 .artistName("Artist")
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
+                .type(2)
+                .apiCode("0001")
                 .build();
 
-        Mockito.when(this.musicEntityValidator.validateEntity(music)).thenReturn(emptyList());
         Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(music);
 
-        assertThrows(CustomEntityDuplicationException.class, () -> this.musicService.add(music));
+        Music testAddByApiCode = this.musicService.addByApiCode(2, "test");
 
-        Mockito.verify(this.musicEntityValidator).validateEntity(music);
+        assertNotNull(testAddByApiCode);
+        assertEquals(music.getApiCode(), testAddByApiCode.getApiCode());
         Mockito.verify(this.musicRepository).getByApiCode(anyString());
+    }
+
+    @Test
+    void givenInvalidApiCodeAndTypeWhenAddByApiCodeShouldThrowBadRequestException() throws Exception {
+
+        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenReturn(null);
+
+        assertThrows(CustomBadRequestException.class, () -> this.musicService.addByApiCode(2, "test"));
+        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());
+    }
+
+    @Test
+    void givenApiCodeAndInvalidTypeWhenAddByApiCodeShouldThrowBadRequestException() {
+
+        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+
+        assertThrows(CustomBadRequestException.class, () -> this.musicService.addByApiCode(5, "test"));
+        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+
+    }
+
+    @Test
+    void givenApiCodeAndTypeWhenAddByApiCodeAndServiceNotAvailableShouldThrowServiceNotAvailableException() throws Exception  {
+
+        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class, () -> this.musicService.addByApiCode(2, "test"));
+        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());
 
     }
 

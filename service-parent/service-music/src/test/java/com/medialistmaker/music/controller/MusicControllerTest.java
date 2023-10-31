@@ -1,12 +1,9 @@
 package com.medialistmaker.music.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.medialistmaker.music.domain.Music;
-import com.medialistmaker.music.dto.MusicDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.music.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.music.service.music.MusicServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -23,8 +19,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -219,17 +213,7 @@ class MusicControllerTest {
     }
 
     @Test
-    void givenMusicWhenAddMusicShouldSaveAndReturnMusicDTOAndReturn201() throws Exception {
-
-        MusicDTO musicDTO = MusicDTO
-                .builder()
-                .title("Music")
-                .artistName("Artist")
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
-                .build();
+    void givenApiCodeAndTypeWhenAddByApiCodeShouldSaveAndReturnMusicDTOAndReturn200() throws Exception {
 
         Music music = Music
                 .builder()
@@ -241,120 +225,54 @@ class MusicControllerTest {
                 .releasedAt(2000)
                 .build();
 
-        Mockito.when(this.musicService.add(music)).thenReturn(music);
+        Mockito.when(this.musicService.addByApiCode(anyInt(),anyString())).thenReturn(music);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        new ObjectMapper()
-                                                .configure(
-                                                        SerializationFeature.WRAP_ROOT_VALUE,
-                                                        false)
-                                                .writeValueAsString(musicDTO)
-                                )
+                                .post("/api/musics/apicode/{apicode}",
+                                        "test")
+                                .param("type", "1")
                 )
                 .andDo(print())
                 .andExpectAll(
                         status().isCreated(),
                         jsonPath("$.apiCode", equalTo(music.getApiCode()))
                 );
+
     }
 
     @Test
-    void givenInvalidMusicWhenAddMusicShouldReturnListOfErrorAndReturn400() throws Exception {
+    void givenInvalidApiCodeAndTypeWhenAddByApiCodeShouldReturnBadRequestExceptionAndReturn400() throws Exception {
 
-        MusicDTO musicDTO = MusicDTO
-                .builder()
-                .title("Music")
-                .artistName("Artist")
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
-                .build();
-
-        Music music = Music
-                .builder()
-                .title("Music")
-                .artistName("Artist")
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
-                .build();
-
-        List<String> errorList = List.of("Error 1", "Error 2");
-
-        Mockito.when(this.musicService.add(music)).thenThrow(new CustomBadRequestException("Error", errorList));
+        Mockito.when(this.musicService.addByApiCode(anyInt(),anyString())).thenThrow(new CustomBadRequestException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        new ObjectMapper()
-                                                .configure(
-                                                        SerializationFeature.WRAP_ROOT_VALUE,
-                                                        false)
-                                                .writeValueAsString(musicDTO)
-                                )
+                                .post("/api/musics/apicode/{apicode}",
+                                        "test")
+                                .param("type", "1")
                 )
                 .andDo(print())
-                .andExpectAll(
-                        status().isBadRequest(),
-                        result -> assertTrue(result.getResolvedException() instanceof CustomBadRequestException),
-                        result -> assertEquals(errorList.size(),
-                                ((CustomBadRequestException) result.getResolvedException()).getErrorList().size()
-                        )
-
+                .andExpect(
+                        status().isBadRequest()
                 );
+
     }
 
     @Test
-    void givenMusicWithExistingApiCodeWhenAddMusicShouldReturn400() throws Exception {
+    void givenApiCodeAndTypeWhenAddByApiCodeAndApiNotAvailableShouldReturnServiceNotAvailableAndReturn503() throws Exception {
 
-        MusicDTO musicDTO = MusicDTO
-                .builder()
-                .title("Music")
-                .artistName("Artist")
-                .id(1L)
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
-                .build();
-
-        Music music = Music
-                .builder()
-                .title("Music")
-                .artistName("Artist")
-                .id(1L)
-                .type(1)
-                .apiCode("MUSIC")
-                .pictureUrl("http://test.jpg")
-                .releasedAt(2000)
-                .build();
-
-        Mockito.when(this.musicService.add(music)).thenThrow(new CustomEntityDuplicationException("Error"));
+        Mockito.when(this.musicService.addByApiCode(anyInt(),anyString())).thenThrow(new ServiceNotAvailableException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        new ObjectMapper()
-                                                .configure(
-                                                        SerializationFeature.WRAP_ROOT_VALUE,
-                                                        false)
-                                                .writeValueAsString(musicDTO)
-                                )
+                                .post("/api/musics/apicode/{apicode}",
+                                        "test")
+                                .param("type", "1")
                 )
                 .andDo(print())
-                .andExpectAll(
-                        status().isBadRequest(),
-                        result -> assertTrue(result.getResolvedException() instanceof CustomEntityDuplicationException)
+                .andExpect(
+                        status().isServiceUnavailable()
                 );
 
     }
