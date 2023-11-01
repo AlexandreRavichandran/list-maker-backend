@@ -108,4 +108,43 @@ class MovieListItemRepositoryTest {
         assertNotNull(testGetByAppUserIdAndSortingOrder);
         assertEquals(movieListItem, testGetByAppUserIdAndSortingOrder);
     }
+
+    @Test
+    void givenAppUserIdWhenFindFirstBySortingOrderShouldReturnMovieListItemWithMaxSortingOrder() {
+
+        MovieListItem firstMovieListItem = MovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MovieListItem secondMovieListItem = MovieListItem
+                .builder()
+                .movieId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MovieListItem thirdMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MovieListItem> movieList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+
+        this.movieListItemRepository.saveAll(movieList);
+
+        MovieListItem testGetLargestSortingNumber = this.
+                movieListItemRepository.getFirstByAppUserIdOrderBySortingOrderDesc(1L);
+
+        assertEquals(thirdMovieListItem, testGetLargestSortingNumber);
+        assertEquals(3, testGetLargestSortingNumber.getSortingOrder());
+
+    }
 }

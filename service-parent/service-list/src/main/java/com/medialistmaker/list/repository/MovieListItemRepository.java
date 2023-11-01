@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface MovieListItemRepository extends JpaRepository<MovieListItem, Long>, ListItemBaseRepository<MovieListItem> {
 
     MovieListItem getByAppUserIdAndMovieId(Long appUserId, Long movieId);
+
 }

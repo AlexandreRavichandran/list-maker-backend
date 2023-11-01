@@ -3,10 +3,12 @@ package com.medialistmaker.list.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.medialistmaker.list.domain.MovieListItem;
-import com.medialistmaker.list.dto.MovieListItemDTO;
+import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
+import com.medialistmaker.list.dto.movie.MovieListItemDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.movielistitem.MovieListItemServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -87,15 +89,7 @@ class MovieListItemControllerTest {
     }
 
     @Test
-    void givenMovieListItemWhenAddMovieListItemShouldSaveAndReturnMovieListItemAndReturn201() throws Exception {
-
-        MovieListItemDTO movieListItemDTO = MovieListItemDTO
-                .builder()
-                .movieId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+    void givenMovieListItemAddWhenAddMovieListItemShouldSaveAndReturnMovieListItemAndReturn201() throws Exception {
 
         MovieListItem movieListItem = MovieListItem
                 .builder()
@@ -105,7 +99,10 @@ class MovieListItemControllerTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.movieItemServiceImpl.add(movieListItem)).thenReturn(movieListItem);
+        MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
+        movieListItemAddDTO.setApiCode("XXXXX");
+
+        Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenReturn(movieListItem);
 
         this.mockMvc
                 .perform(
@@ -117,7 +114,7 @@ class MovieListItemControllerTest {
                                                 .configure(
                                                         SerializationFeature.WRAP_ROOT_VALUE,
                                                         false)
-                                                .writeValueAsString(movieListItemDTO)
+                                                .writeValueAsString(movieListItemAddDTO)
                                 )
                 )
                 .andDo(print())
@@ -129,29 +126,12 @@ class MovieListItemControllerTest {
     }
 
     @Test
-    void givenInvalidMovieListItemWhenAddMovieListItemShouldReturnErrorListAndReturn400() throws Exception {
+    void givenInvalidMovieListItemAddWhenAddMovieListItemShouldThrowBadRequestExceptionAndReturn400() throws Exception {
 
-        MovieListItemDTO movieListItemDTO = MovieListItemDTO
-                .builder()
-                .movieId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
+        movieListItemAddDTO.setApiCode("XXXXX");
 
-        MovieListItem movieListItem = MovieListItem
-                .builder()
-                .movieId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
-
-        List<String> errorList = List.of("Error 1", "Error 2");
-
-        Mockito
-                .when(this.movieItemServiceImpl.add(movieListItem))
-                .thenThrow(new CustomBadRequestException("Error", errorList));
+        Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenThrow(CustomBadRequestException.class);
 
         this.mockMvc
                 .perform(
@@ -163,42 +143,22 @@ class MovieListItemControllerTest {
                                                 .configure(
                                                         SerializationFeature.WRAP_ROOT_VALUE,
                                                         false)
-                                                .writeValueAsString(movieListItemDTO)
+                                                .writeValueAsString(movieListItemAddDTO)
                                 )
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isBadRequest(),
-                        result -> assertTrue(result.getResolvedException() instanceof CustomBadRequestException),
-                        result -> assertEquals(errorList.size(),
-                                ((CustomBadRequestException) result.getResolvedException()).getErrorList().size()
-                        )
+                        status().isBadRequest()
                 );
-
     }
 
     @Test
-    void givenExistingMovieListItemWhenAddMovieListItemShouldReturn400() throws Exception {
+    void givenExistingMovieListItemAddWhenAddMovieListItemShouldThrowEntityDuplicationExceptionAndReturn409() throws Exception {
 
-        MovieListItemDTO movieListItemDTO = MovieListItemDTO
-                .builder()
-                .appUserId(1L)
-                .movieId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
+        movieListItemAddDTO.setApiCode("XXXXX");
 
-        MovieListItem movieListItem = MovieListItem
-                .builder()
-                .appUserId(1L)
-                .movieId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
-
-        Mockito
-                .when(this.movieItemServiceImpl.add(movieListItem))
-                .thenThrow(new CustomEntityDuplicationException("Already exists"));
+        Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenThrow(CustomEntityDuplicationException.class);
 
         this.mockMvc
                 .perform(
@@ -210,13 +170,39 @@ class MovieListItemControllerTest {
                                                 .configure(
                                                         SerializationFeature.WRAP_ROOT_VALUE,
                                                         false)
-                                                .writeValueAsString(movieListItemDTO)
+                                                .writeValueAsString(movieListItemAddDTO)
                                 )
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isBadRequest(),
-                        result -> assertTrue(result.getResolvedException() instanceof CustomEntityDuplicationException)
+                        status().isConflict()
+                );
+    }
+
+    @Test
+    void givenMovieListItemAddWhenAddMovieListItemAndServiceNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn424() throws Exception {
+
+        MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
+        movieListItemAddDTO.setApiCode("XXXXX");
+
+        Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenThrow(ServiceNotAvailableException.class);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/lists/movies")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false)
+                                                .writeValueAsString(movieListItemAddDTO)
+                                )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isFailedDependency()
                 );
     }
 

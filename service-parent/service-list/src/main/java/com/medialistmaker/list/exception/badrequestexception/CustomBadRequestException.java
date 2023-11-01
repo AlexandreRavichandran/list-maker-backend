@@ -8,11 +8,15 @@ import java.util.List;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class CustomBadRequestException extends Exception {
 
-    private final List<String> errorList;
+    private List<String> errorList;
 
     public CustomBadRequestException(String message, List<String> errorList) {
         super(message);
         this.errorList = errorList;
+    }
+
+    public CustomBadRequestException(String message) {
+        super(message);
     }
 
     public List<String> getErrorList() {

@@ -1,4 +1,4 @@
-package com.medialistmaker.list.dto;
+package com.medialistmaker.list.dto.music;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,19 +9,20 @@ import java.util.Date;
 @Data
 @Builder
 @AllArgsConstructor
-public class MovieListItemDTO {
+public class MusicListItemDTO {
 
-    public MovieListItemDTO() {
+    public MusicListItemDTO() {
         //Private constructor
     }
 
     private Long id;
 
-    private Long movieId;
+    private String musicApiCode;
 
     private Long appUserId;
 
     private Integer sortingOrder;
 
     private Date addedAt;
+
 }
