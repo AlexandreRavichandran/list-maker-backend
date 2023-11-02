@@ -19,8 +19,6 @@ public class MovieListItemDTO {
 
     private Long movieId;
 
-    private String movieApiCode;
-
     private Long appUserId;
 
     private Integer sortingOrder;

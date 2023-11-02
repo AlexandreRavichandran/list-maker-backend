@@ -1,10 +1,11 @@
 package com.medialistmaker.list.controller;
 
-import com.medialistmaker.list.domain.MusicListItem;
-import com.medialistmaker.list.dto.MusicListItemDTO;
+import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
+import com.medialistmaker.list.dto.music.MusicListItemDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.musiclistitem.MusicListItemServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +39,12 @@ public class MusicListItemController {
     }
 
     @PostMapping
-    public ResponseEntity<MusicListItemDTO> add(@RequestBody MusicListItemDTO musicListItemDTO)
-            throws CustomBadRequestException, CustomEntityDuplicationException {
+    public ResponseEntity<MusicListItemDTO> add(@RequestBody MusicListItemAddDTO musicListItemDTO)
+            throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {
 
-        MusicListItem musicListItem = this.modelMapper.map(musicListItemDTO, MusicListItem.class);
 
         return new ResponseEntity<>(
-                this.modelMapper.map(this.musicListService.add(musicListItem), MusicListItemDTO.class),
+                this.modelMapper.map(this.musicListService.add(musicListItemDTO), MusicListItemDTO.class),
                 HttpStatus.CREATED
         );
     }

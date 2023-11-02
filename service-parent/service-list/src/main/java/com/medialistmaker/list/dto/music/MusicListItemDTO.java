@@ -17,7 +17,7 @@ public class MusicListItemDTO {
 
     private Long id;
 
-    private String musicApiCode;
+    private String musicId;
 
     private Long appUserId;
 

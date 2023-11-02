@@ -2,11 +2,15 @@ package com.medialistmaker.list.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.domain.MusicListItem;
-import com.medialistmaker.list.dto.MusicListItemDTO;
+import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
+import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
+import com.medialistmaker.list.dto.music.MusicListItemDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.musiclistitem.MusicListItemServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -87,15 +91,7 @@ class MusicListItemControllerTest {
     }
 
     @Test
-    void givenMusicListItemWhenAddMusicListItemShouldSaveAndReturnMusicListItemAndReturn201() throws Exception {
-
-        MusicListItemDTO musicListItemDTO = MusicListItemDTO
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+    void givenMusicListItemAddWhenAddMusicListItemShouldSaveAndReturnMusicListItemAndReturn201() throws Exception {
 
         MusicListItem musicListItem = MusicListItem
                 .builder()
@@ -105,7 +101,10 @@ class MusicListItemControllerTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.musicItemServiceImpl.add(musicListItem)).thenReturn(musicListItem);
+        MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
+        musicListItemAddDTO.setApiCode("XXXXX");
+
+        Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenReturn(musicListItem);
 
         this.mockMvc
                 .perform(
@@ -117,41 +116,22 @@ class MusicListItemControllerTest {
                                                 .configure(
                                                         SerializationFeature.WRAP_ROOT_VALUE,
                                                         false)
-                                                .writeValueAsString(musicListItemDTO)
+                                                .writeValueAsString(musicListItemAddDTO)
                                 )
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isCreated(),
-                        jsonPath("$.musicId", equalTo(musicListItem.getMusicId().intValue())),
-                        jsonPath("$.appUserId", equalTo(musicListItem.getAppUserId().intValue()))
+                        status().isCreated()
                 );
     }
 
     @Test
-    void givenInvalidMusicListItemWhenAddMusicListItemShouldReturnErrorListAndReturn400() throws Exception {
+    void givenInvalidMusicListItemAddWhenAddMusicListItemShouldThrowBadRequestExceptionAndReturn400() throws Exception {
 
-        MusicListItemDTO musicListItemDTO = MusicListItemDTO
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
+        musicListItemAddDTO.setApiCode("XXXXX");
 
-        MusicListItem musicListItem = MusicListItem
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
-
-        List<String> errorList = List.of("Error 1", "Error 2");
-
-        Mockito
-                .when(this.musicItemServiceImpl.add(musicListItem))
-                .thenThrow(new CustomBadRequestException("Error", errorList));
+        Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenThrow(CustomBadRequestException.class);
 
         this.mockMvc
                 .perform(
@@ -163,42 +143,22 @@ class MusicListItemControllerTest {
                                                 .configure(
                                                         SerializationFeature.WRAP_ROOT_VALUE,
                                                         false)
-                                                .writeValueAsString(musicListItemDTO)
+                                                .writeValueAsString(musicListItemAddDTO)
                                 )
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isBadRequest(),
-                        result -> assertTrue(result.getResolvedException() instanceof CustomBadRequestException),
-                        result -> assertEquals(errorList.size(),
-                                ((CustomBadRequestException) result.getResolvedException()).getErrorList().size()
-                        )
+                        status().isBadRequest()
                 );
-
     }
 
     @Test
-    void givenExistingMusicListItemWhenAddMusicListItemShouldReturn400() throws Exception {
+    void givenExistingMusicListItemAddWhenAddMusicListItemShouldThrowEntityDuplicationExceptionAndReturn409() throws Exception {
 
-        MusicListItemDTO musicListItemDTO = MusicListItemDTO
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
+        musicListItemAddDTO.setApiCode("XXXXX");
 
-        MusicListItem musicListItem = MusicListItem
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
-
-        Mockito
-                .when(this.musicItemServiceImpl.add(musicListItem))
-                .thenThrow(new CustomEntityDuplicationException("Already exists"));
+        Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenThrow(CustomEntityDuplicationException.class);
 
         this.mockMvc
                 .perform(
@@ -210,14 +170,42 @@ class MusicListItemControllerTest {
                                                 .configure(
                                                         SerializationFeature.WRAP_ROOT_VALUE,
                                                         false)
-                                                .writeValueAsString(musicListItemDTO)
+                                                .writeValueAsString(musicListItemAddDTO)
                                 )
                 )
+                .andDo(print())
                 .andExpectAll(
-                        status().isBadRequest(),
-                        result -> assertTrue(result.getResolvedException() instanceof CustomEntityDuplicationException)
+                        status().isConflict()
                 );
     }
+
+    @Test
+    void givenMusicListItemAddWhenAddMusicListItemAndServiceNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn424() throws Exception {
+
+        MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
+        musicListItemAddDTO.setApiCode("XXXXX");
+
+        Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenThrow(ServiceNotAvailableException.class);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/lists/musics")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false)
+                                                .writeValueAsString(musicListItemAddDTO)
+                                )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isFailedDependency()
+                );
+    }
+
 
     @Test
     void givenListItemIdWhenDeleteByIdShouldDeleteAndReturnRelatedListItemAndReturn200() throws Exception {

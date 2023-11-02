@@ -107,4 +107,41 @@ class MusicListItemRepositoryTest {
         assertNotNull(testGetByAppUserIdAndSortingOrder);
         assertEquals(musicListItem, testGetByAppUserIdAndSortingOrder);
     }
+
+    @Test
+    void givenAppUserIdWhenFindFirstBySortingOrderShouldReturnMusicListItemWithMaxSortingOrder() {
+
+        MusicListItem firstMusicListItem = MusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MusicListItem secondMusicListItem = MusicListItem
+                .builder()
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MusicListItem thirdMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MusicListItem> musicList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+
+        this.musicListItemRepository.saveAll(musicList);
+
+        MusicListItem testGetLargestSortingNumber = this.musicListItemRepository.getFirstByAppUserIdOrderBySortingOrderDesc(1L);
+
+        assertEquals(thirdMusicListItem, testGetLargestSortingNumber);
+        assertEquals(3, testGetLargestSortingNumber.getSortingOrder());
+    }
 }

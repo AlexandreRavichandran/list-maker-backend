@@ -1,11 +1,14 @@
 package com.medialistmaker.list.service.musiclistitem;
 
+import com.medialistmaker.list.connector.music.MusicConnectorProxy;
 import com.medialistmaker.list.domain.MusicListItem;
+import com.medialistmaker.list.dto.music.MusicDTO;
+import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.repository.MusicListItemRepository;
-import com.medialistmaker.list.utils.CustomEntityValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class MusicListItemServiceImplTest {
@@ -27,7 +30,7 @@ class MusicListItemServiceImplTest {
     MusicListItemRepository musicListItemRepository;
 
     @Mock
-    CustomEntityValidator<MusicListItem> musicListEntityValidator;
+    MusicConnectorProxy musicConnectorProxy;
 
     @InjectMocks
     MusicListItemServiceImpl musicListService;
@@ -71,71 +74,105 @@ class MusicListItemServiceImplTest {
     }
 
     @Test
-    void givenMusicListItemWhenAddMusicListItemShouldSaveAndReturnMusicListItem()
-            throws CustomBadRequestException, CustomEntityDuplicationException {
+    void givenMusicListItemAddWhenAddMusicListItemShouldSaveAndReturnMusicListItem()
+            throws CustomBadRequestException, CustomNotFoundException,
+            CustomEntityDuplicationException, ServiceNotAvailableException {
 
-        MusicListItem musicListItem = MusicListItem
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
+        listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setType(1);
 
-        Mockito.when(this.musicListEntityValidator.validateEntity(musicListItem)).thenReturn(emptyList());
+        MusicDTO musicDTO = new MusicDTO();
+        musicDTO.setId(1L);
+
+        MusicListItem musicListItem = new MusicListItem();
+        musicListItem.setMusicId(musicDTO.getId());
+        musicListItem.setAppUserId(1L);
+
+
+        Mockito.when(this.musicConnectorProxy.getAlbumByApiCode(anyString())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.musicListItemRepository.save(musicListItem)).thenReturn(musicListItem);
+        Mockito.when(this.musicConnectorProxy.saveByApiCode(anyInt(), anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicListItemRepository.save(any())).thenReturn(musicListItem);
 
-        MusicListItem testAddMusicListItem = this.musicListService.add(musicListItem);
+        MusicListItem testAddMusicListItem = this.musicListService.add(listItemAddDTO);
 
-        Mockito.verify(this.musicListEntityValidator).validateEntity(musicListItem);
+        Mockito.verify(this.musicConnectorProxy).getAlbumByApiCode(anyString());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
-        Mockito.verify(this.musicListItemRepository).save(musicListItem);
+        Mockito.verify(this.musicConnectorProxy).saveByApiCode(anyInt(), anyString());
+        Mockito.verify(this.musicListItemRepository).save(any());
 
-        assertEquals(testAddMusicListItem, musicListItem);
+        assertEquals(musicDTO.getId(),testAddMusicListItem.getMusicId());
     }
 
     @Test
-    void givenInvalidMusicListItemWhenAddMusicListItemShouldThrowBadRequestException() {
+    void givenMusicListItemAddWithInvalidApiCodeWhenAddMusicListItemShouldThrowBadRequestException() throws Exception {
 
-        MusicListItem musicListItem = MusicListItem
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
+        listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setType(2);
 
-        List<String> errorList = List.of("Error 1", "Error 2");
-        Mockito.when(this.musicListEntityValidator.validateEntity(musicListItem)).thenReturn(errorList);
+        MusicDTO musicDTO = new MusicDTO();
+        musicDTO.setId(1L);
 
-        assertThrows(CustomBadRequestException.class, () -> this.musicListService.add(musicListItem));
+        Mockito.when(this.musicConnectorProxy.getSongByApiCode(anyString())).thenThrow(CustomNotFoundException.class);
 
-        Mockito.verify(this.musicListEntityValidator).validateEntity(musicListItem);
+        assertThrows(CustomBadRequestException.class, () -> this.musicListService.add(listItemAddDTO));
+
+        Mockito.verify(this.musicConnectorProxy).getSongByApiCode(anyString());
 
     }
 
     @Test
-    void givenMusicListItemWithAlreadyExistingMusicIdShouldThrowEntityDuplicationException() {
+    void givenMusicListItemAddWithAlreadyExistingMusicIdWhenAddMusicListItemShouldThrowEntityDuplicationException() throws Exception {
 
-        MusicListItem musicListItem = MusicListItem
-                .builder()
-                .musicId(1L)
-                .appUserId(1L)
-                .addedAt(new Date())
-                .sortingOrder(1)
-                .build();
+        MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
+        listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setType(1);
 
-        Mockito.when(this.musicListEntityValidator.validateEntity(musicListItem)).thenReturn(emptyList());
-        Mockito.when(this.musicListItemRepository
-                        .getByAppUserIdAndMusicId(anyLong(), anyLong()))
-                .thenReturn(musicListItem);
+        MusicDTO musicDTO = new MusicDTO();
+        musicDTO.setId(1L);
 
-        assertThrows(CustomEntityDuplicationException.class, () -> this.musicListService.add(musicListItem));
+        MusicListItem musicListItem = new MusicListItem();
+        musicListItem.setMusicId(musicDTO.getId());
+        musicListItem.setAppUserId(1L);
 
-        Mockito.verify(this.musicListEntityValidator).validateEntity(musicListItem);
+        Mockito.when(this.musicConnectorProxy.getAlbumByApiCode(anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(musicListItem);
+
+        assertThrows(CustomEntityDuplicationException.class, () -> this.musicListService.add(listItemAddDTO));
+
+        Mockito.verify(this.musicConnectorProxy).getAlbumByApiCode(anyString());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
+
+
     }
+
+    @Test
+    void givenMusicListItemAddWhenAddMusicListItemAndServiceNotAvailableShouldThrowServiceNotAvailableException() throws Exception {
+
+        MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
+        listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setType(2);
+
+        MusicDTO musicDTO = new MusicDTO();
+        musicDTO.setId(1L);
+
+        MusicListItem musicListItem = new MusicListItem();
+        musicListItem.setMusicId(musicDTO.getId());
+        musicListItem.setAppUserId(1L);
+
+        Mockito.when(this.musicConnectorProxy.getSongByApiCode(anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
+        Mockito.when(this.musicConnectorProxy.saveByApiCode(anyInt(), anyString())).thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class, () -> this.musicListService.add(listItemAddDTO));
+
+        Mockito.verify(this.musicConnectorProxy).getSongByApiCode(anyString());
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
+        Mockito.verify(this.musicConnectorProxy).saveByApiCode(anyInt(), anyString());
+    }
+
 
     @Test
     void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMusicListItem() throws CustomNotFoundException {
