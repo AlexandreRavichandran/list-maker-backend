@@ -50,7 +50,7 @@ public class MovieListItemController {
 
     @DeleteMapping("/{listItemId}")
     public ResponseEntity<MovieListItemDTO> deleteById(@PathVariable("listItemId") Long listItemId)
-            throws CustomNotFoundException {
+            throws CustomNotFoundException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
                 this.modelMapper.map(this.movieListService.deleteById(listItemId), MovieListItemDTO.class),

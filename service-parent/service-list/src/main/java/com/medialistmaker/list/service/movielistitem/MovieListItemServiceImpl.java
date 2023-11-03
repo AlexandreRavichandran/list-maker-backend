@@ -62,6 +62,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         MovieListItem movieListItemToAdd = MovieListItem
                 .builder()
                 .appUserId(1L)
+                .sortingOrder(this.getNextSortingOrder(1L))
                 .addedAt(new Date())
                 .build();
         try {
@@ -75,7 +76,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
 
     @Override
-    public MovieListItem deleteById(Long movieListId) throws CustomNotFoundException {
+    public MovieListItem deleteById(Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
         MovieListItem itemToDelete = this.movieListItemRepository.getReferenceById(movieListId);
 
@@ -85,6 +86,49 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
         this.movieListItemRepository.delete(itemToDelete);
 
+        this.updateOrder(1L);
+        this.checkIfMovieUsedInOtherList(itemToDelete.getMovieId());
+
         return itemToDelete;
+    }
+
+    private Integer getNextSortingOrder(Long appUserId) {
+
+        MovieListItem appUserLastItem = this.movieListItemRepository.getFirstByAppUserIdOrderBySortingOrderDesc(appUserId);
+
+        if(nonNull(appUserLastItem)) {
+            return appUserLastItem.getSortingOrder() + 1;
+        }
+
+        return 1;
+    }
+
+    private void checkIfMovieUsedInOtherList(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException {
+        List<MovieListItem> movieListItems = this.movieListItemRepository.getByMovieId(movieId);
+
+        if(Boolean.TRUE.equals(movieListItems.isEmpty())) {
+            this.deleteMovie(movieId);
+        }
+
+    }
+
+    private void deleteMovie(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException{
+        this.movieConnectorProxy.deleteById(movieId);
+    }
+
+    @Override
+    public void updateOrder(Long appUserId) {
+
+        List<MovieListItem> movieListItems = this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
+
+        Integer i = 1;
+
+        for (MovieListItem movieListItem : movieListItems) {
+            movieListItem.setSortingOrder(i);
+            i++;
+        }
+
+        this.movieListItemRepository.saveAll(movieListItems);
+
     }
 }

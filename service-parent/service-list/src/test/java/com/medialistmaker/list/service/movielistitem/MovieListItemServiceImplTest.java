@@ -180,7 +180,7 @@ class MovieListItemServiceImplTest {
     }
 
     @Test
-    void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMovieListItem() throws CustomNotFoundException {
+    void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMovieListItem() throws Exception {
 
         MovieListItem movieListItem = MovieListItem
                 .builder()
@@ -208,4 +208,40 @@ class MovieListItemServiceImplTest {
         Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
     }
 
+    @Test
+    void givenAppUserIdShouldGetAllMovieItemAndResetSortingOrderAndSave() {
+
+        MovieListItem firstMovieListItem = MovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MovieListItem secondMovieListItem = MovieListItem
+                .builder()
+                .movieId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MovieListItem thirdMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MovieListItem> movieListItems = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+
+        Mockito.when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(movieListItems);
+
+        this.movieListService.updateOrder(1L);
+
+        Mockito.verify(this.movieListItemRepository).saveAll(movieListItems);
+
+    }
 }

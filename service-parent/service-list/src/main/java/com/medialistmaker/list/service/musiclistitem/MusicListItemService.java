@@ -16,6 +16,7 @@ public interface MusicListItemService {
     MusicListItem add(MusicListItemAddDTO listItemAddDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 
-    MusicListItem deleteById(Long musicListId) throws CustomNotFoundException;
+    MusicListItem deleteById(Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
+    void updateOrder(Long appUserId);
 }

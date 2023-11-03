@@ -20,4 +20,8 @@ public class MovieConnectorProxy {
     public MovieDTO getByApiCode(String apiCode) throws CustomNotFoundException, ServiceNotAvailableException {
         return this.movieConnector.getByApiCode(apiCode);
     }
+
+    public MovieDTO deleteById(Long id) throws CustomNotFoundException, ServiceNotAvailableException {
+        return this.movieConnector.deleteById(id);
+    }
 }

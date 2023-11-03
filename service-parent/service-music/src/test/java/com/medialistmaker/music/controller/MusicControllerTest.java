@@ -229,7 +229,7 @@ class MusicControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics/apicode/{apicode}",
+                                .post("/api/musics/apicodes/{apicode}",
                                         "test")
                                 .param("type", "1")
                 )
@@ -248,7 +248,7 @@ class MusicControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics/apicode/{apicode}",
+                                .post("/api/musics/apicodes/{apicode}",
                                         "test")
                                 .param("type", "1")
                 )
@@ -260,19 +260,19 @@ class MusicControllerTest {
     }
 
     @Test
-    void givenApiCodeAndTypeWhenAddByApiCodeAndApiNotAvailableShouldReturnServiceNotAvailableAndReturn503() throws Exception {
+    void givenApiCodeAndTypeWhenAddByApiCodeAndApiNotAvailableShouldReturnServiceNotAvailableAndReturn424() throws Exception {
 
         Mockito.when(this.musicService.addByApiCode(anyInt(),anyString())).thenThrow(new ServiceNotAvailableException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics/apicode/{apicode}",
+                                .post("/api/musics/apicodes/{apicode}",
                                         "test")
                                 .param("type", "1")
                 )
                 .andDo(print())
                 .andExpect(
-                        status().isServiceUnavailable()
+                        status().isFailedDependency()
                 );
 
     }

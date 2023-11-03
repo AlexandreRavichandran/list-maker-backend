@@ -51,7 +51,7 @@ public class MusicListItemController {
 
     @DeleteMapping("/{listItemId}")
     public ResponseEntity<MusicListItemDTO> deleteById(@PathVariable("listItemId") Long listItemId)
-            throws CustomNotFoundException {
+            throws CustomNotFoundException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
                 this.modelMapper.map(this.musicListService.deleteById(listItemId), MusicListItemDTO.class),

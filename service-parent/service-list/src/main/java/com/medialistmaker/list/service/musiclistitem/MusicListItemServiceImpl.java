@@ -1,6 +1,7 @@
 package com.medialistmaker.list.service.musiclistitem;
 
 import com.medialistmaker.list.connector.music.MusicConnectorProxy;
+import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.domain.MusicListItem;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
@@ -41,8 +42,10 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         try {
             if(listItemAddDTO.getType().equals(1)) {
                 musicToAdd = this.musicConnectorProxy.getAlbumByApiCode(listItemAddDTO.getApiCode());
-            } else {
+            } else if(listItemAddDTO.getType().equals(2)) {
                 musicToAdd = this.musicConnectorProxy.getSongByApiCode(listItemAddDTO.getApiCode());
+            } else {
+                throw new CustomBadRequestException("Bad type");
             }
         } catch (CustomNotFoundException e) {
             throw new CustomBadRequestException("Movie not exists");
@@ -60,6 +63,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         MusicListItem musicListItemToAdd = MusicListItem
                 .builder()
                 .appUserId(1L)
+                .sortingOrder(this.getNextSortingOrder(1L))
                 .addedAt(new Date())
                 .build();
         try {
@@ -72,7 +76,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     }
 
     @Override
-    public MusicListItem deleteById(Long musicListId) throws CustomNotFoundException {
+    public MusicListItem deleteById(Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
         MusicListItem itemToDelete = this.musicListItemRepository.getReferenceById(musicListId);
 
@@ -82,6 +86,47 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.delete(itemToDelete);
 
+        this.updateOrder(1L);
+        this.checkIfMusicUsedInOtherList(itemToDelete.getMusicId());
         return itemToDelete;
+    }
+
+    private Integer getNextSortingOrder(Long appUserId) {
+
+        MusicListItem appUserLastItem = this.musicListItemRepository.getFirstByAppUserIdOrderBySortingOrderDesc(appUserId);
+
+        if(nonNull(appUserLastItem)) {
+            return appUserLastItem.getSortingOrder() + 1;
+        }
+
+        return 1;
+    }
+
+    private void checkIfMusicUsedInOtherList(Long musicId) throws CustomNotFoundException, ServiceNotAvailableException {
+        List<MovieListItem> movieListItems = this.musicListItemRepository.getByMusicId(musicId);
+
+        if(Boolean.TRUE.equals(movieListItems.isEmpty())) {
+            this.deleteMusic(musicId);
+        }
+
+    }
+
+    private void deleteMusic(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException{
+        this.musicConnectorProxy.deleteById(movieId);
+    }
+
+    @Override
+    public void updateOrder(Long appUserId) {
+        List<MusicListItem> musicListItems = this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
+
+        Integer i = 1;
+
+        for (MusicListItem musicListItem : musicListItems) {
+            musicListItem.setSortingOrder(i);
+            i++;
+        }
+
+        this.musicListItemRepository.saveAll(musicListItems);
+
     }
 }

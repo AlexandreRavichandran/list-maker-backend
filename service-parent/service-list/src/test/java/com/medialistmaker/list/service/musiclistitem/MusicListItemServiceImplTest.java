@@ -175,7 +175,7 @@ class MusicListItemServiceImplTest {
 
 
     @Test
-    void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMusicListItem() throws CustomNotFoundException {
+    void givenIdWhenDeleteByIdShouldDeleteAndReturnRelatedMusicListItem() throws Exception {
 
         MusicListItem musicListItem = MusicListItem
                 .builder()
@@ -191,6 +191,43 @@ class MusicListItemServiceImplTest {
 
         Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
         assertEquals(musicListItem, testDeleteById);
+    }
+
+    @Test
+    void givenAppUserIdShouldGetAllMovieItemAndResetSortingOrderAndSave() {
+
+        MusicListItem firstMusicListItem = MusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MusicListItem secondMusicListItem = MusicListItem
+                .builder()
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MusicListItem thirdMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MusicListItem> musicListItems = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+
+        Mockito.when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(musicListItems);
+
+        this.musicListService.updateOrder(1L);
+
+        Mockito.verify(this.musicListItemRepository).saveAll(musicListItems);
+
     }
 
     @Test

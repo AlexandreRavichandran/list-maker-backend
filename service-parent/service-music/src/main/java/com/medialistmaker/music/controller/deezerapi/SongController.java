@@ -32,7 +32,7 @@ public class SongController {
 
     }
 
-    @GetMapping("/{apicode}")
+    @GetMapping("/apicodes/{apicode}")
     public ResponseEntity<SongElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException {
 

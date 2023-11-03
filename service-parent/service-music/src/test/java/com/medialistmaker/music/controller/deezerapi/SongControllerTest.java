@@ -118,7 +118,7 @@ class SongControllerTest {
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get(
-                                        "/api/musics/deezerapi/songs/{apicode}",
+                                        "/api/musics/deezerapi/songs/apicodes/{apicode}",
                                         "test"
                                 )
                 )
@@ -138,7 +138,7 @@ class SongControllerTest {
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get(
-                                        "/api/musics/deezerapi/songs/{apicode}",
+                                        "/api/musics/deezerapi/songs/apicodes/{apicode}",
                                         "test"
                                 )
                 )

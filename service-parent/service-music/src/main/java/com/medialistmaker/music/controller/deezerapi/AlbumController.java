@@ -32,7 +32,7 @@ public class AlbumController {
 
     }
 
-    @GetMapping("/{apicode}")
+    @GetMapping("/apicodes/{apicode}")
     public ResponseEntity<AlbumElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException {
 

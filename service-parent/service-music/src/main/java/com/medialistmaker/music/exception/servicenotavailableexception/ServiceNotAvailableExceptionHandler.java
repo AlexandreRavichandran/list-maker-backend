@@ -16,7 +16,7 @@ public class ServiceNotAvailableExceptionHandler {
                 .message(e.getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorDTO, HttpStatus.SERVICE_UNAVAILABLE);
+        return new ResponseEntity<>(errorDTO, HttpStatus.FAILED_DEPENDENCY);
     }
 
 }

@@ -24,4 +24,8 @@ public class MusicConnectorProxy {
     public MusicDTO getSongByApiCode(String apiCode) throws CustomNotFoundException, ServiceNotAvailableException {
         return this.musicConnector.getSongByApiCode(apiCode);
     }
+
+    public MusicDTO deleteById(Long id) throws CustomNotFoundException, ServiceNotAvailableException {
+        return this.musicConnector.deleteById(id);
+    }
 }

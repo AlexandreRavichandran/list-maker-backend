@@ -68,7 +68,7 @@ public class MusicController {
 
     }
 
-    @PostMapping("/apicode/{apicode}")
+    @PostMapping("/apicodes/{apicode}")
     public ResponseEntity<MusicDTO> addFromApiCode(@RequestParam("type") Integer type, @PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException {
 
