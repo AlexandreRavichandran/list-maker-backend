@@ -1,11 +1,7 @@
 package com.medialistmaker.movie.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.medialistmaker.movie.domain.Movie;
-import com.medialistmaker.movie.dto.MovieDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.service.movie.MovieServiceImpl;
@@ -16,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -24,7 +19,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -96,7 +90,7 @@ class MovieControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/api/movies/apicode/{apicode}",
+                                .get("/api/movies/apicodes/{apicode}",
                                         movie.getApiCode()
                                 )
                 )
@@ -228,7 +222,7 @@ class MovieControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/movies/apicode/{apicode}",
+                                .post("/api/movies/apicodes/{apicode}",
                                         "test"
                                 )
                 )
@@ -247,7 +241,7 @@ class MovieControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/movies/apicode/{apicode}",
+                                .post("/api/movies/apicodes/{apicode}",
                                         "test"
                                 )
                 )
@@ -259,19 +253,19 @@ class MovieControllerTest {
     }
 
     @Test
-    void givenApiCodeWhenAddByApiCodeAndApiNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn503() throws Exception {
+    void givenApiCodeWhenAddByApiCodeAndApiNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn424() throws Exception {
 
         Mockito.when(this.movieService.addByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/movies/apicode/{apicode}",
+                                .post("/api/movies/apicodes/{apicode}",
                                         "test"
                                 )
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isServiceUnavailable(),
+                        status().isFailedDependency(),
                         result -> assertTrue(result.getResolvedException() instanceof ServiceNotAvailableException)
                 );
 

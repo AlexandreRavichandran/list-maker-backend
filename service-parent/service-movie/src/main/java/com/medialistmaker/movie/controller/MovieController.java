@@ -35,7 +35,7 @@ public class MovieController {
         );
     }
 
-    @GetMapping("/apicode/{apicode}")
+    @GetMapping("/apicodes/{apicode}")
     public ResponseEntity<MovieDTO> readByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomNotFoundException {
 
@@ -55,7 +55,7 @@ public class MovieController {
         );
     }
 
-    @PostMapping("/apicode/{apicode}")
+    @PostMapping("/apicodes/{apicode}")
     public ResponseEntity<MovieDTO> addFromApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException {
 

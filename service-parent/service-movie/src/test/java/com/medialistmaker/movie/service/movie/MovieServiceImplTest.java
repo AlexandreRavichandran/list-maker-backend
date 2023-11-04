@@ -4,7 +4,6 @@ import com.medialistmaker.movie.connector.OmdbConnectorProxy;
 import com.medialistmaker.movie.domain.Movie;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.movie.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.movie.repository.MovieRepository;
@@ -20,7 +19,6 @@ import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
