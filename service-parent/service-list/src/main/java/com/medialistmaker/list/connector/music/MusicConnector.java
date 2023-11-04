@@ -7,7 +7,7 @@ import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNot
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(value = "music", url = "/api/musics")
+@FeignClient(name = "music", path = "/api/musics")
 public interface MusicConnector {
 
     @GetMapping("/deezerapi/albums/apicodes/{apicode}")
