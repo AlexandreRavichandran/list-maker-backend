@@ -3,6 +3,7 @@ package com.medialistmaker.music.controller.deezerapi;
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
@@ -37,6 +38,14 @@ public class AlbumController {
             throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(this.albumConnectorProxy.getByApiCode(apiCode), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/apicodes/{apicode}/tracklist")
+    public ResponseEntity<TrackListDTO> getTrackListByAlbumApiCode(@PathVariable("apicode") String apiCode)
+            throws ServiceNotAvailableException, CustomBadRequestException {
+
+        return new ResponseEntity<>(this.albumConnectorProxy.getTrackListByAlbumApiCode(apiCode), HttpStatus.OK);
 
     }
 }

@@ -1,6 +1,7 @@
 package com.medialistmaker.music.connector.deezer.album;
 
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,4 +15,7 @@ public interface DeezerAlbumConnector {
     AlbumElementDTO getByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException;
 
+    @GetMapping("/{apicode}/tracks")
+    TrackListDTO getTrackListByAlbumApiCode(@PathVariable("apicode") String apiCode)
+        throws CustomBadRequestException, ServiceNotAvailableException;
 }

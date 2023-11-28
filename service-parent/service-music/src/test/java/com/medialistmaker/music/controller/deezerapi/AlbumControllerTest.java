@@ -4,6 +4,8 @@ import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.ArtistElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.item.AlbumSearchElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
@@ -136,6 +138,58 @@ class AlbumControllerTest {
                         MockMvcRequestBuilders
                                 .get(
                                         "/api/musics/deezerapi/albums/apicodes/{apicode}",
+                                        "test"
+                                )
+                )
+                .andExpect(
+                        status().isBadRequest()
+                );
+
+    }
+
+    @Test
+    void givenApiCodeWhenGetTrackListByApiCodeShouldReturnRelatedSongElementListAndReturn200() throws Exception {
+
+        SongElementDTO firstElement = new SongElementDTO();
+        firstElement.setId("1");
+
+        SongElementDTO secondElement = new SongElementDTO();
+        secondElement.setId("1");
+
+        SongElementDTO thirdElement = new SongElementDTO();
+        thirdElement.setId("1");
+
+        TrackListDTO trackListDTO = new TrackListDTO();
+        trackListDTO.setSongs(List.of(firstElement, secondElement, thirdElement));
+
+        Mockito
+                .when(this.albumConnectorProxy.getTrackListByAlbumApiCode(anyString()))
+                .thenReturn(trackListDTO);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get(
+                                        "/api/musics/deezerapi/albums/apicodes/{apicode}/tracklist",
+                                        "test"
+                                )
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", hasSize(trackListDTO.getSongs().size()))
+                );
+    }
+
+    @Test
+    void givenApiCodeWhenGetTrackListByApiCodeAndApiErrorShouldThrowBadRequestExceptionAndReturn400() throws Exception {
+
+        Mockito
+                .when(this.albumConnectorProxy.getTrackListByAlbumApiCode(anyString()))
+                .thenThrow(new CustomBadRequestException("Bad request", new ArrayList<>()));
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get(
+                                        "/api/musics/deezerapi/albums/apicodes/{apicode}/tracklist",
                                         "test"
                                 )
                 )
