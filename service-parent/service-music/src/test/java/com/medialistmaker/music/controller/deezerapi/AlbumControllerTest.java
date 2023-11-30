@@ -175,7 +175,7 @@ class AlbumControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$", hasSize(trackListDTO.getSongs().size()))
+                        jsonPath("$.data", hasSize(trackListDTO.getSongs().size()))
                 );
     }
 

@@ -1,5 +1,6 @@
 package com.medialistmaker.music.dto.externalapi.deezerapi;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,8 +13,16 @@ public class SongElementDTO extends MusicElementDTO {
 
     private String duration;
 
+    private String rank;
+
+    private Integer trackNumber;
+
     private String preview;
 
     private ArtistElementDTO artist;
 
+    @JsonProperty("track_position")
+    public void setTrackNumber(Integer trackNumber) {
+        this.trackNumber = trackNumber;
+    }
 }
