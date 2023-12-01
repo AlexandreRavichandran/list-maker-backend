@@ -3,6 +3,8 @@ package com.medialistmaker.movie.dto.externalapi.omdbapi.item;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class MovieElementDTO {
 
@@ -14,11 +16,19 @@ public class MovieElementDTO {
 
     private String duration;
 
+    private String genre;
+
+    private String mainActors;
+
     private String synopsis;
 
     private String director;
 
+    private List<RatingDTO> ratings;
+
     private String pictureUrl;
+
+    private Boolean isAlreadyInList;
 
     @JsonProperty("apiCode")
     public String getApiCode() {
@@ -80,6 +90,16 @@ public class MovieElementDTO {
         this.director = director;
     }
 
+    @JsonProperty("ratings")
+    public List<RatingDTO> getRatings() {
+        return ratings;
+    }
+
+    @JsonProperty("Ratings")
+    public void setRatings(List<RatingDTO> ratings) {
+        this.ratings = ratings;
+    }
+
     @JsonProperty("pictureUrl")
     public String getPictureUrl() {
         return pictureUrl;
@@ -88,5 +108,25 @@ public class MovieElementDTO {
     @JsonProperty("Poster")
     public void setPictureUrl(String pictureUrl) {
         this.pictureUrl = pictureUrl;
+    }
+
+    @JsonProperty("genre")
+    public String getGenre() {
+        return genre;
+    }
+
+    @JsonProperty("Genre")
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    @JsonProperty("mainActors")
+    public String getMainActors() {
+        return mainActors;
+    }
+
+    @JsonProperty("Actors")
+    public void setMainActors(String mainActors) {
+        this.mainActors = mainActors;
     }
 }

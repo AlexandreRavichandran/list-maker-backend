@@ -37,7 +37,7 @@ class OmdbConnectorProxyTest {
         movieElementDTO.setDuration("anyString()");
         movieElementDTO.setPictureUrl("anyString()");
 
-        Mockito.when(this.omdbConnector.getMovieByApiCode(anyString(), any())).thenReturn(movieElementDTO);
+        Mockito.when(this.omdbConnector.getMovieByApiCode(anyString(), any(), anyString())).thenReturn(movieElementDTO);
 
         MovieElementDTO testGetByApiCode = this.omdbConnectorProxy.getByApiCode("test");
 
@@ -74,7 +74,7 @@ class OmdbConnectorProxyTest {
     @Test
     void givenApiCodeWhenGetByApiCodeAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.omdbConnector.getMovieByApiCode(anyString(), any())).thenThrow(CustomBadRequestException.class);
+        Mockito.when(this.omdbConnector.getMovieByApiCode(anyString(), any(), anyString())).thenThrow(CustomBadRequestException.class);
 
         assertThrows(CustomBadRequestException.class, () ->  this.omdbConnectorProxy.getByApiCode("test"));
 

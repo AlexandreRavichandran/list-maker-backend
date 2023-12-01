@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OmdbConnector {
 
     @GetMapping
-    MovieElementDTO getMovieByApiCode(@RequestParam("i") String apiCode, @RequestParam("apiKey") String apiKey)
+    MovieElementDTO getMovieByApiCode(
+            @RequestParam("i") String apiCode,
+            @RequestParam("apiKey") String apiKey,
+            @RequestParam("plot") String plot)
             throws CustomBadRequestException, ServiceNotAvailableException;
 
     @GetMapping
