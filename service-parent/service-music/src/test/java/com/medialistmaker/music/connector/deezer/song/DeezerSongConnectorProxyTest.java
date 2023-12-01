@@ -32,7 +32,7 @@ class DeezerSongConnectorProxyTest {
         SongElementDTO song = new SongElementDTO();
         song.setId("1L");
         song.setTitle("Song 1");
-        song.setDuration("2m30");
+        song.setDuration(180);
         song.setPreview("test.mp3");
         song.setArtist(artist);
 

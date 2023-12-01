@@ -9,6 +9,8 @@ import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.item.AlbumSearchElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
+import com.medialistmaker.music.utils.MathUtils;
+import com.medialistmaker.music.utils.TimeCalculator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +36,12 @@ class AlbumControllerTest {
 
     @MockBean
     DeezerAlbumConnectorProxy albumConnectorProxy;
+
+    @MockBean
+    MathUtils mathUtils;
+
+    @MockBean
+    TimeCalculator timeCalculator;
 
     @Autowired
     MockMvc mockMvc;
@@ -152,12 +160,18 @@ class AlbumControllerTest {
 
         SongElementDTO firstElement = new SongElementDTO();
         firstElement.setId("1");
+        firstElement.setDuration(180);
+        firstElement.setRank(995000);
 
         SongElementDTO secondElement = new SongElementDTO();
-        secondElement.setId("1");
+        secondElement.setId("2");
+        secondElement.setDuration(180);
+        secondElement.setRank(994000);
 
         SongElementDTO thirdElement = new SongElementDTO();
-        thirdElement.setId("1");
+        thirdElement.setId("3");
+        thirdElement.setDuration(180);
+        thirdElement.setRank(997000);
 
         TrackListDTO trackListDTO = new TrackListDTO();
         trackListDTO.setSongs(List.of(firstElement, secondElement, thirdElement));
@@ -165,6 +179,9 @@ class AlbumControllerTest {
         Mockito
                 .when(this.albumConnectorProxy.getTrackListByAlbumApiCode(anyString()))
                 .thenReturn(trackListDTO);
+
+        Mockito.when(this.timeCalculator.formatSecondsToHourMinutesAndSeconds(anyInt())).thenReturn("2m30");
+        Mockito.when(this.mathUtils.calculateAverageOfList(any())).thenReturn(40);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders

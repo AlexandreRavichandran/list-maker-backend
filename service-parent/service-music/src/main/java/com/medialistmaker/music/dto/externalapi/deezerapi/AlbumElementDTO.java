@@ -13,7 +13,13 @@ public class AlbumElementDTO extends MusicElementDTO {
 
     private String pictureUrl;
 
+    private String releaseDate;
+
     private ArtistElementDTO artist;
+
+    private GenreListDTO genreList;
+
+    private Boolean isAlreadyInList;
 
     public String getPictureUrl() {
         return pictureUrl;
@@ -24,5 +30,13 @@ public class AlbumElementDTO extends MusicElementDTO {
         this.pictureUrl = pictureUrl;
     }
 
-    
+    @JsonProperty("release_date")
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    @JsonProperty("genres")
+    public void setGenreList(GenreListDTO genreList) {
+        this.genreList = genreList;
+    }
 }

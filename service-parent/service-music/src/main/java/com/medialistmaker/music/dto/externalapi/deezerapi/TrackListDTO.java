@@ -11,4 +11,7 @@ public class TrackListDTO {
     @JsonProperty("data")
     private List<SongElementDTO> songs;
 
+    private String totalDuration;
+
+    private Double albumPopularityRate;
 }

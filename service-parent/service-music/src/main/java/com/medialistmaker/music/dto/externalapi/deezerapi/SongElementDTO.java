@@ -11,9 +11,9 @@ public class SongElementDTO extends MusicElementDTO {
 
     private String title;
 
-    private String duration;
+    private Integer duration;
 
-    private String rank;
+    private Integer rank;
 
     private Integer trackNumber;
 

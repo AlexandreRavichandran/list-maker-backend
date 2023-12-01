@@ -3,14 +3,19 @@ package com.medialistmaker.music.controller.deezerapi;
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
+import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
+import com.medialistmaker.music.utils.MathUtils;
+import com.medialistmaker.music.utils.TimeCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static java.lang.Integer.parseInt;
 
 @RestController
 @RequestMapping("/api/musics/deezerapi/albums")
@@ -21,6 +26,12 @@ public class AlbumController {
 
     @Autowired
     DeezerAlbumConnectorProxy albumConnectorProxy;
+
+    @Autowired
+    TimeCalculator timeCalculator;
+
+    @Autowired
+    MathUtils mathUtils;
 
     @GetMapping
     public ResponseEntity<AlbumSearchListDTO> getByAlbumName(@RequestParam("name") String albumName)
@@ -45,7 +56,14 @@ public class AlbumController {
     public ResponseEntity<TrackListDTO> getTrackListByAlbumApiCode(@PathVariable("apicode") String apiCode)
             throws ServiceNotAvailableException, CustomBadRequestException {
 
-        return new ResponseEntity<>(this.albumConnectorProxy.getTrackListByAlbumApiCode(apiCode), HttpStatus.OK);
+        TrackListDTO trackListDTO = this.albumConnectorProxy.getTrackListByAlbumApiCode(apiCode);
 
+        int totalSongDurationInSeconds = trackListDTO.getSongs().stream().mapToInt(SongElementDTO::getDuration).sum();
+        Integer averageAlbumPopularity = this.mathUtils.calculateAverageOfList(trackListDTO.getSongs().stream().mapToInt(SongElementDTO::getRank).toArray());
+
+        trackListDTO.setTotalDuration(this.timeCalculator.formatSecondsToHourMinutesAndSeconds(totalSongDurationInSeconds));
+        trackListDTO.setAlbumPopularityRate(((averageAlbumPopularity/1000000D) * 100));
+
+        return new ResponseEntity<>(trackListDTO, HttpStatus.OK);
     }
 }

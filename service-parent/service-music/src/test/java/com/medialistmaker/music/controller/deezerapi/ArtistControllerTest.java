@@ -54,7 +54,7 @@ class ArtistControllerTest {
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.data", hasSize(3))
+                        jsonPath("$.albumList", hasSize(3))
                 );
     }
 
