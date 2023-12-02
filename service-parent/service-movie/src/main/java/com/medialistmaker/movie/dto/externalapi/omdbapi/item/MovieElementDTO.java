@@ -3,6 +3,7 @@ package com.medialistmaker.movie.dto.externalapi.omdbapi.item;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -16,7 +17,7 @@ public class MovieElementDTO {
 
     private String duration;
 
-    private String genre;
+    private List<String> genreList;
 
     private String mainActors;
 
@@ -110,14 +111,9 @@ public class MovieElementDTO {
         this.pictureUrl = pictureUrl;
     }
 
-    @JsonProperty("genre")
-    public String getGenre() {
-        return genre;
-    }
-
     @JsonProperty("Genre")
     public void setGenre(String genre) {
-        this.genre = genre;
+        this.genreList =  Arrays.stream(genre.split(", ")).toList();
     }
 
     @JsonProperty("mainActors")
