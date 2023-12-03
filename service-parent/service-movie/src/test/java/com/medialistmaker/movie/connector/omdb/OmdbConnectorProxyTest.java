@@ -1,4 +1,4 @@
-package com.medialistmaker.movie.connector;
+package com.medialistmaker.movie.connector.omdb;
 
 import com.medialistmaker.movie.connector.omdb.OmdbConnector;
 import com.medialistmaker.movie.connector.omdb.OmdbConnectorProxy;

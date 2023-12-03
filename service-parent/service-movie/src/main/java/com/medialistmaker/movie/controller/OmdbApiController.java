@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.util.Objects.nonNull;
-
 @RestController
 @RequestMapping("/api/movies/omdbapi")
 public class OmdbApiController {
@@ -55,11 +53,7 @@ public class OmdbApiController {
 
             Movie movie = this.movieService.readByApiCode(movieElementDTO.getApiCode());
 
-            if(nonNull(movie)) {
-                isAlreadyInList = this.listConnectorProxy.isMovieIdAlreadyInList(movie.getId());
-            } else {
-                isAlreadyInList = Boolean.FALSE;
-            }
+            isAlreadyInList = this.listConnectorProxy.isMovieIdAlreadyInList(movie.getId());
 
         } catch (CustomNotFoundException e) {
             isAlreadyInList = Boolean.FALSE;

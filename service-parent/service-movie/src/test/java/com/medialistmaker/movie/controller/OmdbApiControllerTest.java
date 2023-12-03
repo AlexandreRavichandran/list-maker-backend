@@ -106,41 +106,7 @@ class OmdbApiControllerTest {
     }
 
     @Test
-    void givenApiCodeWhichIsNotInListWhenGetByApiCodeShouldReturnRelatedMovieAndReturn200() throws Exception {
-
-        MovieElementDTO movieElement = new MovieElementDTO();
-        movieElement.setApiCode("00001");
-        movieElement.setTitle("Movie 1");
-        movieElement.setDirector("Alexandre");
-        movieElement.setDuration("200m");
-        movieElement.setSynopsis("Summary");
-        movieElement.setReleasedAt("2000");
-
-        Mockito
-                .when(this.omdbConnectorProxy.getByApiCode(anyString()))
-                .thenReturn(movieElement);
-
-        Mockito
-                .when(this.movieService.readByApiCode(anyString()))
-                .thenThrow(CustomNotFoundException.class);
-
-        this.mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .get(
-                                        "/api/movies/omdbapi/apicodes/{apicode}",
-                                        "test"
-                                )
-                )
-                .andDo(print())
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.apiCode", equalTo(movieElement.getApiCode())),
-                        jsonPath("$.isAlreadyInList", equalTo(Boolean.FALSE))
-                );
-    }
-
-    @Test
-    void givenApiCodeWhichIsInListWhenGetByApiCodeShouldReturnRelatedMovieAndReturn200() throws Exception {
+    void givenApiCodeWhenGetByApiCodeShouldReturnRelatedMovieAndReturn200() throws Exception {
 
         MovieElementDTO movieElement = new MovieElementDTO();
         movieElement.setApiCode("00001");
@@ -182,7 +148,7 @@ class OmdbApiControllerTest {
     }
 
     @Test
-    void givenApiCodeWhenGetByApiCodeShouldReturnRelatedMovieAndReturn200() throws Exception {
+    void givenNonExistingApiCodeWhenGetByApiCodeShouldReturnRelatedMovieWithAlreadyInListFieldFalseAndReturn200() throws Exception {
 
         MovieElementDTO movieElement = new MovieElementDTO();
         movieElement.setApiCode("00001");
@@ -195,6 +161,10 @@ class OmdbApiControllerTest {
         Mockito
                 .when(this.omdbConnectorProxy.getByApiCode(anyString()))
                 .thenReturn(movieElement);
+
+        Mockito
+                .when(this.movieService.readByApiCode(anyString()))
+                .thenThrow(CustomNotFoundException.class);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
