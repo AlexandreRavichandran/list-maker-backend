@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Map;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,12 +19,18 @@ public class AlbumElementDTO extends MusicElementDTO {
 
     private ArtistElementDTO artist;
 
-    private GenreListDTO genreList;
+    private List<GenreDTO> genreList;
 
     private Boolean isAlreadyInList;
 
+    @JsonProperty("pictureUrl")
     public String getPictureUrl() {
         return pictureUrl;
+    }
+
+    @JsonProperty("releaseDate")
+    public String getReleaseDate() {
+        return releaseDate;
     }
 
     @JsonProperty("cover_xl")
@@ -35,9 +43,20 @@ public class AlbumElementDTO extends MusicElementDTO {
         this.releaseDate = releaseDate;
     }
 
+    @JsonProperty("genreList")
+    public List<GenreDTO> getGenreList() {
+        return genreList;
+    }
+
     @JsonProperty("genres")
-    public void setGenreList(GenreListDTO genreList) {
-        this.genreList = genreList;
+    public void setGenreList(Map<String, List<GenreDTO>> genres) {
+        this.genreList = genres.get("data");
+    }
+
+    @Override
+    @JsonProperty("apiCode")
+    public String getApiCode() {
+        return apiCode;
     }
 
     @Override
