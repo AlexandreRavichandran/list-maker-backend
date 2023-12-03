@@ -38,6 +38,15 @@ public class MovieListItemController {
         );
     }
 
+    @GetMapping("/{movieId}")
+    public ResponseEntity<Boolean> isMovieInAppUserList(@PathVariable("movieId") Long movieId) {
+
+        return new ResponseEntity<>(
+                this.movieListService.isMovieUsedInOtherList(movieId),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping
     public ResponseEntity<MovieListItemDTO> add(@RequestBody MovieListItemAddDTO listItemDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {

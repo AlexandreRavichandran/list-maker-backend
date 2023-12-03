@@ -18,5 +18,7 @@ public interface MovieListItemService {
 
     MovieListItem deleteById(Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
+    Boolean isMovieUsedInOtherList(Long movieId);
+
     void updateOrder(Long appUserId);
 }

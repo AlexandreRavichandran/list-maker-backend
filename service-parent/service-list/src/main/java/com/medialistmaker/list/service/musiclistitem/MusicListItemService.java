@@ -18,5 +18,7 @@ public interface MusicListItemService {
 
     MusicListItem deleteById(Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
+    Boolean isMusicUsedInOtherList(Long musicId);
+
     void updateOrder(Long appUserId);
 }

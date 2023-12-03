@@ -1,7 +1,6 @@
 package com.medialistmaker.list.service.musiclistitem;
 
 import com.medialistmaker.list.connector.music.MusicConnectorProxy;
-import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.domain.MusicListItem;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
@@ -87,7 +86,12 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         this.musicListItemRepository.delete(itemToDelete);
 
         this.updateOrder(1L);
-        this.checkIfMusicUsedInOtherList(itemToDelete.getMusicId());
+
+        Boolean isMovieUsedInAnotherList = this.isMusicUsedInOtherList(itemToDelete.getMusicId());
+
+        if(Boolean.FALSE.equals(isMovieUsedInAnotherList)) {
+            this.deleteMusic(itemToDelete.getMusicId());
+        }
         return itemToDelete;
     }
 
@@ -102,12 +106,11 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         return 1;
     }
 
-    private void checkIfMusicUsedInOtherList(Long musicId) throws CustomNotFoundException, ServiceNotAvailableException {
-        List<MovieListItem> movieListItems = this.musicListItemRepository.getByMusicId(musicId);
+    public Boolean isMusicUsedInOtherList(Long musicId) {
 
-        if(Boolean.TRUE.equals(movieListItems.isEmpty())) {
-            this.deleteMusic(musicId);
-        }
+        List<MusicListItem> musicMistItems = this.musicListItemRepository.getByMusicId(musicId);
+
+        return Boolean.FALSE.equals(musicMistItems.isEmpty());
 
     }
 

@@ -1,6 +1,5 @@
 package com.medialistmaker.list.repository;
 
-import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.domain.MusicListItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +11,5 @@ public interface MusicListItemRepository extends JpaRepository<MusicListItem, Lo
 
     MusicListItem getByAppUserIdAndMusicId(Long appUserId, Long musicId);
 
-    List<MovieListItem> getByMusicId(Long id);
+    List<MusicListItem> getByMusicId(Long id);
 }

@@ -38,6 +38,15 @@ public class MusicListItemController {
         );
     }
 
+    @GetMapping("/{musicId}")
+    public ResponseEntity<Boolean> isMusicInAppUserList(@PathVariable("musicId") Long musicId) {
+
+        return new ResponseEntity<>(
+                this.musicListService.isMusicUsedInOtherList(musicId),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping
     public ResponseEntity<MusicListItemDTO> add(@RequestBody MusicListItemAddDTO musicListItemDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {

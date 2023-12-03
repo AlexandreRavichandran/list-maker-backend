@@ -74,7 +74,6 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         }
     }
 
-
     @Override
     public MovieListItem deleteById(Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
@@ -87,9 +86,21 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         this.movieListItemRepository.delete(itemToDelete);
 
         this.updateOrder(1L);
-        this.checkIfMovieUsedInOtherList(itemToDelete.getMovieId());
+
+        Boolean isMovieUsedInAnotherList = this.isMovieUsedInOtherList(itemToDelete.getMovieId());
+
+        if(Boolean.FALSE.equals(isMovieUsedInAnotherList)) {
+            this.deleteMovie(itemToDelete.getMovieId());
+        }
 
         return itemToDelete;
+    }
+
+    public Boolean isMovieUsedInOtherList(Long movieId) {
+        List<MovieListItem> movieListItems = this.movieListItemRepository.getByMovieId(movieId);
+
+        return Boolean.FALSE.equals(movieListItems.isEmpty());
+
     }
 
     private Integer getNextSortingOrder(Long appUserId) {
@@ -101,15 +112,6 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         }
 
         return 1;
-    }
-
-    private void checkIfMovieUsedInOtherList(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException {
-        List<MovieListItem> movieListItems = this.movieListItemRepository.getByMovieId(movieId);
-
-        if(Boolean.TRUE.equals(movieListItems.isEmpty())) {
-            this.deleteMovie(movieId);
-        }
-
     }
 
     private void deleteMovie(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException{

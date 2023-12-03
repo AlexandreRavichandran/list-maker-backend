@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
-import com.medialistmaker.list.dto.movie.MovieListItemDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.entityduplicationexception.CustomEntityDuplicationException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
@@ -26,8 +25,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -241,7 +238,7 @@ class MovieListItemControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/lists/movies/{musicId}",
+                                .delete("/api/lists/movies/{movieId}",
                                         1L
                                 )
                 )
@@ -250,5 +247,23 @@ class MovieListItemControllerTest {
                         status().isNotFound()
                 );
 
+    }
+
+    @Test
+    void givenExistingMovieIdWhenIsMovieInAppUserListShouldReturnBooleanAndReturn200() throws Exception {
+
+        Mockito.when(this.movieItemServiceImpl.isMovieUsedInOtherList(anyLong())).thenReturn(Boolean.TRUE);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/movies/{movieId}",
+                                        1L
+                                )
+
+                )
+                .andDo(print())
+                .andExpect(
+                        status().isOk()
+                );
     }
 }
