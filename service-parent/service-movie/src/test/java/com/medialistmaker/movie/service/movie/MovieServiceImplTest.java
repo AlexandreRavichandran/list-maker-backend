@@ -1,6 +1,6 @@
 package com.medialistmaker.movie.service.movie;
 
-import com.medialistmaker.movie.connector.OmdbConnectorProxy;
+import com.medialistmaker.movie.connector.omdb.OmdbConnectorProxy;
 import com.medialistmaker.movie.domain.Movie;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;

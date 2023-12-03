@@ -1,4 +1,4 @@
-package com.medialistmaker.movie.connector;
+package com.medialistmaker.movie.connector.omdb;
 
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;

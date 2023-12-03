@@ -1,10 +1,11 @@
 package com.medialistmaker.movie.connector;
 
+import com.medialistmaker.movie.connector.omdb.OmdbConnector;
+import com.medialistmaker.movie.connector.omdb.OmdbConnectorProxy;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListItemDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
-import jakarta.ws.rs.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
