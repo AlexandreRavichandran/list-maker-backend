@@ -2,6 +2,8 @@ package com.medialistmaker.music.controller.deezerapi;
 
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
+import com.medialistmaker.music.connector.list.ListConnectorProxy;
+import com.medialistmaker.music.domain.Music;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.ArtistElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
@@ -9,6 +11,8 @@ import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.item.AlbumSearchElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
+import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
+import com.medialistmaker.music.service.music.MusicServiceImpl;
 import com.medialistmaker.music.utils.MathUtils;
 import com.medialistmaker.music.utils.TimeCalculator;
 import org.junit.jupiter.api.Test;
@@ -38,7 +42,13 @@ class AlbumControllerTest {
     DeezerAlbumConnectorProxy albumConnectorProxy;
 
     @MockBean
+    ListConnectorProxy listConnectorProxy;
+
+    @MockBean
     MathUtils mathUtils;
+
+    @MockBean
+    MusicServiceImpl musicService;
 
     @MockBean
     TimeCalculator timeCalculator;
@@ -106,14 +116,14 @@ class AlbumControllerTest {
     }
 
     @Test
-    void givenApiCodeWhenGetByApiCodeShouldReturnRelatedAlbumElementAndReturn200() throws Exception {
+    void givenNonExistingApiCodeWhenGetByApiCodeShouldReturnRelatedAlbumElementWithAlreadyInListFieldFalseAndReturn200() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
         artist.setId("1");
         artist.setName("Artist");
 
         AlbumElementDTO album = new AlbumElementDTO();
-        album.setId("1");
+        album.setApiCode("1");
         album.setTitle("Album");
         album.setPictureUrl("test.com");
         album.setArtist(artist);
@@ -121,6 +131,10 @@ class AlbumControllerTest {
         Mockito
                 .when(this.albumConnectorProxy.getByApiCode(anyString()))
                 .thenReturn(album);
+
+        Mockito
+                .when(this.musicService.readByApiCode(anyString()))
+                .thenThrow(CustomNotFoundException.class);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
@@ -131,7 +145,51 @@ class AlbumControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id", equalTo(album.getId()))
+                        jsonPath("$.id", equalTo(album.getApiCode())),
+                        jsonPath("$.isAlreadyInList", equalTo(Boolean.FALSE))
+                );
+    }
+
+    @Test
+    void givenApiCodeWhenGetByApiCodeShouldReturnRelatedAlbumElementAndReturn200() throws Exception {
+
+        ArtistElementDTO artist = new ArtistElementDTO();
+        artist.setId("1");
+        artist.setName("Artist");
+
+        AlbumElementDTO album = new AlbumElementDTO();
+        album.setApiCode("1");
+        album.setTitle("Album");
+        album.setPictureUrl("test.com");
+        album.setArtist(artist);
+
+        Music music = new Music();
+        music.setId(1L);
+        music.setApiCode("XXX");
+
+        Mockito
+                .when(this.albumConnectorProxy.getByApiCode(anyString()))
+                .thenReturn(album);
+
+        Mockito
+                .when(this.musicService.readByApiCode(anyString()))
+                .thenReturn(music);
+
+        Mockito
+                .when(this.listConnectorProxy.isMusicIdAlreadyInList(1L))
+                .thenReturn(Boolean.TRUE);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get(
+                                        "/api/musics/deezerapi/albums/apicodes/{apicode}",
+                                        "test"
+                                )
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id", equalTo(album.getApiCode())),
+                        jsonPath("$.isAlreadyInList", equalTo(Boolean.TRUE))
                 );
     }
 
@@ -159,17 +217,17 @@ class AlbumControllerTest {
     void givenApiCodeWhenGetTrackListByApiCodeShouldReturnRelatedSongElementListAndReturn200() throws Exception {
 
         SongElementDTO firstElement = new SongElementDTO();
-        firstElement.setId("1");
+        firstElement.setApiCode("1");
         firstElement.setDuration(180);
         firstElement.setRank(995000);
 
         SongElementDTO secondElement = new SongElementDTO();
-        secondElement.setId("2");
+        secondElement.setApiCode("2");
         secondElement.setDuration(180);
         secondElement.setRank(994000);
 
         SongElementDTO thirdElement = new SongElementDTO();
-        thirdElement.setId("3");
+        thirdElement.setApiCode("3");
         thirdElement.setDuration(180);
         thirdElement.setRank(997000);
 

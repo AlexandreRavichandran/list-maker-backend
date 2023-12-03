@@ -2,20 +2,22 @@ package com.medialistmaker.music.controller.deezerapi;
 
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
+import com.medialistmaker.music.connector.list.ListConnectorProxy;
+import com.medialistmaker.music.domain.Music;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
+import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
+import com.medialistmaker.music.service.music.MusicServiceImpl;
 import com.medialistmaker.music.utils.MathUtils;
 import com.medialistmaker.music.utils.TimeCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static java.lang.Integer.parseInt;
 
 @RestController
 @RequestMapping("/api/musics/deezerapi/albums")
@@ -28,10 +30,16 @@ public class AlbumController {
     DeezerAlbumConnectorProxy albumConnectorProxy;
 
     @Autowired
+    ListConnectorProxy listConnectorProxy;
+
+    @Autowired
     TimeCalculator timeCalculator;
 
     @Autowired
     MathUtils mathUtils;
+
+    @Autowired
+    MusicServiceImpl musicService;
 
     @GetMapping
     public ResponseEntity<AlbumSearchListDTO> getByAlbumName(@RequestParam("name") String albumName)
@@ -48,7 +56,23 @@ public class AlbumController {
     public ResponseEntity<AlbumElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException {
 
-        return new ResponseEntity<>(this.albumConnectorProxy.getByApiCode(apiCode), HttpStatus.OK);
+        Boolean isAlreadyInList;
+
+        AlbumElementDTO albumElementDTO = this.albumConnectorProxy.getByApiCode(apiCode);
+
+        try {
+
+            Music music = this.musicService.readByApiCode(albumElementDTO.getApiCode());
+
+            isAlreadyInList = this.listConnectorProxy.isMusicIdAlreadyInList(music.getId());
+
+        } catch (CustomNotFoundException e) {
+            isAlreadyInList = Boolean.FALSE;
+        }
+
+        albumElementDTO.setIsAlreadyInList(isAlreadyInList);
+
+        return new ResponseEntity<>(albumElementDTO, HttpStatus.OK);
 
     }
 

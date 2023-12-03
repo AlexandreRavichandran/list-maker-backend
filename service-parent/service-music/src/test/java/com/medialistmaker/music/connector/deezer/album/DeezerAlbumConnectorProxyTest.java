@@ -34,7 +34,7 @@ class DeezerAlbumConnectorProxyTest {
         artist.setName("Artist");
 
         AlbumElementDTO album = new AlbumElementDTO();
-        album.setId("1L");
+        album.setApiCode("1L");
         album.setTitle("Album 1");
         album.setPictureUrl("test.com");
         album.setArtist(artist);
@@ -64,13 +64,13 @@ class DeezerAlbumConnectorProxyTest {
     void givenApiCodeWhenGetTrackListByApiCodeShouldReturnRelatedSongElementList() throws Exception {
 
         SongElementDTO firstElement = new SongElementDTO();
-        firstElement.setId("1");
+        firstElement.setApiCode("1");
 
         SongElementDTO secondElement = new SongElementDTO();
-        secondElement.setId("1");
+        secondElement.setApiCode("1");
 
         SongElementDTO thirdElement = new SongElementDTO();
-        thirdElement.setId("1");
+        thirdElement.setApiCode("1");
 
         TrackListDTO trackListDTO = new TrackListDTO();
         trackListDTO.setSongs(List.of(firstElement, secondElement, thirdElement));

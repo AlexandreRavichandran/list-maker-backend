@@ -39,4 +39,10 @@ public class AlbumElementDTO extends MusicElementDTO {
     public void setGenreList(GenreListDTO genreList) {
         this.genreList = genreList;
     }
+
+    @Override
+    @JsonProperty("id")
+    public void setApiCode(String apiCode) {
+        this.apiCode = apiCode;
+    }
 }

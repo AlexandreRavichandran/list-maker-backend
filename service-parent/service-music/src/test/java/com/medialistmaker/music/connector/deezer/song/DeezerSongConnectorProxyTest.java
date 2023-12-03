@@ -30,7 +30,7 @@ class DeezerSongConnectorProxyTest {
         artist.setName("Artist");
 
         SongElementDTO song = new SongElementDTO();
-        song.setId("1L");
+        song.setApiCode("1L");
         song.setTitle("Song 1");
         song.setDuration(180);
         song.setPreview("test.mp3");

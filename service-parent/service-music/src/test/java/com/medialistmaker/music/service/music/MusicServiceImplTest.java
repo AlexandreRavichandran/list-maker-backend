@@ -189,7 +189,7 @@ class MusicServiceImplTest {
         artistElementDTO.setName("Artist");
 
         AlbumElementDTO albumElementDTO = new AlbumElementDTO();
-        albumElementDTO.setId("0001");
+        albumElementDTO.setApiCode("0001");
         albumElementDTO.setTitle("Title");
         albumElementDTO.setPictureUrl("www.google.fr");
         albumElementDTO.setArtist(artistElementDTO);
@@ -210,7 +210,7 @@ class MusicServiceImplTest {
         Music testAddByApiCode = this.musicService.addByApiCode(1, "test");
 
         assertNotNull(testAddByApiCode);
-        assertEquals(albumElementDTO.getId(), testAddByApiCode.getApiCode());
+        assertEquals(albumElementDTO.getApiCode(), testAddByApiCode.getApiCode());
         assertEquals(MusicTypeConstant.TYPE_ALBUM, testAddByApiCode.getType());
         Mockito.verify(this.musicRepository).getByApiCode(anyString());
         Mockito.verify(this.albumConnectorProxy).getByApiCode(anyString());
@@ -225,7 +225,7 @@ class MusicServiceImplTest {
         artistElementDTO.setName("Artist");
 
         SongElementDTO songElementDTO = new SongElementDTO();
-        songElementDTO.setId("0001");
+        songElementDTO.setApiCode("0001");
         songElementDTO.setTitle("Title");
         songElementDTO.setPreview("www.google.fr");
         songElementDTO.setArtist(artistElementDTO);
@@ -245,7 +245,7 @@ class MusicServiceImplTest {
         Music testAddByApiCode = this.musicService.addByApiCode(2, "test");
 
         assertNotNull(testAddByApiCode);
-        assertEquals(songElementDTO.getId(), testAddByApiCode.getApiCode());
+        assertEquals(songElementDTO.getApiCode(), testAddByApiCode.getApiCode());
         assertEquals(MusicTypeConstant.TYPE_SONG, testAddByApiCode.getType());
         Mockito.verify(this.musicRepository).getByApiCode(anyString());
         Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());

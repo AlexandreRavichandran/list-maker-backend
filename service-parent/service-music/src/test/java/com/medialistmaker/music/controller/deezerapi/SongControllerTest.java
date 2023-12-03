@@ -105,7 +105,7 @@ class SongControllerTest {
         artist.setName("Artist");
 
         SongElementDTO song = new SongElementDTO();
-        song.setId("2L");
+        song.setApiCode("2L");
         song.setTitle("Song 2");
         song.setDuration(180);
         song.setPreview("test.mp3");
@@ -124,7 +124,7 @@ class SongControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id", equalTo(song.getId()))
+                        jsonPath("$.apiCode", equalTo(song.getApiCode()))
                 );
     }
 

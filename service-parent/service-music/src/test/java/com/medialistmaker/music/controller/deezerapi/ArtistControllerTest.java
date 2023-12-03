@@ -33,13 +33,13 @@ class ArtistControllerTest {
     void givenArtistIdWhenGetAlbumListByArtistIdShouldReturnRelatedAlbumListAndReturn200() throws Exception {
 
         AlbumElementDTO firstAlbum = new AlbumElementDTO();
-        firstAlbum.setId("1");
+        firstAlbum.setApiCode("1");
 
         AlbumElementDTO secondAlbum = new AlbumElementDTO();
-        secondAlbum.setId("2");
+        secondAlbum.setApiCode("2");
 
         AlbumElementDTO thirdAlbum = new AlbumElementDTO();
-        thirdAlbum.setId("3");
+        thirdAlbum.setApiCode("3");
 
         AlbumListDTO listDTO = new AlbumListDTO();
         listDTO.setAlbumList(List.of(firstAlbum, secondAlbum, thirdAlbum));

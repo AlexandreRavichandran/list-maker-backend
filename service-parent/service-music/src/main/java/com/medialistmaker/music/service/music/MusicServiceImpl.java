@@ -102,7 +102,7 @@ public class MusicServiceImpl implements MusicService {
 
         //TODO Find alternative
         Music music = this.modelMapper.map(musicElementDTO, Music.class);
-        music.setApiCode(musicElementDTO.getId());
+        music.setApiCode(musicElementDTO.getApiCode());
         music.setId(null);
         music.setType(type);
 
