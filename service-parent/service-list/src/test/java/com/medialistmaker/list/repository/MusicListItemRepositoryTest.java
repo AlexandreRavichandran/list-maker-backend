@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +25,8 @@ class MusicListItemRepositoryTest {
 
     @Autowired
     MusicListItemRepository musicListItemRepository;
+
+    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMusicListItemOrderedBySortingOrderAsc() {
@@ -143,5 +147,58 @@ class MusicListItemRepositoryTest {
 
         assertEquals(thirdMusicListItem, testGetLargestSortingNumber);
         assertEquals(3, testGetLargestSortingNumber.getSortingOrder());
+    }
+
+    @Test
+    void givenAppUserIdWhenGetTop3ByAppUserIdShouldReturnLastThreeLastAddedMusicListItem() throws ParseException {
+
+        MusicListItem firstMusicListItem = MusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("01-01-2023"))
+                .sortingOrder(1)
+                .build();
+
+        MusicListItem secondMusicListItem = MusicListItem
+                .builder()
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("02-01-2023"))
+                .sortingOrder(2)
+                .build();
+
+        MusicListItem thirdMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("03-01-2023"))
+                .sortingOrder(3)
+                .build();
+
+        MusicListItem fourthMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("04-01-2023"))
+                .sortingOrder(4)
+                .build();
+
+        List<MusicListItem> musicList = List.of(
+                firstMusicListItem,
+                secondMusicListItem,
+                thirdMusicListItem,
+                fourthMusicListItem
+        );
+
+        this.musicListItemRepository.saveAll(musicList);
+
+        List<MusicListItem> testGetLatestAddedMusicListItem =
+                this.musicListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(1L);
+
+        assertEquals(3, testGetLatestAddedMusicListItem.size());
+        assertEquals(fourthMusicListItem, testGetLatestAddedMusicListItem.get(0));
+        assertEquals(thirdMusicListItem, testGetLatestAddedMusicListItem.get(1));
+        assertEquals(secondMusicListItem, testGetLatestAddedMusicListItem.get(2));
     }
 }

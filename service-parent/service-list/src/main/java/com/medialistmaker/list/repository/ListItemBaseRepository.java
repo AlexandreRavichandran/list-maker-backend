@@ -13,4 +13,6 @@ public interface ListItemBaseRepository<A extends ListItem> {
     A getByAppUserIdAndSortingOrder(Long appUserId, Integer order);
 
     A getFirstByAppUserIdOrderBySortingOrderDesc(Long appUserId);
+
+    List<A> getTop3ByAppUserIdOrderByAddedAtDesc(Long appUserId);
 }

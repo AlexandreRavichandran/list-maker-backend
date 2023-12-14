@@ -39,6 +39,11 @@ public class MovieListItemServiceImpl implements MovieListItemService {
     }
 
     @Override
+    public List<MovieListItem> getLatestAddedByAppUserId(Long appUserId) {
+        return this.movieListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(appUserId);
+    }
+
+    @Override
     public MovieListItem add(MovieListItemAddDTO movieListItem)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {
 

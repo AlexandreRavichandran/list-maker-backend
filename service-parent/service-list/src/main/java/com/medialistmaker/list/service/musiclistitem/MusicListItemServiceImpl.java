@@ -33,6 +33,11 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     }
 
     @Override
+    public List<MusicListItem> getLatestAddedByAppUserId(Long appUserId) {
+        return this.musicListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(appUserId);
+    }
+
+    @Override
     public MusicListItem add(MusicListItemAddDTO listItemAddDTO) throws
             CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {
 

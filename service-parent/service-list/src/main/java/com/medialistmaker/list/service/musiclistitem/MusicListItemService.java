@@ -13,6 +13,8 @@ public interface MusicListItemService {
 
     List<MusicListItem> getByAppUserId(Long appUserId);
 
+    List<MusicListItem> getLatestAddedByAppUserId(Long appUserId);
+
     MusicListItem add(MusicListItemAddDTO listItemAddDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 

@@ -38,6 +38,19 @@ public class MusicListItemController {
         );
     }
 
+    @GetMapping("/latest")
+    public ResponseEntity<List<MusicListItemDTO>> getLatestAddedByAppUserId() {
+
+        return new ResponseEntity<>(
+                this.musicListService
+                        .getLatestAddedByAppUserId(1L)
+                        .stream()
+                        .map(listItem -> this.modelMapper.map(listItem, MusicListItemDTO.class))
+                        .toList(),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping("/{musicId}")
     public ResponseEntity<Boolean> isMusicInAppUserList(@PathVariable("musicId") Long musicId) {
 

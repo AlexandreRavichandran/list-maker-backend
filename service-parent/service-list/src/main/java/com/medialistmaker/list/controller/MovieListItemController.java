@@ -38,6 +38,19 @@ public class MovieListItemController {
         );
     }
 
+    @GetMapping("/latest")
+    public ResponseEntity<List<MovieListItemDTO>> getLatestAddedByAppUserId() {
+
+        return new ResponseEntity<>(
+                this.movieListService
+                        .getLatestAddedByAppUserId(1L)
+                        .stream()
+                        .map(listItem -> this.modelMapper.map(listItem, MovieListItemDTO.class))
+                        .toList(),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping("/{movieId}")
     public ResponseEntity<Boolean> isMovieInAppUserList(@PathVariable("movieId") Long movieId) {
 

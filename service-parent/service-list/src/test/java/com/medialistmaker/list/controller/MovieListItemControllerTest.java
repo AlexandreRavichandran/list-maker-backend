@@ -86,6 +86,49 @@ class MovieListItemControllerTest {
     }
 
     @Test
+    void givenAppUserIdWhenGetLatestAddedByAppUserIdShouldReturnRelatedMovieListItemAndReturn200() throws Exception {
+
+        MovieListItem firstMovieListItem = MovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MovieListItem secondMovieListItem = MovieListItem
+                .builder()
+                .movieId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MovieListItem thirdMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MovieListItem> movieListItemList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+
+        Mockito.when(this.movieItemServiceImpl.getLatestAddedByAppUserId(anyLong())).thenReturn(movieListItemList);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/movies/latest")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", hasSize(movieListItemList.size()))
+                );
+    }
+
+    @Test
     void givenMovieListItemAddWhenAddMovieListItemShouldSaveAndReturnMovieListItemAndReturn201() throws Exception {
 
         MovieListItem movieListItem = MovieListItem

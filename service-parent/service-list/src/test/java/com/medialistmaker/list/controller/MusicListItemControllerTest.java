@@ -86,6 +86,49 @@ class MusicListItemControllerTest {
     }
 
     @Test
+    void givenAppUserIdWhenGetLatestAddedByAppUserIdShouldReturnRelatedMusicListItemAndReturn200() throws Exception {
+
+        MusicListItem firstMusicListItem = MusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MusicListItem secondMusicListItem = MusicListItem
+                .builder()
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MusicListItem thirdMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MusicListItem> musicListItemList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+
+        Mockito.when(this.musicItemServiceImpl.getLatestAddedByAppUserId(anyLong())).thenReturn(musicListItemList);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/musics/latest")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", hasSize(musicListItemList.size()))
+                );
+    }
+
+    @Test
     void givenMusicListItemAddWhenAddMusicListItemShouldSaveAndReturnMusicListItemAndReturn201() throws Exception {
 
         MusicListItem musicListItem = MusicListItem

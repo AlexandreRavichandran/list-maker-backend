@@ -13,6 +13,8 @@ public interface MovieListItemService {
 
     List<MovieListItem> getByAppUserId(Long appUserId);
 
+    List<MovieListItem> getLatestAddedByAppUserId(Long appUserId);
+
     MovieListItem add(MovieListItemAddDTO movieListItemAdd)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 

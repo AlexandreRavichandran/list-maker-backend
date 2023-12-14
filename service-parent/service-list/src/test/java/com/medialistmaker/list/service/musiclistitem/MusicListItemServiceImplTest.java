@@ -74,6 +74,44 @@ class MusicListItemServiceImplTest {
     }
 
     @Test
+    void givenAppUserIdWhenGetLatestAddedByAppUserIdShouldReturnRelatedMusicListItemList() {
+
+        MusicListItem firstMusicListItem = MusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MusicListItem secondMusicListItem = MusicListItem
+                .builder()
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MusicListItem thirdMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MusicListItem> musicListItemList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+
+        Mockito.when(this.musicListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(anyLong())).thenReturn(musicListItemList);
+
+        List<MusicListItem> testGetByAppUserId = this.musicListService.getLatestAddedByAppUserId(1L);
+
+        Mockito.verify(this.musicListItemRepository).getTop3ByAppUserIdOrderByAddedAtDesc(anyLong());
+        assertEquals(3, testGetByAppUserId.size());
+        assertTrue(testGetByAppUserId.containsAll(musicListItemList));
+    }
+
+    @Test
     void givenMusicListItemAddWhenAddMusicListItemShouldSaveAndReturnMusicListItem()
             throws CustomBadRequestException, CustomNotFoundException,
             CustomEntityDuplicationException, ServiceNotAvailableException {

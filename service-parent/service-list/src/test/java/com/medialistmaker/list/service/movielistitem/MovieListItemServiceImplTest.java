@@ -9,7 +9,6 @@ import com.medialistmaker.list.exception.entityduplicationexception.CustomEntity
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.repository.MovieListItemRepository;
-import com.medialistmaker.list.utils.CustomEntityValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -71,6 +70,44 @@ class MovieListItemServiceImplTest {
         List<MovieListItem> testGetByAppUserId = this.movieListService.getByAppUserId(1L);
 
         Mockito.verify(this.movieListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        assertEquals(3, testGetByAppUserId.size());
+        assertTrue(testGetByAppUserId.containsAll(movieListItemList));
+    }
+
+    @Test
+    void givenAppUserIdWhenGetLatestAddedByAppUserIdShouldReturnRelatedMovieListItemList() {
+
+        MovieListItem firstMovieListItem = MovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MovieListItem secondMovieListItem = MovieListItem
+                .builder()
+                .movieId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MovieListItem thirdMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MovieListItem> movieListItemList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+
+        Mockito.when(this.movieListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(anyLong())).thenReturn(movieListItemList);
+
+        List<MovieListItem> testGetByAppUserId = this.movieListService.getLatestAddedByAppUserId(1L);
+
+        Mockito.verify(this.movieListItemRepository).getTop3ByAppUserIdOrderByAddedAtDesc(anyLong());
         assertEquals(3, testGetByAppUserId.size());
         assertTrue(testGetByAppUserId.containsAll(movieListItemList));
     }

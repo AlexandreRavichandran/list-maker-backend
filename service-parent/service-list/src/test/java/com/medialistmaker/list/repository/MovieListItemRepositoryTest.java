@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +25,8 @@ class MovieListItemRepositoryTest {
 
     @Autowired
     MovieListItemRepository movieListItemRepository;
+
+    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMovieListItemOrderedBySortingOrderAsc() {
@@ -146,5 +150,58 @@ class MovieListItemRepositoryTest {
         assertEquals(thirdMovieListItem, testGetLargestSortingNumber);
         assertEquals(3, testGetLargestSortingNumber.getSortingOrder());
 
+    }
+
+    @Test
+    void givenAppUserIdWhenGetTop3ByAppUserIdShouldReturnLastThreeLastAddedMusicListItem() throws ParseException {
+
+        MovieListItem firstMovieListItem = MovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("01-01-2023"))
+                .sortingOrder(1)
+                .build();
+
+        MovieListItem secondMovieListItem = MovieListItem
+                .builder()
+                .movieId(2L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("02-01-2023"))
+                .sortingOrder(2)
+                .build();
+
+        MovieListItem thirdMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("03-01-2023"))
+                .sortingOrder(3)
+                .build();
+
+        MovieListItem fourthMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(this.format.parse("04-01-2023"))
+                .sortingOrder(3)
+                .build();
+
+        List<MovieListItem> musicList = List.of(
+                firstMovieListItem,
+                secondMovieListItem,
+                thirdMovieListItem,
+                fourthMovieListItem
+        );
+
+        this.movieListItemRepository.saveAll(musicList);
+
+        List<MovieListItem> testGetLatestAddedMovieListItem =
+                this.movieListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(1L);
+
+        assertEquals(3, testGetLatestAddedMovieListItem.size());
+        assertEquals(fourthMovieListItem, testGetLatestAddedMovieListItem.get(0));
+        assertEquals(thirdMovieListItem, testGetLatestAddedMovieListItem.get(1));
+        assertEquals(secondMovieListItem, testGetLatestAddedMovieListItem.get(2));
     }
 }
