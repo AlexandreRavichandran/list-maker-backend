@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -36,9 +37,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public List<Movie> browseByIds(List<Long> movieIds) {
+        List<Movie> movieList =  this.movieRepository.getByIds(movieIds);
 
-        return this.movieRepository.getByIds(movieIds);
+        movieList.sort(Comparator.comparingInt(movie -> movieIds.indexOf(movie.getId())));
 
+        return movieList;
     }
 
     @Override

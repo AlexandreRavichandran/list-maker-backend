@@ -17,6 +17,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,7 +57,7 @@ class MovieServiceImplTest {
                 .apiCode("MOVIE2")
                 .build();
 
-        List<Movie> movieList = List.of(firstMovie, secondMovie);
+        List<Movie> movieList = new ArrayList<>(List.of(firstMovie, secondMovie));
 
         Mockito.when(this.movieRepository.getByIds(anyList())).thenReturn(movieList);
 
