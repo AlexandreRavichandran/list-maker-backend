@@ -1,5 +1,6 @@
 package com.medialistmaker.music.repository;
 
+import com.medialistmaker.music.constant.MusicTypeConstant;
 import com.medialistmaker.music.domain.Music;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,7 +116,7 @@ class MusicRepositoryTest {
 
         this.musicRepository.saveAll(musicList);
 
-        Music testGetByApiCode = this.musicRepository.getByApiCode(firstMusic.getApiCode());
+        Music testGetByApiCode = this.musicRepository.getByApiCodeAndType(firstMusic.getApiCode(), MusicTypeConstant.TYPE_ALBUM);
 
         assertNotNull(testGetByApiCode);
         assertEquals(firstMusic.getId(), testGetByApiCode.getId());

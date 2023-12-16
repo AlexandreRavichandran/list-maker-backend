@@ -21,6 +21,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,6 +53,7 @@ class MusicServiceImplTest {
 
         Music firstMusic = Music
                 .builder()
+                .id(1L)
                 .title("First music")
                 .artistName("Artist 1")
                 .type(1)
@@ -62,6 +64,7 @@ class MusicServiceImplTest {
 
         Music secondMusic = Music
                 .builder()
+                .id(2L)
                 .title("Second music")
                 .artistName("Artist 2")
                 .type(1)
@@ -70,7 +73,7 @@ class MusicServiceImplTest {
                 .releasedAt(2002)
                 .build();
 
-        List<Music> musicList = List.of(firstMusic, secondMusic);
+        List<Music> musicList = new ArrayList<>(List.of(firstMusic, secondMusic));
 
         Mockito.when(this.musicRepository.getByIds(anyList())).thenReturn(musicList);
 
@@ -162,23 +165,23 @@ class MusicServiceImplTest {
                 .releasedAt(2000)
                 .build();
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(music);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(music);
 
-        Music testReadByApiCode = this.musicService.readByApiCode(music.getApiCode());
+        Music testReadByApiCode = this.musicService.readByApiCodeAndType(music.getApiCode(), 1);
 
         assertNotNull(testReadByApiCode);
         assertEquals(music, testReadByApiCode);
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
 
     }
 
     @Test
     void givenInvalidApiCodeWhenReadByApiCodeShouldThrowNotFoundException() {
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
 
-        assertThrows(CustomNotFoundException.class, () -> this.musicService.readByApiCode("test"));
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        assertThrows(CustomNotFoundException.class, () -> this.musicService.readByApiCodeAndType("test", 1));
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
     }
 
     @Test
@@ -203,7 +206,7 @@ class MusicServiceImplTest {
                 .pictureUrl("www.google.fr")
                 .build();
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
         Mockito.when(this.albumConnectorProxy.getByApiCode(anyString())).thenReturn(albumElementDTO);
         Mockito.when(this.musicRepository.save(music)).thenReturn(music);
 
@@ -212,7 +215,7 @@ class MusicServiceImplTest {
         assertNotNull(testAddByApiCode);
         assertEquals(albumElementDTO.getApiCode(), testAddByApiCode.getApiCode());
         assertEquals(MusicTypeConstant.TYPE_ALBUM, testAddByApiCode.getType());
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.albumConnectorProxy).getByApiCode(anyString());
         Mockito.verify(this.musicRepository).save(music);
     }
@@ -238,7 +241,7 @@ class MusicServiceImplTest {
                 .apiCode("0001")
                 .build();
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
         Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenReturn(songElementDTO);
         Mockito.when(this.musicRepository.save(music)).thenReturn(music);
 
@@ -247,7 +250,7 @@ class MusicServiceImplTest {
         assertNotNull(testAddByApiCode);
         assertEquals(songElementDTO.getApiCode(), testAddByApiCode.getApiCode());
         assertEquals(MusicTypeConstant.TYPE_SONG, testAddByApiCode.getType());
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());
         Mockito.verify(this.musicRepository).save(music);
     }
@@ -263,44 +266,44 @@ class MusicServiceImplTest {
                 .apiCode("0001")
                 .build();
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(music);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(music);
 
         Music testAddByApiCode = this.musicService.addByApiCode(2, "test");
 
         assertNotNull(testAddByApiCode);
         assertEquals(music.getApiCode(), testAddByApiCode.getApiCode());
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
     }
 
     @Test
     void givenInvalidApiCodeAndTypeWhenAddByApiCodeShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
         Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenReturn(null);
 
         assertThrows(CustomBadRequestException.class, () -> this.musicService.addByApiCode(2, "test"));
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());
     }
 
     @Test
     void givenApiCodeAndInvalidTypeWhenAddByApiCodeShouldThrowBadRequestException() {
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
 
         assertThrows(CustomBadRequestException.class, () -> this.musicService.addByApiCode(5, "test"));
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
 
     }
 
     @Test
     void givenApiCodeAndTypeWhenAddByApiCodeAndServiceNotAvailableShouldThrowServiceNotAvailableException() throws Exception  {
 
-        Mockito.when(this.musicRepository.getByApiCode(anyString())).thenReturn(null);
+        Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
         Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
 
         assertThrows(ServiceNotAvailableException.class, () -> this.musicService.addByApiCode(2, "test"));
-        Mockito.verify(this.musicRepository).getByApiCode(anyString());
+        Mockito.verify(this.musicRepository).getByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.songConnectorProxy).getByApiCode(anyString());
 
     }

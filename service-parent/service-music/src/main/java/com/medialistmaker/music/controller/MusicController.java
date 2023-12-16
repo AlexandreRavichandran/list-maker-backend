@@ -58,11 +58,11 @@ public class MusicController {
     }
 
     @GetMapping("/apicode/{apicode}")
-    public ResponseEntity<MusicDTO> readByApiCode(@PathVariable("apicode") String apiCode)
+    public ResponseEntity<MusicDTO> readByApiCode(@PathVariable("apicode") String apiCode, @RequestParam("type") Integer type)
             throws CustomNotFoundException {
 
         return new ResponseEntity<>(
-                this.modelMapper.map(this.musicService.readByApiCode(apiCode), MusicDTO.class),
+                this.modelMapper.map(this.musicService.readByApiCodeAndType(apiCode, type), MusicDTO.class),
                 HttpStatus.OK
         );
 

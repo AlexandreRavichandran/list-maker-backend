@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class AlbumElementDTO extends MusicElementDTO {
 
     private String pictureUrl;
 
-    private String releaseDate;
+    private String releasedAt;
 
     private ArtistElementDTO artist;
 
@@ -28,9 +29,9 @@ public class AlbumElementDTO extends MusicElementDTO {
         return pictureUrl;
     }
 
-    @JsonProperty("releaseDate")
-    public String getReleaseDate() {
-        return releaseDate;
+    @JsonProperty("releasedAt")
+    public String getReleasedAt() {
+        return releasedAt;
     }
 
     @JsonProperty("cover_xl")
@@ -39,8 +40,9 @@ public class AlbumElementDTO extends MusicElementDTO {
     }
 
     @JsonProperty("release_date")
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setReleasedAt(String releasedAt) {
+        LocalDate date = LocalDate.parse(releasedAt);
+        this.releasedAt = String.valueOf(date.getYear());
     }
 
     @JsonProperty("genreList")

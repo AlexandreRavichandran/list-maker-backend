@@ -133,7 +133,7 @@ class AlbumControllerTest {
                 .thenReturn(album);
 
         Mockito
-                .when(this.musicService.readByApiCode(anyString()))
+                .when(this.musicService.readByApiCodeAndType(anyString(), anyInt()))
                 .thenThrow(CustomNotFoundException.class);
 
         this.mockMvc.perform(
@@ -142,10 +142,11 @@ class AlbumControllerTest {
                                         "/api/musics/deezerapi/albums/apicodes/{apicode}",
                                         "test"
                                 )
+                                .param("type", "1")
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id", equalTo(album.getApiCode())),
+                        jsonPath("$.apiCode", equalTo(album.getApiCode())),
                         jsonPath("$.isAlreadyInList", equalTo(Boolean.FALSE))
                 );
     }
@@ -172,7 +173,7 @@ class AlbumControllerTest {
                 .thenReturn(album);
 
         Mockito
-                .when(this.musicService.readByApiCode(anyString()))
+                .when(this.musicService.readByApiCodeAndType(anyString(), anyInt()))
                 .thenReturn(music);
 
         Mockito
@@ -185,10 +186,11 @@ class AlbumControllerTest {
                                         "/api/musics/deezerapi/albums/apicodes/{apicode}",
                                         "test"
                                 )
+                                .param("type", "1")
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id", equalTo(album.getApiCode())),
+                        jsonPath("$.apiCode", equalTo(album.getApiCode())),
                         jsonPath("$.isAlreadyInList", equalTo(Boolean.TRUE))
                 );
     }
@@ -232,7 +234,7 @@ class AlbumControllerTest {
         thirdElement.setRank(997000);
 
         TrackListDTO trackListDTO = new TrackListDTO();
-        trackListDTO.setSongs(List.of(firstElement, secondElement, thirdElement));
+        trackListDTO.setSongList(List.of(firstElement, secondElement, thirdElement));
 
         Mockito
                 .when(this.albumConnectorProxy.getTrackListByAlbumApiCode(anyString()))
@@ -250,7 +252,7 @@ class AlbumControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.data", hasSize(trackListDTO.getSongs().size()))
+                        jsonPath("$.data", hasSize(trackListDTO.getSongList().size()))
                 );
     }
 

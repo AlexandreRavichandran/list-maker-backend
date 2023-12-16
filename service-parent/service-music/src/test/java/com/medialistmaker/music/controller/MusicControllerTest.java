@@ -180,12 +180,13 @@ class MusicControllerTest {
                 .releasedAt(2000)
                 .build();
 
-        Mockito.when(this.musicService.readByApiCode(anyString())).thenReturn(music);
+        Mockito.when(this.musicService.readByApiCodeAndType(anyString(), anyInt())).thenReturn(music);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/musics/apicode/{apicode}",
                                         "MUSIC")
+                                .param("type", "1")
                 )
                 .andDo(print())
                 .andExpectAll(
@@ -198,12 +199,13 @@ class MusicControllerTest {
     @Test
     void givenInvalidApiCodeWhenReadByApiCodeShouldReturn404() throws Exception {
 
-        Mockito.when(this.musicService.readByApiCode(anyString())).thenThrow(new CustomNotFoundException("Error"));
+        Mockito.when(this.musicService.readByApiCodeAndType(anyString(), anyInt())).thenThrow(new CustomNotFoundException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/musics/apicode/{apicode}",
                                         "test")
+                                .param("type", "1")
                 )
                 .andDo(print())
                 .andExpect(

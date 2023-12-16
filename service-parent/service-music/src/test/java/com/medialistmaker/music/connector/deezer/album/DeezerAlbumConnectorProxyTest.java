@@ -73,7 +73,7 @@ class DeezerAlbumConnectorProxyTest {
         thirdElement.setApiCode("1");
 
         TrackListDTO trackListDTO = new TrackListDTO();
-        trackListDTO.setSongs(List.of(firstElement, secondElement, thirdElement));
+        trackListDTO.setSongList(List.of(firstElement, secondElement, thirdElement));
 
         Mockito.when(this.deezerAlbumConnector.getTrackListByAlbumApiCode(anyString())).thenReturn(trackListDTO);
 

@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -42,7 +43,12 @@ public class MusicServiceImpl implements MusicService {
 
     @Override
     public List<Music> browseByIds(List<Long> musicIds) {
-        return this.musicRepository.getByIds(musicIds);
+
+        List<Music> musicList = this.musicRepository.getByIds(musicIds);
+
+        musicList.sort(Comparator.comparingInt(music -> musicIds.indexOf(music.getId())));
+
+        return musicList;
     }
 
     @Override
@@ -65,9 +71,9 @@ public class MusicServiceImpl implements MusicService {
     }
 
     @Override
-    public Music readByApiCode(String apiCode) throws CustomNotFoundException {
+    public Music readByApiCodeAndType(String apiCode, Integer type) throws CustomNotFoundException {
 
-        Music music = this.musicRepository.getByApiCode(apiCode);
+        Music music = this.musicRepository.getByApiCodeAndType(apiCode, type);
 
         if(isNull(music)) {
             log.error("Music with api code {} not found", apiCode);
@@ -84,7 +90,7 @@ public class MusicServiceImpl implements MusicService {
             throws CustomBadRequestException, ServiceNotAvailableException {
         MusicElementDTO musicElementDTO;
 
-        Music isMovieAlreadyExist = this.musicRepository.getByApiCode(apiCode);
+        Music isMovieAlreadyExist = this.musicRepository.getByApiCodeAndType(apiCode, type);
 
         if(nonNull(isMovieAlreadyExist)) {
             return isMovieAlreadyExist;

@@ -16,5 +16,5 @@ public interface MusicRepository extends JpaRepository<Music, Long> {
     @Query("SELECT m FROM Music m WHERE m.id IN(:musicIds)")
     List<Music> getByIds(@Param("musicIds") List<Long> musicIds);
 
-    Music getByApiCode(String apiCode);
+    Music getByApiCodeAndType(String apiCode, Integer type);
 }

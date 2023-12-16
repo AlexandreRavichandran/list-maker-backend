@@ -15,7 +15,7 @@ public interface MusicService {
 
     Music readById(Long musicId) throws CustomNotFoundException;
 
-    Music readByApiCode(String apiCode) throws CustomNotFoundException;
+    Music readByApiCodeAndType(String apiCode, Integer type) throws CustomNotFoundException;
 
     Music addByApiCode(Integer type, String apiCode) throws CustomBadRequestException, ServiceNotAvailableException;
 

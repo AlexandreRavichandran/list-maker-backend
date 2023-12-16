@@ -9,7 +9,7 @@ import java.util.List;
 public class TrackListDTO {
 
     @JsonProperty("data")
-    private List<SongElementDTO> songs;
+    private List<SongElementDTO> songList;
 
     private String totalDuration;
 

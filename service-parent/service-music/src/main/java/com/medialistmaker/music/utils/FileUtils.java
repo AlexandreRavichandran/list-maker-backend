@@ -41,7 +41,7 @@ public class FileUtils {
             return files[0];
         } else {
             Random random = new Random();
-            return files[random.nextInt(files.length - 1)];
+            return files[random.nextInt(files.length)];
         }
     }
 }

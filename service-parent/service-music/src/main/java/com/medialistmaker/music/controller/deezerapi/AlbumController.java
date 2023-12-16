@@ -3,6 +3,7 @@ package com.medialistmaker.music.controller.deezerapi;
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
 import com.medialistmaker.music.connector.list.ListConnectorProxy;
+import com.medialistmaker.music.constant.MusicTypeConstant;
 import com.medialistmaker.music.domain.Music;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
@@ -62,7 +63,7 @@ public class AlbumController {
 
         try {
 
-            Music music = this.musicService.readByApiCode(albumElementDTO.getApiCode());
+            Music music = this.musicService.readByApiCodeAndType(albumElementDTO.getApiCode(), MusicTypeConstant.TYPE_ALBUM);
 
             isAlreadyInList = this.listConnectorProxy.isMusicIdAlreadyInList(music.getId());
 
@@ -82,8 +83,8 @@ public class AlbumController {
 
         TrackListDTO trackListDTO = this.albumConnectorProxy.getTrackListByAlbumApiCode(apiCode);
 
-        int totalSongDurationInSeconds = trackListDTO.getSongs().stream().mapToInt(SongElementDTO::getDuration).sum();
-        Integer averageAlbumPopularity = this.mathUtils.calculateAverageOfList(trackListDTO.getSongs().stream().mapToInt(SongElementDTO::getRank).toArray());
+        int totalSongDurationInSeconds = trackListDTO.getSongList().stream().mapToInt(SongElementDTO::getDuration).sum();
+        Integer averageAlbumPopularity = this.mathUtils.calculateAverageOfList(trackListDTO.getSongList().stream().mapToInt(SongElementDTO::getRank).toArray());
 
         trackListDTO.setTotalDuration(this.timeCalculator.formatSecondsToHourMinutesAndSeconds(totalSongDurationInSeconds));
         trackListDTO.setAlbumPopularityRate(((averageAlbumPopularity/1000000D) * 100));
