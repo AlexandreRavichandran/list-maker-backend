@@ -13,16 +13,13 @@ public class MusicConnectorProxy {
     @Autowired
     MusicConnector musicConnector;
 
+    public MusicDTO getMusicByApiCodeAndType(String apiCode, Integer type)
+            throws CustomNotFoundException, ServiceNotAvailableException {
+        return this.musicConnector.getMusicByApiCodeAndType(apiCode, type);
+    }
+
     public MusicDTO saveByApiCode(Integer type, String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
         return this.musicConnector.saveByApiCode(type, apiCode);
-    }
-
-    public MusicDTO getAlbumByApiCode(String apiCode) throws CustomNotFoundException, ServiceNotAvailableException {
-        return this.musicConnector.getAlbumByApiCode(apiCode);
-    }
-
-    public MusicDTO getSongByApiCode(String apiCode) throws CustomNotFoundException, ServiceNotAvailableException {
-        return this.musicConnector.getSongByApiCode(apiCode);
     }
 
     public MusicDTO deleteById(Long id) throws CustomNotFoundException, ServiceNotAvailableException {

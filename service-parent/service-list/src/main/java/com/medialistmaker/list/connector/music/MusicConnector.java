@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(name = "music", path = "/api/musics")
 public interface MusicConnector {
 
-    @GetMapping("/deezerapi/albums/apicodes/{apicode}")
-    MusicDTO getAlbumByApiCode(@PathVariable("apicode") String apiCode) throws CustomNotFoundException, ServiceNotAvailableException;
-
-    @GetMapping("/deezerapi/songs/apicodes/{apicode}")
-    MusicDTO getSongByApiCode(@PathVariable("apicode") String apiCode) throws CustomNotFoundException, ServiceNotAvailableException;
+    @GetMapping("/apicodes/{apicode}")
+    MusicDTO getMusicByApiCodeAndType(@PathVariable("apicode") String apiCode, @RequestParam("type") Integer type)
+            throws CustomNotFoundException, ServiceNotAvailableException;
 
     @PostMapping("/apicodes/{apicode}")
     MusicDTO saveByApiCode(@RequestParam("type") Integer type, @PathVariable("apicode") String apiCode)

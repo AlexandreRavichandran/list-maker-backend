@@ -47,29 +47,19 @@ public class MovieListItemServiceImpl implements MovieListItemService {
     public MovieListItem add(MovieListItemAddDTO movieListItem)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {
 
-        MovieDTO movieToAdd;
-
         try {
-            movieToAdd = this.movieConnectorProxy.getByApiCode(movieListItem.getApiCode());
+            MovieDTO movieToAdd = this.movieConnectorProxy.getByApiCode(movieListItem.getApiCode());
+
+            if (Boolean.TRUE.equals(this.isMovieAlreadyInAppUserList(1L, movieToAdd.getId()))) {
+                throw new CustomEntityDuplicationException("Already exists");
+            }
+
         } catch (CustomNotFoundException e) {
-            throw new CustomBadRequestException("Movie not exists");
+            log.info("Movie not exist yet");
         }
 
-        MovieListItem isMovieAlreadyInAppUserList =
-                this.movieListItemRepository.getByAppUserIdAndMovieId(
-                        1L, movieToAdd.getId()
-                );
+        MovieListItem movieListItemToAdd = this.createMovieListItem(1L);
 
-        if (nonNull(isMovieAlreadyInAppUserList)) {
-            throw new CustomEntityDuplicationException("Already exists");
-        }
-
-        MovieListItem movieListItemToAdd = MovieListItem
-                .builder()
-                .appUserId(1L)
-                .sortingOrder(this.getNextSortingOrder(1L))
-                .addedAt(new Date())
-                .build();
         try {
             MovieDTO movieDTO = this.movieConnectorProxy.saveByApiCode(movieListItem.getApiCode());
             movieListItemToAdd.setMovieId(movieDTO.getId());
@@ -136,6 +126,24 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         }
 
         this.movieListItemRepository.saveAll(movieListItems);
+
+    }
+
+    private Boolean isMovieAlreadyInAppUserList(Long appUserId, Long movieId) {
+
+        MovieListItem movieListItem = this.movieListItemRepository.getByAppUserIdAndMovieId(appUserId, movieId);
+
+        return nonNull(movieListItem);
+    }
+
+    private MovieListItem createMovieListItem(Long appUserId) {
+
+        return MovieListItem
+                .builder()
+                .appUserId(appUserId)
+                .sortingOrder(this.getNextSortingOrder(1L))
+                .addedAt(new Date())
+                .build();
 
     }
 }

@@ -9,6 +9,7 @@ import com.medialistmaker.list.exception.entityduplicationexception.CustomEntity
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.repository.MusicListItemRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
+@Slf4j
 public class MusicListItemServiceImpl implements MusicListItemService {
 
     @Autowired
@@ -41,35 +43,22 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     public MusicListItem add(MusicListItemAddDTO listItemAddDTO) throws
             CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {
 
-        MusicDTO musicToAdd;
-
         try {
-            if(listItemAddDTO.getType().equals(1)) {
-                musicToAdd = this.musicConnectorProxy.getAlbumByApiCode(listItemAddDTO.getApiCode());
-            } else if(listItemAddDTO.getType().equals(2)) {
-                musicToAdd = this.musicConnectorProxy.getSongByApiCode(listItemAddDTO.getApiCode());
-            } else {
-                throw new CustomBadRequestException("Bad type");
+
+            MusicDTO musicToAdd = this.musicConnectorProxy.getMusicByApiCodeAndType(
+                    listItemAddDTO.getApiCode(), listItemAddDTO.getType()
+            );
+
+            if (Boolean.TRUE.equals(this.isMusicAlreadyInAppUserList(musicToAdd.getId(), 1L))) {
+                throw new CustomEntityDuplicationException("Already exists");
             }
+
         } catch (CustomNotFoundException e) {
-            throw new CustomBadRequestException("Movie not exists");
+            log.info("Music does not exist yet");
         }
 
-        MusicListItem isMusicAlreadyInAppUserList =
-                this.musicListItemRepository.getByAppUserIdAndMusicId(
-                        1L, musicToAdd.getId()
-                );
+        MusicListItem musicListItemToAdd = this.createMusicListItem(1L);
 
-        if (nonNull(isMusicAlreadyInAppUserList)) {
-            throw new CustomEntityDuplicationException("Already exists");
-        }
-
-        MusicListItem musicListItemToAdd = MusicListItem
-                .builder()
-                .appUserId(1L)
-                .sortingOrder(this.getNextSortingOrder(1L))
-                .addedAt(new Date())
-                .build();
         try {
             MusicDTO musicDTO = this.musicConnectorProxy.saveByApiCode(listItemAddDTO.getType(), listItemAddDTO.getApiCode());
             musicListItemToAdd.setMusicId(musicDTO.getId());
@@ -136,5 +125,24 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.saveAll(musicListItems);
 
+    }
+
+    private Boolean isMusicAlreadyInAppUserList(Long musicId, Long appUserId) {
+
+        MusicListItem isMusicAlreadyInAppUserList =
+                this.musicListItemRepository.getByAppUserIdAndMusicId(
+                        appUserId, musicId
+                );
+
+        return nonNull(isMusicAlreadyInAppUserList);
+    }
+
+    private MusicListItem createMusicListItem(Long appUserId) {
+        return MusicListItem
+                .builder()
+                .appUserId(appUserId)
+                .sortingOrder(this.getNextSortingOrder(1L))
+                .addedAt(new Date())
+                .build();
     }
 }

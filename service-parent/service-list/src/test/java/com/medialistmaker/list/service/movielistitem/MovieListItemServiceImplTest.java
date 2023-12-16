@@ -144,28 +144,6 @@ class MovieListItemServiceImplTest {
     }
 
     @Test
-    void givenMovieListItemAddWithInvalidApiCodeWhenAddMovieListItemShouldThrowBadRequestException() throws Exception {
-
-        MovieListItemAddDTO listItemAddDTO = new MovieListItemAddDTO();
-        listItemAddDTO.setApiCode("XXXX");
-
-        MovieDTO movieDTO = new MovieDTO();
-        movieDTO.setId(1L);
-
-        MovieListItem movieListItem = new MovieListItem();
-        movieListItem.setMovieId(movieDTO.getId());
-        movieListItem.setAppUserId(1L);
-
-
-        Mockito.when(this.movieConnectorProxy.getByApiCode(anyString())).thenThrow(CustomNotFoundException.class);
-
-        assertThrows(CustomBadRequestException.class, () -> this.movieListService.add(listItemAddDTO));
-
-        Mockito.verify(this.movieConnectorProxy).getByApiCode(anyString());
-
-    }
-
-    @Test
     void givenMovieListItemAddWithAlreadyExistingMovieIdWhenAddMovieListItemShouldThrowEntityDuplicationException() throws Exception {
 
         MovieListItemAddDTO listItemAddDTO = new MovieListItemAddDTO();

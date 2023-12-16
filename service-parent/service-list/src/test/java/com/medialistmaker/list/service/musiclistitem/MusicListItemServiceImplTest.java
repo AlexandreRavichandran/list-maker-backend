@@ -21,7 +21,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class MusicListItemServiceImplTest {
@@ -128,37 +127,19 @@ class MusicListItemServiceImplTest {
         musicListItem.setAppUserId(1L);
 
 
-        Mockito.when(this.musicConnectorProxy.getAlbumByApiCode(anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
         Mockito.when(this.musicConnectorProxy.saveByApiCode(anyInt(), anyString())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.save(any())).thenReturn(musicListItem);
 
         MusicListItem testAddMusicListItem = this.musicListService.add(listItemAddDTO);
 
-        Mockito.verify(this.musicConnectorProxy).getAlbumByApiCode(anyString());
+        Mockito.verify(this.musicConnectorProxy).getMusicByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
         Mockito.verify(this.musicConnectorProxy).saveByApiCode(anyInt(), anyString());
         Mockito.verify(this.musicListItemRepository).save(any());
 
         assertEquals(musicDTO.getId(),testAddMusicListItem.getMusicId());
-    }
-
-    @Test
-    void givenMusicListItemAddWithInvalidApiCodeWhenAddMusicListItemShouldThrowBadRequestException() throws Exception {
-
-        MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
-        listItemAddDTO.setApiCode("XXXX");
-        listItemAddDTO.setType(2);
-
-        MusicDTO musicDTO = new MusicDTO();
-        musicDTO.setId(1L);
-
-        Mockito.when(this.musicConnectorProxy.getSongByApiCode(anyString())).thenThrow(CustomNotFoundException.class);
-
-        assertThrows(CustomBadRequestException.class, () -> this.musicListService.add(listItemAddDTO));
-
-        Mockito.verify(this.musicConnectorProxy).getSongByApiCode(anyString());
-
     }
 
     @Test
@@ -175,12 +156,12 @@ class MusicListItemServiceImplTest {
         musicListItem.setMusicId(musicDTO.getId());
         musicListItem.setAppUserId(1L);
 
-        Mockito.when(this.musicConnectorProxy.getAlbumByApiCode(anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(musicListItem);
 
         assertThrows(CustomEntityDuplicationException.class, () -> this.musicListService.add(listItemAddDTO));
 
-        Mockito.verify(this.musicConnectorProxy).getAlbumByApiCode(anyString());
+        Mockito.verify(this.musicConnectorProxy).getMusicByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
 
 
@@ -200,13 +181,13 @@ class MusicListItemServiceImplTest {
         musicListItem.setMusicId(musicDTO.getId());
         musicListItem.setAppUserId(1L);
 
-        Mockito.when(this.musicConnectorProxy.getSongByApiCode(anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
         Mockito.when(this.musicConnectorProxy.saveByApiCode(anyInt(), anyString())).thenThrow(ServiceNotAvailableException.class);
 
         assertThrows(ServiceNotAvailableException.class, () -> this.musicListService.add(listItemAddDTO));
 
-        Mockito.verify(this.musicConnectorProxy).getSongByApiCode(anyString());
+        Mockito.verify(this.musicConnectorProxy).getMusicByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
         Mockito.verify(this.musicConnectorProxy).saveByApiCode(anyInt(), anyString());
     }
