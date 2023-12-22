@@ -2,6 +2,7 @@ package com.medialistmaker.list.service.movielistitem;
 
 import com.medialistmaker.list.connector.movie.MovieConnectorProxy;
 import com.medialistmaker.list.domain.MovieListItem;
+import com.medialistmaker.list.dto.movie.MovieAddDTO;
 import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
@@ -19,10 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class MovieListItemServiceImplTest {
@@ -118,7 +117,7 @@ class MovieListItemServiceImplTest {
             CustomEntityDuplicationException, ServiceNotAvailableException {
 
         MovieListItemAddDTO listItemAddDTO = new MovieListItemAddDTO();
-        listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setApiCode("XXX");
 
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setId(1L);
@@ -127,17 +126,19 @@ class MovieListItemServiceImplTest {
         movieListItem.setMovieId(movieDTO.getId());
         movieListItem.setAppUserId(1L);
 
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXX");
 
         Mockito.when(this.movieConnectorProxy.getByApiCode(anyString())).thenReturn(movieDTO);
         Mockito.when(this.movieListItemRepository.getByAppUserIdAndMovieId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.movieConnectorProxy.saveByApiCode(anyString())).thenReturn(movieDTO);
+        Mockito.when(this.movieConnectorProxy.saveByApiCode(movieAddDTO)).thenReturn(movieDTO);
         Mockito.when(this.movieListItemRepository.save(any())).thenReturn(movieListItem);
 
         MovieListItem testAddMovieListItem = this.movieListService.add(listItemAddDTO);
 
         Mockito.verify(this.movieConnectorProxy).getByApiCode(anyString());
         Mockito.verify(this.movieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
-        Mockito.verify(this.movieConnectorProxy).saveByApiCode(anyString());
+        Mockito.verify(this.movieConnectorProxy).saveByApiCode(movieAddDTO);
         Mockito.verify(this.movieListItemRepository).save(any());
 
         assertEquals(movieDTO.getId(),testAddMovieListItem.getMovieId());
@@ -182,16 +183,19 @@ class MovieListItemServiceImplTest {
         movieListItem.setMovieId(movieDTO.getId());
         movieListItem.setAppUserId(1L);
 
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXXX");
+
 
         Mockito.when(this.movieConnectorProxy.getByApiCode(anyString())).thenReturn(movieDTO);
         Mockito.when(this.movieListItemRepository.getByAppUserIdAndMovieId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.movieConnectorProxy.saveByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
+        Mockito.when(this.movieConnectorProxy.saveByApiCode(movieAddDTO)).thenThrow(ServiceNotAvailableException.class);
 
         assertThrows(ServiceNotAvailableException.class, () -> this.movieListService.add(listItemAddDTO));
 
         Mockito.verify(this.movieConnectorProxy).getByApiCode(anyString());
         Mockito.verify(this.movieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
-        Mockito.verify(this.movieConnectorProxy).saveByApiCode(anyString());
+        Mockito.verify(this.movieConnectorProxy).saveByApiCode(movieAddDTO);
     }
 
     @Test

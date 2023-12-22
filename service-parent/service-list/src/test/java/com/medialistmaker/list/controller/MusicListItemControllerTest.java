@@ -213,7 +213,7 @@ class MusicListItemControllerTest {
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isConflict()
+                        status().isBadRequest()
                 );
     }
 

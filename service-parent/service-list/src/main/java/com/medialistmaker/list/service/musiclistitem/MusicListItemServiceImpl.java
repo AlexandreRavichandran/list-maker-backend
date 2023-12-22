@@ -50,7 +50,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
             );
 
             if (Boolean.TRUE.equals(this.isMusicAlreadyInAppUserList(musicToAdd.getId(), 1L))) {
-                throw new CustomEntityDuplicationException("Already exists");
+                throw new CustomEntityDuplicationException("This music is already in your list");
             }
 
         } catch (CustomNotFoundException e) {

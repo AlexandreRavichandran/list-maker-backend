@@ -2,6 +2,7 @@ package com.medialistmaker.list.service.movielistitem;
 
 import com.medialistmaker.list.connector.movie.MovieConnectorProxy;
 import com.medialistmaker.list.domain.MovieListItem;
+import com.medialistmaker.list.dto.movie.MovieAddDTO;
 import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
@@ -51,7 +52,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
             MovieDTO movieToAdd = this.movieConnectorProxy.getByApiCode(movieListItem.getApiCode());
 
             if (Boolean.TRUE.equals(this.isMovieAlreadyInAppUserList(1L, movieToAdd.getId()))) {
-                throw new CustomEntityDuplicationException("Already exists");
+                throw new CustomEntityDuplicationException("This movie is already in your list");
             }
 
         } catch (CustomNotFoundException e) {
@@ -61,7 +62,9 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         MovieListItem movieListItemToAdd = this.createMovieListItem(1L);
 
         try {
-            MovieDTO movieDTO = this.movieConnectorProxy.saveByApiCode(movieListItem.getApiCode());
+            MovieAddDTO movieAddDTO = new MovieAddDTO();
+            movieAddDTO.setApiCode(movieListItem.getApiCode());
+            MovieDTO movieDTO = this.movieConnectorProxy.saveByApiCode(movieAddDTO);
             movieListItemToAdd.setMovieId(movieDTO.getId());
             return this.movieListItemRepository.save(movieListItemToAdd);
         } catch (CustomBadRequestException e) {

@@ -1,5 +1,6 @@
 package com.medialistmaker.list.connector.movie;
 
+import com.medialistmaker.list.dto.movie.MovieAddDTO;
 import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
@@ -13,8 +14,8 @@ public class MovieConnectorProxy {
     @Autowired
     MovieConnector movieConnector;
 
-    public MovieDTO saveByApiCode(String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
-        return this.movieConnector.saveByApiCode(apiCode);
+    public MovieDTO saveByApiCode(MovieAddDTO movieAddDTO) throws CustomBadRequestException, ServiceNotAvailableException {
+        return this.movieConnector.saveByApiCode(movieAddDTO);
     }
 
     public MovieDTO getByApiCode(String apiCode) throws CustomNotFoundException, ServiceNotAvailableException {

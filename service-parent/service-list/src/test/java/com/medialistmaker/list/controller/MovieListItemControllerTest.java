@@ -215,7 +215,7 @@ class MovieListItemControllerTest {
                 )
                 .andDo(print())
                 .andExpectAll(
-                        status().isConflict()
+                        status().isBadRequest()
                 );
     }
 

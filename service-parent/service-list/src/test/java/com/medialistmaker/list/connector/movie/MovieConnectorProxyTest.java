@@ -1,5 +1,6 @@
 package com.medialistmaker.list.connector.movie;
 
+import com.medialistmaker.list.dto.movie.MovieAddDTO;
 import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
@@ -61,9 +62,12 @@ class MovieConnectorProxyTest {
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setId(1L);
 
-        Mockito.when(this.movieConnector.saveByApiCode(anyString())).thenReturn(movieDTO);
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXX");
 
-        MovieDTO testGetByApiCode = this.movieConnectorProxy.saveByApiCode("test");
+        Mockito.when(this.movieConnector.saveByApiCode(movieAddDTO)).thenReturn(movieDTO);
+
+        MovieDTO testGetByApiCode = this.movieConnectorProxy.saveByApiCode(movieAddDTO);
 
         assertNotNull(movieDTO);
         assertEquals(movieDTO, testGetByApiCode);
@@ -73,18 +77,24 @@ class MovieConnectorProxyTest {
     @Test
     void givenInvalidApiCodeWhenAddByApiCodeShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.movieConnector.saveByApiCode(anyString())).thenThrow(CustomBadRequestException.class);
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXX");
 
-        assertThrows(CustomBadRequestException.class, () -> this.movieConnectorProxy.saveByApiCode("test"));
+        Mockito.when(this.movieConnector.saveByApiCode(movieAddDTO)).thenThrow(CustomBadRequestException.class);
+
+        assertThrows(CustomBadRequestException.class, () -> this.movieConnectorProxy.saveByApiCode(movieAddDTO));
 
     }
 
     @Test
     void givenApiCodeWhenAddByApiCodeAndServiceNotAvailableShouldThrowServiceNotAvailableException() throws Exception {
 
-        Mockito.when(this.movieConnector.saveByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXX");
 
-        assertThrows(ServiceNotAvailableException.class, () -> this.movieConnectorProxy.saveByApiCode("test"));
+        Mockito.when(this.movieConnector.saveByApiCode(movieAddDTO)).thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class, () -> this.movieConnectorProxy.saveByApiCode(movieAddDTO));
 
     }
 }
