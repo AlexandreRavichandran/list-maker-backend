@@ -1,5 +1,6 @@
 package com.medialistmaker.movie.controller;
 
+import com.medialistmaker.movie.dto.MovieAddDTO;
 import com.medialistmaker.movie.dto.MovieDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
@@ -35,6 +36,17 @@ public class MovieController {
         );
     }
 
+    @PostMapping
+    public ResponseEntity<MovieDTO> addFromApiCode(@RequestBody MovieAddDTO movieAddDTO)
+            throws CustomBadRequestException, ServiceNotAvailableException {
+
+        return new ResponseEntity<>(
+                this.modelMapper.map(this.movieService.addByApiCode(movieAddDTO.getApiCode()), MovieDTO.class),
+                HttpStatus.CREATED
+        );
+
+    }
+
     @GetMapping("/apicodes/{apicode}")
     public ResponseEntity<MovieDTO> readByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomNotFoundException {
@@ -55,16 +67,6 @@ public class MovieController {
         );
     }
 
-    @PostMapping("/apicodes/{apicode}")
-    public ResponseEntity<MovieDTO> addFromApiCode(@PathVariable("apicode") String apiCode)
-            throws CustomBadRequestException, ServiceNotAvailableException {
-
-        return new ResponseEntity<>(
-                this.modelMapper.map(this.movieService.addByApiCode(apiCode), MovieDTO.class),
-                HttpStatus.CREATED
-        );
-
-    }
 
     @DeleteMapping("/{movieId}")
     public ResponseEntity<MovieDTO> deleteById(@PathVariable("movieId") Long movieId)

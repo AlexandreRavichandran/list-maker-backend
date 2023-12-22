@@ -1,6 +1,9 @@
 package com.medialistmaker.movie.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.medialistmaker.movie.domain.Movie;
+import com.medialistmaker.movie.dto.MovieAddDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -22,7 +26,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MovieController.class)
 class MovieControllerTest {
@@ -214,7 +219,10 @@ class MovieControllerTest {
     }
 
     @Test
-    void givenApiCodeWhenAddByApiCodeShouldSaveAndReturnRelatedMovieAndReturn200() throws Exception {
+    void givenMovieAddWhenAddByApiCodeShouldSaveAndReturnRelatedMovieAndReturn200() throws Exception {
+
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXXX");
 
         Movie movie = Movie.builder().id(1L).apiCode("test").pictureUrl("test.com").releasedAt(1993).build();
 
@@ -222,8 +230,15 @@ class MovieControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/movies/apicodes/{apicode}",
-                                        "test"
+                                .post("/api/movies")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(movieAddDTO)
                                 )
                 )
                 .andDo(print())
@@ -235,14 +250,24 @@ class MovieControllerTest {
     }
 
     @Test
-    void givenInvalidApiCodeWhenAddByApiCodeShouldThrowNotFoundExceptionAndReturn400() throws Exception {
+    void givenMovieAddWithInvalidApiCodeWhenAddByApiCodeShouldThrowNotFoundExceptionAndReturn400() throws Exception {
+
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXXX");
 
         Mockito.when(this.movieService.addByApiCode(anyString())).thenThrow(CustomBadRequestException.class);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/movies/apicodes/{apicode}",
-                                        "test"
+                                .post("/api/movies")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(movieAddDTO)
                                 )
                 )
                 .andDo(print())
@@ -253,14 +278,24 @@ class MovieControllerTest {
     }
 
     @Test
-    void givenApiCodeWhenAddByApiCodeAndApiNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn424() throws Exception {
+    void givenMovieAddWhenAddByApiCodeAndApiNotAvailableShouldThrowServiceNotAvailableExceptionAndReturn424() throws Exception {
+
+        MovieAddDTO movieAddDTO = new MovieAddDTO();
+        movieAddDTO.setApiCode("XXXX");
 
         Mockito.when(this.movieService.addByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/movies/apicodes/{apicode}",
-                                        "test"
+                                .post("/api/movies")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(movieAddDTO)
                                 )
                 )
                 .andDo(print())
