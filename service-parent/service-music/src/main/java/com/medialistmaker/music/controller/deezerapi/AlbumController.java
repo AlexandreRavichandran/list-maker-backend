@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static java.util.Objects.isNull;
+
 @RestController
 @RequestMapping("/api/musics/deezerapi/albums")
 public class AlbumController {
@@ -51,11 +53,15 @@ public class AlbumController {
 
     @GetMapping("/apicodes/{apicode}")
     public ResponseEntity<AlbumElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
-            throws CustomBadRequestException, ServiceNotAvailableException {
+            throws CustomBadRequestException, ServiceNotAvailableException, CustomNotFoundException {
 
         Boolean isAlreadyInList;
 
         AlbumElementDTO albumElementDTO = this.albumConnectorProxy.getByApiCode(apiCode);
+
+        if(isNull(albumElementDTO.getApiCode())) {
+            throw new CustomNotFoundException("Movie not found");
+        }
 
         try {
 

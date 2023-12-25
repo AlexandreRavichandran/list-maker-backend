@@ -1,6 +1,10 @@
 package com.medialistmaker.music.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.medialistmaker.music.constant.MusicTypeConstant;
 import com.medialistmaker.music.domain.Music;
+import com.medialistmaker.music.dto.MusicAddDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -217,6 +222,10 @@ class MusicControllerTest {
     @Test
     void givenApiCodeAndTypeWhenAddByApiCodeShouldSaveAndReturnMusicDTOAndReturn200() throws Exception {
 
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setApiCode("XXXX");
+        musicAddDTO.setType(MusicTypeConstant.TYPE_ALBUM);
+
         Music music = Music
                 .builder()
                 .title("Music")
@@ -231,9 +240,16 @@ class MusicControllerTest {
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics/apicodes/{apicode}",
-                                        "test")
-                                .param("type", "1")
+                                .post("/api/musics")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(musicAddDTO)
+                                )
                 )
                 .andDo(print())
                 .andExpectAll(
@@ -246,13 +262,24 @@ class MusicControllerTest {
     @Test
     void givenInvalidApiCodeAndTypeWhenAddByApiCodeShouldReturnBadRequestExceptionAndReturn400() throws Exception {
 
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setApiCode("XXXX");
+        musicAddDTO.setType(MusicTypeConstant.TYPE_ALBUM);
+
         Mockito.when(this.musicService.addByApiCode(anyInt(),anyString())).thenThrow(new CustomBadRequestException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics/apicodes/{apicode}",
-                                        "test")
-                                .param("type", "1")
+                                .post("/api/musics")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(musicAddDTO)
+                                )
                 )
                 .andDo(print())
                 .andExpect(
@@ -264,13 +291,24 @@ class MusicControllerTest {
     @Test
     void givenApiCodeAndTypeWhenAddByApiCodeAndApiNotAvailableShouldReturnServiceNotAvailableAndReturn424() throws Exception {
 
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setApiCode("XXXX");
+        musicAddDTO.setType(MusicTypeConstant.TYPE_ALBUM);
+
         Mockito.when(this.musicService.addByApiCode(anyInt(),anyString())).thenThrow(new ServiceNotAvailableException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/musics/apicodes/{apicode}",
-                                        "test")
-                                .param("type", "1")
+                                .post("/api/musics")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(musicAddDTO)
+                                )
                 )
                 .andDo(print())
                 .andExpect(

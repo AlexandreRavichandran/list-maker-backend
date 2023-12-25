@@ -212,6 +212,28 @@ class AlbumControllerTest {
     }
 
     @Test
+    void givenInvalidApiCodeWhenGetByApiCodeShouldThrowNotFoundExceptionAndReturn404() throws Exception {
+
+        AlbumElementDTO album = new AlbumElementDTO();
+
+        Mockito
+                .when(this.albumConnectorProxy.getByApiCode(anyString()))
+                .thenReturn(album);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get(
+                                        "/api/musics/deezerapi/albums/apicodes/{apicode}",
+                                        "test"
+                                )
+                )
+                .andExpect(
+                        status().isNotFound()
+                );
+
+    }
+
+    @Test
     void givenApiCodeWhenGetTrackListByApiCodeShouldReturnRelatedSongElementListAndReturn200() throws Exception {
 
         SongElementDTO firstElement = new SongElementDTO();
@@ -247,7 +269,7 @@ class AlbumControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.data", hasSize(trackListDTO.getSongList().size()))
+                        jsonPath("$.songList", hasSize(trackListDTO.getSongList().size()))
                 );
     }
 
