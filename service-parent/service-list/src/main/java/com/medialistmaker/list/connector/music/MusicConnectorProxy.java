@@ -1,5 +1,6 @@
 package com.medialistmaker.list.connector.music;
 
+import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
@@ -18,8 +19,8 @@ public class MusicConnectorProxy {
         return this.musicConnector.getMusicByApiCodeAndType(apiCode, type);
     }
 
-    public MusicDTO saveByApiCode(Integer type, String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
-        return this.musicConnector.saveByApiCode(type, apiCode);
+    public MusicDTO saveByApiCode(MusicAddDTO musicAddDTO) throws CustomBadRequestException, ServiceNotAvailableException {
+        return this.musicConnector.saveByApiCode(musicAddDTO);
     }
 
     public MusicDTO deleteById(Long id) throws CustomNotFoundException, ServiceNotAvailableException {

@@ -1,8 +1,8 @@
 package com.medialistmaker.list.connector.music;
 
+import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
-import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +12,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class MusicConnectorProxyTest {
@@ -30,9 +28,13 @@ class MusicConnectorProxyTest {
         MusicDTO musicDTO = new MusicDTO();
         musicDTO.setId(1L);
 
-        Mockito.when(this.musicConnector.saveByApiCode(anyInt(), anyString())).thenReturn(musicDTO);
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setApiCode("test");
+        musicAddDTO.setType(1);
 
-        MusicDTO testGetByApiCode = this.musicConnectorProxy.saveByApiCode(1,"test");
+        Mockito.when(this.musicConnector.saveByApiCode(musicAddDTO)).thenReturn(musicDTO);
+
+        MusicDTO testGetByApiCode = this.musicConnectorProxy.saveByApiCode(musicAddDTO);
 
         assertNotNull(testGetByApiCode);
         assertEquals(musicDTO, testGetByApiCode);
@@ -42,18 +44,27 @@ class MusicConnectorProxyTest {
     @Test
     void givenInvalidApiCodeWhenAddByApiCodeShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.musicConnector.saveByApiCode(anyInt(), anyString())).thenThrow(CustomBadRequestException.class);
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setApiCode("test");
+        musicAddDTO.setType(1);
 
-        assertThrows(CustomBadRequestException.class, () -> this.musicConnectorProxy.saveByApiCode(1,"test"));
+        Mockito.when(this.musicConnector.saveByApiCode(musicAddDTO)).thenThrow(CustomBadRequestException.class);
+
+        assertThrows(CustomBadRequestException.class, () -> this.musicConnectorProxy.saveByApiCode(musicAddDTO));
 
     }
 
     @Test
     void givenApiCodeWhenAddByApiCodeAndServiceNotAvailableShouldThrowServiceNotAvailableException() throws Exception {
 
-        Mockito.when(this.musicConnector.saveByApiCode(anyInt(), anyString())).thenThrow(ServiceNotAvailableException.class);
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setApiCode("test");
+        musicAddDTO.setType(1);
 
-        assertThrows(ServiceNotAvailableException.class, () -> this.musicConnectorProxy.saveByApiCode(1,"test"));
+
+        Mockito.when(this.musicConnector.saveByApiCode(musicAddDTO)).thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class, () -> this.musicConnectorProxy.saveByApiCode(musicAddDTO));
 
     }
 }

@@ -2,6 +2,7 @@ package com.medialistmaker.list.service.musiclistitem;
 
 import com.medialistmaker.list.connector.music.MusicConnectorProxy;
 import com.medialistmaker.list.domain.MusicListItem;
+import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
@@ -60,7 +61,10 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         MusicListItem musicListItemToAdd = this.createMusicListItem(1L);
 
         try {
-            MusicDTO musicDTO = this.musicConnectorProxy.saveByApiCode(listItemAddDTO.getType(), listItemAddDTO.getApiCode());
+            MusicAddDTO musicAddDTO = new MusicAddDTO();
+            musicAddDTO.setApiCode(listItemAddDTO.getApiCode());
+            musicAddDTO.setType(listItemAddDTO.getType());
+            MusicDTO musicDTO = this.musicConnectorProxy.saveByApiCode(musicAddDTO);
             musicListItemToAdd.setMusicId(musicDTO.getId());
             return this.musicListItemRepository.save(musicListItemToAdd);
         } catch (CustomBadRequestException e) {

@@ -1,5 +1,6 @@
 package com.medialistmaker.list.connector.music;
 
+import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
@@ -14,8 +15,8 @@ public interface MusicConnector {
     MusicDTO getMusicByApiCodeAndType(@PathVariable("apicode") String apiCode, @RequestParam("type") Integer type)
             throws CustomNotFoundException, ServiceNotAvailableException;
 
-    @PostMapping("/apicodes/{apicode}")
-    MusicDTO saveByApiCode(@RequestParam("type") Integer type, @PathVariable("apicode") String apiCode)
+    @PostMapping
+    MusicDTO saveByApiCode(@RequestBody MusicAddDTO musicAddDTO)
             throws CustomBadRequestException, ServiceNotAvailableException;
 
     @DeleteMapping("/{musicId}")

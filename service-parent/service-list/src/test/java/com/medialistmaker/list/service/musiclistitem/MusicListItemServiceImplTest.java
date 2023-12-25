@@ -2,6 +2,7 @@ package com.medialistmaker.list.service.musiclistitem;
 
 import com.medialistmaker.list.connector.music.MusicConnectorProxy;
 import com.medialistmaker.list.domain.MusicListItem;
+import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
@@ -126,17 +127,20 @@ class MusicListItemServiceImplTest {
         musicListItem.setMusicId(musicDTO.getId());
         musicListItem.setAppUserId(1L);
 
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setType(1);
+        musicAddDTO.setApiCode("XXXX");
 
         Mockito.when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.musicConnectorProxy.saveByApiCode(anyInt(), anyString())).thenReturn(musicDTO);
+        Mockito.when(this.musicConnectorProxy.saveByApiCode(musicAddDTO)).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.save(any())).thenReturn(musicListItem);
 
         MusicListItem testAddMusicListItem = this.musicListService.add(listItemAddDTO);
 
         Mockito.verify(this.musicConnectorProxy).getMusicByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
-        Mockito.verify(this.musicConnectorProxy).saveByApiCode(anyInt(), anyString());
+        Mockito.verify(this.musicConnectorProxy).saveByApiCode(musicAddDTO);
         Mockito.verify(this.musicListItemRepository).save(any());
 
         assertEquals(musicDTO.getId(),testAddMusicListItem.getMusicId());
@@ -181,15 +185,19 @@ class MusicListItemServiceImplTest {
         musicListItem.setMusicId(musicDTO.getId());
         musicListItem.setAppUserId(1L);
 
+        MusicAddDTO musicAddDTO = new MusicAddDTO();
+        musicAddDTO.setType(2);
+        musicAddDTO.setApiCode("XXXX");
+
         Mockito.when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt())).thenReturn(musicDTO);
         Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(null);
-        Mockito.when(this.musicConnectorProxy.saveByApiCode(anyInt(), anyString())).thenThrow(ServiceNotAvailableException.class);
+        Mockito.when(this.musicConnectorProxy.saveByApiCode(musicAddDTO)).thenThrow(ServiceNotAvailableException.class);
 
         assertThrows(ServiceNotAvailableException.class, () -> this.musicListService.add(listItemAddDTO));
 
         Mockito.verify(this.musicConnectorProxy).getMusicByApiCodeAndType(anyString(), anyInt());
         Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
-        Mockito.verify(this.musicConnectorProxy).saveByApiCode(anyInt(), anyString());
+        Mockito.verify(this.musicConnectorProxy).saveByApiCode(musicAddDTO);
     }
 
 
