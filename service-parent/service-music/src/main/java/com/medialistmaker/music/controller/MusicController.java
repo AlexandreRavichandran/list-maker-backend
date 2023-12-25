@@ -1,5 +1,6 @@
 package com.medialistmaker.music.controller;
 
+import com.medialistmaker.music.dto.MusicAddDTO;
 import com.medialistmaker.music.dto.MusicDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
@@ -68,12 +69,16 @@ public class MusicController {
 
     }
 
-    @PostMapping("/apicodes/{apicode}")
-    public ResponseEntity<MusicDTO> addFromApiCode(@RequestParam("type") Integer type, @PathVariable("apicode") String apiCode)
+    @PostMapping
+    public ResponseEntity<MusicDTO> addFromApiCode(@RequestBody MusicAddDTO musicAddDTO)
             throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.modelMapper.map(this.musicService.addByApiCode(type, apiCode), MusicDTO.class),
+                this.modelMapper.map(
+                        this.musicService.addByApiCode(
+                                musicAddDTO.getType(),
+                                musicAddDTO.getApiCode()
+                        ), MusicDTO.class),
                 HttpStatus.CREATED
         );
 

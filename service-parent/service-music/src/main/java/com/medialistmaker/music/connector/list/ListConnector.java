@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "music", path = "/api/lists/musics")
+@FeignClient(name = "list", path = "/api/lists/musics")
 public interface ListConnector {
 
     @GetMapping("/{musicId}")

@@ -14,7 +14,6 @@ import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundExcept
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.music.service.music.MusicServiceImpl;
 import com.medialistmaker.music.utils.MathUtils;
-import com.medialistmaker.music.utils.TimeCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +31,6 @@ public class AlbumController {
 
     @Autowired
     ListConnectorProxy listConnectorProxy;
-
-    @Autowired
-    TimeCalculator timeCalculator;
 
     @Autowired
     MathUtils mathUtils;
@@ -83,10 +79,13 @@ public class AlbumController {
 
         TrackListDTO trackListDTO = this.albumConnectorProxy.getTrackListByAlbumApiCode(apiCode);
 
+        trackListDTO.getSongList().forEach(songElementDTO -> songElementDTO.setDuration(songElementDTO.getDuration() * 1000));
+
         int totalSongDurationInSeconds = trackListDTO.getSongList().stream().mapToInt(SongElementDTO::getDuration).sum();
+
         Integer averageAlbumPopularity = this.mathUtils.calculateAverageOfList(trackListDTO.getSongList().stream().mapToInt(SongElementDTO::getRank).toArray());
 
-        trackListDTO.setTotalDuration(this.timeCalculator.formatSecondsToHourMinutesAndSeconds(totalSongDurationInSeconds));
+        trackListDTO.setTotalDurationInEpochMilli((long) totalSongDurationInSeconds);
         trackListDTO.setAlbumPopularityRate(((averageAlbumPopularity/1000000D) * 100));
 
         return new ResponseEntity<>(trackListDTO, HttpStatus.OK);

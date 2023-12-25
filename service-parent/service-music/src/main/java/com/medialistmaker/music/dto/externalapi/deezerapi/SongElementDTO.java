@@ -21,6 +21,11 @@ public class SongElementDTO extends MusicElementDTO {
 
     private ArtistElementDTO artist;
 
+    @JsonProperty("trackNumber")
+    public Integer getTrackNumber() {
+        return trackNumber;
+    }
+
     @JsonProperty("track_position")
     public void setTrackNumber(Integer trackNumber) {
         this.trackNumber = trackNumber;

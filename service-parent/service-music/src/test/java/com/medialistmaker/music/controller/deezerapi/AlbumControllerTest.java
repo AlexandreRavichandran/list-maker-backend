@@ -14,7 +14,6 @@ import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestEx
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.service.music.MusicServiceImpl;
 import com.medialistmaker.music.utils.MathUtils;
-import com.medialistmaker.music.utils.TimeCalculator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +48,6 @@ class AlbumControllerTest {
 
     @MockBean
     MusicServiceImpl musicService;
-
-    @MockBean
-    TimeCalculator timeCalculator;
 
     @Autowired
     MockMvc mockMvc;
@@ -240,7 +236,6 @@ class AlbumControllerTest {
                 .when(this.albumConnectorProxy.getTrackListByAlbumApiCode(anyString()))
                 .thenReturn(trackListDTO);
 
-        Mockito.when(this.timeCalculator.formatSecondsToHourMinutesAndSeconds(anyInt())).thenReturn("2m30");
         Mockito.when(this.mathUtils.calculateAverageOfList(any())).thenReturn(40);
 
         this.mockMvc.perform(
