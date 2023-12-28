@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class AlbumSearchElementDTO {
 
-    private String id;
+    private String apiCode;
 
     private String title;
 
@@ -15,6 +15,17 @@ public class AlbumSearchElementDTO {
 
     private ArtistElementDTO artist;
 
+    @JsonProperty("apiCode")
+    public String getApiCode() {
+        return apiCode;
+    }
+
+    @JsonProperty("id")
+    public void setApiCode(String apiCode) {
+        this.apiCode = apiCode;
+    }
+
+    @JsonProperty("pictureUrl")
     public String getPictureUrl() {
         return pictureUrl;
     }

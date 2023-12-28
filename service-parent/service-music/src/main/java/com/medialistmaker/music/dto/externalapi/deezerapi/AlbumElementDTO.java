@@ -22,8 +22,6 @@ public class AlbumElementDTO extends MusicElementDTO {
 
     private List<GenreDTO> genreList;
 
-    private Boolean isAlreadyInList;
-
     @JsonProperty("pictureUrl")
     public String getPictureUrl() {
         return pictureUrl;

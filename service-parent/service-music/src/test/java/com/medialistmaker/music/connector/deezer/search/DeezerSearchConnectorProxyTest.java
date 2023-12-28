@@ -35,19 +35,19 @@ class DeezerSearchConnectorProxyTest {
         artist.setName("Artist");
 
         AlbumSearchElementDTO firstAlbum = new AlbumSearchElementDTO();
-        firstAlbum.setId("1L");
+        firstAlbum.setApiCode("1L");
         firstAlbum.setTitle("Album 1");
         firstAlbum.setPictureUrl("test.com");
         firstAlbum.setArtist(artist);
 
         AlbumSearchElementDTO secondAlbum = new AlbumSearchElementDTO();
-        secondAlbum.setId("2L");
+        secondAlbum.setApiCode("2L");
         secondAlbum.setTitle("Album 2");
         secondAlbum.setPictureUrl("test.com");
         secondAlbum.setArtist(artist);
 
         AlbumSearchListDTO albumSearchListDTO = new AlbumSearchListDTO();
-        albumSearchListDTO.setData(List.of(firstAlbum, secondAlbum));
+        albumSearchListDTO.setSearchResults(List.of(firstAlbum, secondAlbum));
 
         Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString())).thenReturn(albumSearchListDTO);
 
@@ -92,7 +92,7 @@ class DeezerSearchConnectorProxyTest {
         secondSong.setArtist(artist);
 
         SongSearchListDTO songSearchListDTO = new SongSearchListDTO();
-        songSearchListDTO.setData(List.of(firstSong, secondSong));
+        songSearchListDTO.setSearchResults(List.of(firstSong, secondSong));
 
         Mockito.when(this.deezerSearchConnector.getSongByQuery(anyString())).thenReturn(songSearchListDTO);
 

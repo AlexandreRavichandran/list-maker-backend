@@ -58,7 +58,7 @@ class SongControllerTest {
         secondSong.setArtist(artist);
 
         SongSearchListDTO songSearchListDTO = new SongSearchListDTO();
-        songSearchListDTO.setData(List.of(firstSong, secondSong));
+        songSearchListDTO.setSearchResults(List.of(firstSong, secondSong));
 
         Mockito
                 .when(this.searchConnectorProxy.getSongByQuery(anyString()))
