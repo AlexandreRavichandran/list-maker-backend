@@ -26,6 +26,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -293,20 +294,24 @@ class MovieListItemControllerTest {
     }
 
     @Test
-    void givenExistingMovieIdWhenIsMovieInAppUserListShouldReturnBooleanAndReturn200() throws Exception {
+    void givenExistingMovieApiCodeWhenIsMovieInAppUserListShouldReturnBooleanAndReturn200() throws Exception {
 
-        Mockito.when(this.movieItemServiceImpl.isMovieUsedInOtherList(anyLong())).thenReturn(Boolean.TRUE);
+        Mockito
+                .when(this.movieItemServiceImpl.isMovieApiCodeAlreadyInAppUserMovieList(anyLong(), anyString()))
+                .thenReturn(Boolean.TRUE);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/api/lists/movies/{movieId}",
-                                        1L
+                                .get("/api/lists/movies/apicode/{apicode}",
+                                        "test"
                                 )
 
                 )
                 .andDo(print())
-                .andExpect(
-                        status().isOk()
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", equalTo(Boolean.TRUE))
+
                 );
     }
 }

@@ -60,9 +60,8 @@ class OmdbApiControllerTest {
 
 
         MovieElementListDTO listDTO = new MovieElementListDTO();
-        listDTO.setResponseStatus("OK");
-        listDTO.setTotalResults("2");
-        listDTO.setMovieElementList(List.of(firstListItemDTO, secondListItemDTO));
+        listDTO.setTotalResults(2);
+        listDTO.setSearchResults(List.of(firstListItemDTO, secondListItemDTO));
 
         Mockito
                 .when(this.omdbConnectorProxy.getByQuery(anyString()))
@@ -79,7 +78,6 @@ class OmdbApiControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         jsonPath("$.totalResults", equalTo(listDTO.getTotalResults())),
-                        jsonPath("$.responseStatus", equalTo(listDTO.getResponseStatus())),
                         jsonPath("$.movieElementList", hasSize(2))
                 );
     }

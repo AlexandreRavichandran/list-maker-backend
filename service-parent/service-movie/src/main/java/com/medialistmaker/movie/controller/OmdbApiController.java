@@ -2,7 +2,6 @@ package com.medialistmaker.movie.controller;
 
 import com.medialistmaker.movie.connector.list.ListConnectorProxy;
 import com.medialistmaker.movie.connector.omdb.OmdbConnectorProxy;
-import com.medialistmaker.movie.domain.Movie;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("/api/movies/omdbapi")
@@ -43,24 +44,14 @@ public class OmdbApiController {
 
     @GetMapping("/apicodes/{apicode}")
     public ResponseEntity<MovieElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
-            throws CustomBadRequestException, ServiceNotAvailableException {
-
-        Boolean isAlreadyInList;
+            throws CustomNotFoundException, CustomBadRequestException, ServiceNotAvailableException {
 
         MovieElementDTO movieElementDTO = this.omdbConnectorProxy.getByApiCode(apiCode);
 
-        try {
-
-            Movie movie = this.movieService.readByApiCode(movieElementDTO.getApiCode());
-
-            isAlreadyInList = this.listConnectorProxy.isMovieIdAlreadyInList(movie.getId());
-
-        } catch (CustomNotFoundException e) {
-            isAlreadyInList = Boolean.FALSE;
+        if(isNull(movieElementDTO.getApiCode())) {
+            throw new CustomNotFoundException("Movie not found");
         }
 
-
-        movieElementDTO.setIsAlreadyInList(isAlreadyInList);
         return new ResponseEntity<>(
                 movieElementDTO,
                 HttpStatus.OK

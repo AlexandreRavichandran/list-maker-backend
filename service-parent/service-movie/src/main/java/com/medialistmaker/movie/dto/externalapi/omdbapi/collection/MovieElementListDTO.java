@@ -8,29 +8,18 @@ import java.util.List;
 @Data
 public class MovieElementListDTO {
 
-    private List<MovieElementListItemDTO> movieElementList;
+    private List<MovieElementListItemDTO> searchResults;
 
-    private String totalResults;
+    private Integer totalResults;
 
-    private String responseStatus;
-
-    @JsonProperty("movieElementList")
-    public List<MovieElementListItemDTO> getMovieElementList() {
-        return movieElementList;
-    }
-
-    @JsonProperty("responseStatus")
-    public String getResponseStatus() {
-        return responseStatus;
+    @JsonProperty("searchResults")
+    public List<MovieElementListItemDTO> getSearchResults() {
+        return searchResults;
     }
 
     @JsonProperty("Search")
-    public void setMovieElementList(List<MovieElementListItemDTO> movieElementList) {
-        this.movieElementList = movieElementList;
+    public void setSearchResults(List<MovieElementListItemDTO> searchResults) {
+        this.searchResults = searchResults;
     }
 
-    @JsonProperty("Response")
-    public void setResponseStatus(String responseStatus) {
-        this.responseStatus = responseStatus;
-    }
 }

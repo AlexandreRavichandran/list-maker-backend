@@ -29,8 +29,6 @@ public class MovieElementDTO {
 
     private String pictureUrl;
 
-    private Boolean isAlreadyInList;
-
     @JsonProperty("apiCode")
     public String getApiCode() {
         return apiCode;

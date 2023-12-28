@@ -85,7 +85,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
         this.updateOrder(1L);
 
-        Boolean isMovieUsedInAnotherList = this.isMovieUsedInOtherList(itemToDelete.getMovieId());
+        Boolean isMovieUsedInAnotherList = this.isMovieIdAlreadyUsedInOtherList(itemToDelete.getMovieId());
 
         if(Boolean.FALSE.equals(isMovieUsedInAnotherList)) {
             this.deleteMovie(itemToDelete.getMovieId());
@@ -94,11 +94,31 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         return itemToDelete;
     }
 
-    public Boolean isMovieUsedInOtherList(Long movieId) {
+    public Boolean isMovieIdAlreadyUsedInOtherList(Long movieId) {
         List<MovieListItem> movieListItems = this.movieListItemRepository.getByMovieId(movieId);
 
         return Boolean.FALSE.equals(movieListItems.isEmpty());
 
+    }
+
+    @Override
+    public Boolean isMovieApiCodeAlreadyInAppUserMovieList(Long appUserId, String apiCode) throws ServiceNotAvailableException {
+
+        Boolean isMovieApiCodeAlreadyInAppUserMovieList = null;
+
+        try {
+            MovieDTO movieDTO = this.movieConnectorProxy.getByApiCode(apiCode);
+            MovieListItem movieListItem = this.movieListItemRepository.getByAppUserIdAndMovieId(appUserId, movieDTO.getId());
+
+            isMovieApiCodeAlreadyInAppUserMovieList = nonNull(movieListItem);
+
+        } catch (CustomNotFoundException exception) {
+            isMovieApiCodeAlreadyInAppUserMovieList = Boolean.FALSE;
+        } catch (ServiceNotAvailableException exception) {
+            throw new ServiceNotAvailableException("Service not available");
+        }
+
+        return isMovieApiCodeAlreadyInAppUserMovieList;
     }
 
     private Integer getNextSortingOrder(Long appUserId) {

@@ -51,13 +51,15 @@ public class MovieListItemController {
         );
     }
 
-    @GetMapping("/{movieId}")
-    public ResponseEntity<Boolean> isMovieInAppUserList(@PathVariable("movieId") Long movieId) {
+    @GetMapping("/apicode/{apicode}")
+    public ResponseEntity<Boolean> isMovieAlreadyInAppUserList(@PathVariable("apicode") String apiCode)
+            throws ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.movieListService.isMovieUsedInOtherList(movieId),
+                this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(1L, apiCode),
                 HttpStatus.OK
         );
+
     }
 
     @PostMapping

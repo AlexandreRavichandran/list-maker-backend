@@ -263,4 +263,45 @@ class MovieListItemServiceImplTest {
         Mockito.verify(this.movieListItemRepository).saveAll(movieListItems);
 
     }
+
+    @Test
+    void givenAppUserIdAndExistingMovieApiCodeWhenIsAlreadyInAppUserListShouldReturnTrue() throws Exception {
+
+        MovieDTO movieDTO = new MovieDTO();
+        movieDTO.setId(1L);
+
+        MovieListItem movieListItem = new MovieListItem();
+        movieListItem.setId(2L);
+
+        Mockito.when(this.movieConnectorProxy.getByApiCode(anyString())).thenReturn(movieDTO);
+        Mockito.when(this.movieListItemRepository.getByAppUserIdAndMovieId(anyLong(), anyLong())).thenReturn(movieListItem);
+
+        Boolean testIsAlreadyInAppUserList = this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(1L, "tes");
+
+        Mockito.verify(this.movieConnectorProxy).getByApiCode(anyString());
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdAndMovieId(anyLong(), anyLong());
+        assertEquals(Boolean.TRUE, testIsAlreadyInAppUserList);
+    }
+
+    @Test
+    void givenAppUserIdAndNonExistingMovieApiCodeWhenIsAlreadyInAppUserListShouldReturnTrue() throws Exception {
+
+        MovieDTO movieDTO = new MovieDTO();
+        movieDTO.setId(1L);
+
+        Mockito.when(this.movieConnectorProxy.getByApiCode(anyString())).thenThrow(CustomNotFoundException.class);
+
+        Boolean testIsAlreadyInAppUserList = this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(1L, "tes");
+        assertEquals(Boolean.FALSE, testIsAlreadyInAppUserList);
+    }
+
+    @Test
+    void givenAppUserIdAndNonExistingMovieApiCodeWhenIsAlreadyInAppUserListAndServiceNotAvailableShouldReturnTrue() throws Exception {
+
+        Mockito.when(this.movieConnectorProxy.getByApiCode(anyString())).thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class,
+                () -> this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(1L, "test"));
+
+    }
 }

@@ -20,7 +20,9 @@ public interface MovieListItemService {
 
     MovieListItem deleteById(Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
-    Boolean isMovieUsedInOtherList(Long movieId);
+    Boolean isMovieIdAlreadyUsedInOtherList(Long movieId);
+
+    Boolean isMovieApiCodeAlreadyInAppUserMovieList(Long appUserId, String apiCode) throws ServiceNotAvailableException;
 
     void updateOrder(Long appUserId);
 }
