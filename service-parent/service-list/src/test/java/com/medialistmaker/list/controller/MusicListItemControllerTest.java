@@ -25,7 +25,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -294,18 +294,26 @@ class MusicListItemControllerTest {
     @Test
     void givenExistingMusicIdWhenIsMusicInAppUserListShouldReturnBooleanAndReturn200() throws Exception {
 
-        Mockito.when(this.musicItemServiceImpl.isMusicUsedInOtherList(anyLong())).thenReturn(Boolean.TRUE);
+        Mockito
+                .when(this.musicItemServiceImpl.isMusicApiCodeAndTypeAlreadyInAppUserMovieList(
+                        anyLong(),
+                        anyString(),
+                        anyInt())
+                )
+                .thenReturn(Boolean.TRUE);
 
         this.mockMvc.perform(
                 MockMvcRequestBuilders
-                        .get("/api/lists/musics/{musicId}",
-                                1L
+                        .get("/api/lists/musics/apicode/{apicode}",
+                                "test"
                         )
+                        .param("type", "1")
 
         )
                 .andDo(print())
-                .andExpect(
-                        status().isOk()
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", equalTo(Boolean.TRUE))
                 );
     }
 }

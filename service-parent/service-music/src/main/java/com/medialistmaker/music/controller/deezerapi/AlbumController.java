@@ -3,8 +3,6 @@ package com.medialistmaker.music.controller.deezerapi;
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
 import com.medialistmaker.music.connector.list.ListConnectorProxy;
-import com.medialistmaker.music.constant.MusicTypeConstant;
-import com.medialistmaker.music.domain.Music;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
@@ -55,25 +53,11 @@ public class AlbumController {
     public ResponseEntity<AlbumElementDTO> getByApiCode(@PathVariable("apicode") String apiCode)
             throws CustomBadRequestException, ServiceNotAvailableException, CustomNotFoundException {
 
-        Boolean isAlreadyInList;
-
         AlbumElementDTO albumElementDTO = this.albumConnectorProxy.getByApiCode(apiCode);
 
         if(isNull(albumElementDTO.getApiCode())) {
             throw new CustomNotFoundException("Movie not found");
         }
-
-        try {
-
-            Music music = this.musicService.readByApiCodeAndType(albumElementDTO.getApiCode(), MusicTypeConstant.TYPE_ALBUM);
-
-            isAlreadyInList = this.listConnectorProxy.isMusicIdAlreadyInList(music.getId());
-
-        } catch (CustomNotFoundException e) {
-            isAlreadyInList = Boolean.FALSE;
-        }
-
-        albumElementDTO.setIsAlreadyInList(isAlreadyInList);
 
         return new ResponseEntity<>(albumElementDTO, HttpStatus.OK);
 

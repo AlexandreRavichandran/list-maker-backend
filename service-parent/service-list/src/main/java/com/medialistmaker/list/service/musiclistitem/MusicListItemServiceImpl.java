@@ -1,7 +1,9 @@
 package com.medialistmaker.list.service.musiclistitem;
 
 import com.medialistmaker.list.connector.music.MusicConnectorProxy;
+import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.domain.MusicListItem;
+import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
@@ -91,6 +93,28 @@ public class MusicListItemServiceImpl implements MusicListItemService {
             this.deleteMusic(itemToDelete.getMusicId());
         }
         return itemToDelete;
+    }
+
+    @Override
+    public Boolean isMusicApiCodeAndTypeAlreadyInAppUserMovieList(Long appUserId, String apiCode, Integer type)
+            throws ServiceNotAvailableException {
+
+        Boolean isMusicApiCodeAlreadyInAppUserMovieList = null;
+
+        try {
+            MusicDTO musicDTO = this.musicConnectorProxy.getMusicByApiCodeAndType(apiCode, type);
+            MusicListItem musicListItem = this.musicListItemRepository.getByAppUserIdAndMusicId(appUserId, musicDTO.getId());
+
+            isMusicApiCodeAlreadyInAppUserMovieList = nonNull(musicListItem);
+
+        } catch (CustomNotFoundException exception) {
+            isMusicApiCodeAlreadyInAppUserMovieList = Boolean.FALSE;
+        } catch (ServiceNotAvailableException exception) {
+            throw new ServiceNotAvailableException("Service not available");
+        }
+
+        return isMusicApiCodeAlreadyInAppUserMovieList;
+
     }
 
     private Integer getNextSortingOrder(Long appUserId) {

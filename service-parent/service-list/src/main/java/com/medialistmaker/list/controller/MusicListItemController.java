@@ -51,13 +51,15 @@ public class MusicListItemController {
         );
     }
 
-    @GetMapping("/{musicId}")
-    public ResponseEntity<Boolean> isMusicInAppUserList(@PathVariable("musicId") Long musicId) {
+    @GetMapping("/apicode/{apicode}")
+    public ResponseEntity<Boolean> isMusicAlreadyInAppUserList(@PathVariable("apicode") String apiCode, @RequestParam("type") Integer type)
+            throws ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.musicListService.isMusicUsedInOtherList(musicId),
+                this.musicListService.isMusicApiCodeAndTypeAlreadyInAppUserMovieList(1L, apiCode, type),
                 HttpStatus.OK
         );
+
     }
 
     @PostMapping

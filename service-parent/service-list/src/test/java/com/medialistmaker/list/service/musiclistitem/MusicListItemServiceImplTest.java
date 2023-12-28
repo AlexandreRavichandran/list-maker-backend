@@ -267,4 +267,54 @@ class MusicListItemServiceImplTest {
         Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
     }
 
+    @Test
+    void givenAppUserIdAndTypeAndExistingMusicApiCodeWhenIsAlreadyInAppUserListShouldReturnTrue() throws Exception {
+
+        MusicDTO musicDTO = new MusicDTO();
+        musicDTO.setId(1L);
+
+        MusicListItem musicListItem = new MusicListItem();
+        musicListItem.setId(2L);
+
+        Mockito.when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt())).thenReturn(musicDTO);
+        Mockito.when(this.musicListItemRepository.getByAppUserIdAndMusicId(anyLong(), anyLong())).thenReturn(musicListItem);
+
+        Boolean testIsAlreadyInAppUserList =
+                this.musicListService.isMusicApiCodeAndTypeAlreadyInAppUserMovieList(1L, "test", 1);
+
+        Mockito.verify(this.musicConnectorProxy).getMusicByApiCodeAndType(anyString(), anyInt());
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdAndMusicId(anyLong(), anyLong());
+        assertEquals(Boolean.TRUE, testIsAlreadyInAppUserList);
+    }
+
+    @Test
+    void givenAppUserIdAndTypeAndNonExistingMovieApiCodeWhenIsAlreadyInAppUserListShouldReturnTrue() throws Exception {
+
+        MusicDTO musicDTO = new MusicDTO();
+        musicDTO.setId(1L);
+
+        Mockito
+                .when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt()))
+                .thenThrow(CustomNotFoundException.class);
+
+        Boolean testIsAlreadyInAppUserList =
+                this.musicListService.isMusicApiCodeAndTypeAlreadyInAppUserMovieList(1L, "test", 1);
+
+        assertEquals(Boolean.FALSE, testIsAlreadyInAppUserList);
+    }
+
+    @Test
+    void givenAppUserIdAndTypeAndNonExistingMovieApiCodeWhenIsAlreadyInAppUserListAndServiceNotAvailableShouldReturnTrue()
+            throws Exception {
+
+        Mockito
+                .when(this.musicConnectorProxy.getMusicByApiCodeAndType(anyString(), anyInt()))
+                .thenThrow(ServiceNotAvailableException.class);
+
+        assertThrows(ServiceNotAvailableException.class,
+                () -> this.musicListService.
+                        isMusicApiCodeAndTypeAlreadyInAppUserMovieList(1L, "test", 1));
+
+    }
+
 }

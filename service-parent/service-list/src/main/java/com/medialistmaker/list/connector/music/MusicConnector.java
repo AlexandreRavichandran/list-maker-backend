@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(name = "music", path = "/api/musics")
 public interface MusicConnector {
 
-    @GetMapping("/apicodes/{apicode}")
+    @GetMapping("/apicode/{apicode}")
     MusicDTO getMusicByApiCodeAndType(@PathVariable("apicode") String apiCode, @RequestParam("type") Integer type)
             throws CustomNotFoundException, ServiceNotAvailableException;
 

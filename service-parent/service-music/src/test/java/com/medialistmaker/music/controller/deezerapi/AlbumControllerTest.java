@@ -60,19 +60,19 @@ class AlbumControllerTest {
         artist.setName("Artist");
 
         AlbumSearchElementDTO firstAlbum = new AlbumSearchElementDTO();
-        firstAlbum.setId("1L");
+        firstAlbum.setApiCode("1L");
         firstAlbum.setTitle("Album 1");
         firstAlbum.setPictureUrl("test.com");
         firstAlbum.setArtist(artist);
 
         AlbumSearchElementDTO secondAlbum = new AlbumSearchElementDTO();
-        secondAlbum.setId("2L");
+        secondAlbum.setApiCode("2L");
         secondAlbum.setTitle("Album 2");
         secondAlbum.setPictureUrl("test.com");
         secondAlbum.setArtist(artist);
 
         AlbumSearchListDTO albumSearchListDTO = new AlbumSearchListDTO();
-        albumSearchListDTO.setData(List.of(firstAlbum, secondAlbum));
+        albumSearchListDTO.setSearchResults(List.of(firstAlbum, secondAlbum));
 
         Mockito
                 .when(this.searchConnectorProxy.getAlbumByQuery(anyString()))
@@ -142,8 +142,7 @@ class AlbumControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.apiCode", equalTo(album.getApiCode())),
-                        jsonPath("$.isAlreadyInList", equalTo(Boolean.FALSE))
+                        jsonPath("$.apiCode", equalTo(album.getApiCode()))
                 );
     }
 
@@ -186,8 +185,7 @@ class AlbumControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.apiCode", equalTo(album.getApiCode())),
-                        jsonPath("$.isAlreadyInList", equalTo(Boolean.TRUE))
+                        jsonPath("$.apiCode", equalTo(album.getApiCode()))
                 );
     }
 

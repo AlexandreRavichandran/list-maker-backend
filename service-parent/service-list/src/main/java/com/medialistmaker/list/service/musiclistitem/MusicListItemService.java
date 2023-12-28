@@ -20,6 +20,9 @@ public interface MusicListItemService {
 
     MusicListItem deleteById(Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
+    Boolean isMusicApiCodeAndTypeAlreadyInAppUserMovieList(Long appUserId, String apiCode, Integer type)
+            throws ServiceNotAvailableException;
+
     Boolean isMusicUsedInOtherList(Long musicId);
 
     void updateOrder(Long appUserId);
