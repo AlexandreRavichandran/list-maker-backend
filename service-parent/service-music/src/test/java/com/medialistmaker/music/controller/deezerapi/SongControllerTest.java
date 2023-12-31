@@ -40,7 +40,7 @@ class SongControllerTest {
     void givenSongNameWhenGetBySongNameShouldReturnSongSearchListAndReturn200() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         SongSearchElementDTO firstSong = new SongSearchElementDTO();
@@ -73,7 +73,7 @@ class SongControllerTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.data", hasSize(2))
+                        jsonPath("$.searchResults", hasSize(2))
                 );
 
     }
@@ -101,7 +101,7 @@ class SongControllerTest {
     void givenApiCodeWhenGetByApiCodeShouldReturnRelatedSongElementAndReturn200() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         SongElementDTO song = new SongElementDTO();

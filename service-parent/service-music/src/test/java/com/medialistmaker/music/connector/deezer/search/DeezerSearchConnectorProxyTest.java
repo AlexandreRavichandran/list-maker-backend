@@ -31,7 +31,7 @@ class DeezerSearchConnectorProxyTest {
     void givenQueryWhenGetAlbumByQueryShouldReturnRelatedSearchList() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         AlbumSearchElementDTO firstAlbum = new AlbumSearchElementDTO();
@@ -74,7 +74,7 @@ class DeezerSearchConnectorProxyTest {
     void givenQueryWhenGetSongByQueryShouldReturnRelatedSearchList() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         SongSearchElementDTO firstSong = new SongSearchElementDTO();

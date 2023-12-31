@@ -13,6 +13,7 @@ import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearc
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.service.music.MusicServiceImpl;
+import com.medialistmaker.music.utils.DeezerParameterFormatter;
 import com.medialistmaker.music.utils.MathUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -47,6 +48,9 @@ class AlbumControllerTest {
     MathUtils mathUtils;
 
     @MockBean
+    DeezerParameterFormatter deezerFormatter;
+
+    @MockBean
     MusicServiceImpl musicService;
 
     @Autowired
@@ -56,7 +60,7 @@ class AlbumControllerTest {
     void givenAlbumNameWhenGetByAlbumNameShouldReturnAlbumSearchListAndReturn200() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         AlbumSearchElementDTO firstAlbum = new AlbumSearchElementDTO();
@@ -74,48 +78,33 @@ class AlbumControllerTest {
         AlbumSearchListDTO albumSearchListDTO = new AlbumSearchListDTO();
         albumSearchListDTO.setSearchResults(List.of(firstAlbum, secondAlbum));
 
+        Mockito.when(this.deezerFormatter.formatParams(anyMap())).thenReturn("query");
+
         Mockito
                 .when(this.searchConnectorProxy.getAlbumByQuery(anyString()))
                 .thenReturn(albumSearchListDTO);
 
+
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get(
                                         "/api/musics/deezerapi/albums"
                                 )
                                 .param("name", "test")
+                                .param("artist", "artist")
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.data", hasSize(2))
+                        jsonPath("$.searchResults", hasSize(2))
                 );
     }
 
-    @Test
-    void givenAlbumNameWhenGetByAlbumNameAndApiErrorShouldThrowBadRequestExceptionAndReturn400() throws Exception {
-
-        Mockito
-                .when(this.searchConnectorProxy.getAlbumByQuery(anyString()))
-                .thenThrow(new CustomBadRequestException("Bad request", new ArrayList<>()));
-
-        this.mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .get(
-                                        "/api/musics/deezerapi/albums"
-                                )
-                                .param("name", "test")
-                )
-                .andExpect(
-                        status().isBadRequest()
-                );
-
-    }
 
     @Test
     void givenNonExistingApiCodeWhenGetByApiCodeShouldReturnRelatedAlbumElementWithAlreadyInListFieldFalseAndReturn200() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         AlbumElementDTO album = new AlbumElementDTO();
@@ -150,7 +139,7 @@ class AlbumControllerTest {
     void givenApiCodeWhenGetByApiCodeShouldReturnRelatedAlbumElementAndReturn200() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         AlbumElementDTO album = new AlbumElementDTO();

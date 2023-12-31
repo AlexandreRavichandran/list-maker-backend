@@ -188,7 +188,7 @@ class MusicServiceImplTest {
     void givenAlbumApiCodeAndTypeWhenAddByApiCodeShouldSaveAndReturnMovie() throws Exception {
 
         ArtistElementDTO artistElementDTO = new ArtistElementDTO();
-        artistElementDTO.setId("0002");
+        artistElementDTO.setApiCode("0002");
         artistElementDTO.setName("Artist");
 
         AlbumElementDTO albumElementDTO = new AlbumElementDTO();
@@ -224,7 +224,7 @@ class MusicServiceImplTest {
     void givenSongApiCodeAndTypeWhenAddByApiCodeShouldSaveAndReturnMovie() throws Exception {
 
         ArtistElementDTO artistElementDTO = new ArtistElementDTO();
-        artistElementDTO.setId("0002");
+        artistElementDTO.setApiCode("0002");
         artistElementDTO.setName("Artist");
 
         SongElementDTO songElementDTO = new SongElementDTO();

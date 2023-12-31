@@ -22,6 +22,8 @@ public class AlbumElementDTO extends MusicElementDTO {
 
     private List<GenreDTO> genreList;
 
+    private String type;
+
     @JsonProperty("pictureUrl")
     public String getPictureUrl() {
         return pictureUrl;
@@ -63,5 +65,15 @@ public class AlbumElementDTO extends MusicElementDTO {
     @JsonProperty("id")
     public void setApiCode(String apiCode) {
         this.apiCode = apiCode;
+    }
+
+    @JsonProperty("type")
+    public String getType() {
+        return type;
+    }
+
+    @JsonProperty("record_type")
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -30,7 +30,7 @@ class DeezerAlbumConnectorProxyTest {
     void givenApiCodeWhenGetByApiCodeShouldReturnRelatedAlbumElement() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         AlbumElementDTO album = new AlbumElementDTO();

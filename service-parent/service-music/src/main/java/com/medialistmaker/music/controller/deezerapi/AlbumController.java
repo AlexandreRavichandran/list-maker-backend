@@ -11,11 +11,15 @@ import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestEx
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.music.service.music.MusicServiceImpl;
+import com.medialistmaker.music.utils.DeezerParameterFormatter;
 import com.medialistmaker.music.utils.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Objects.isNull;
 
@@ -38,12 +42,23 @@ public class AlbumController {
     @Autowired
     MusicServiceImpl musicService;
 
+    @Autowired
+    DeezerParameterFormatter parameterFormatter;
+
     @GetMapping
-    public ResponseEntity<AlbumSearchListDTO> getByAlbumName(@RequestParam("name") String albumName)
+    public ResponseEntity<AlbumSearchListDTO> browseByQueryAndFilter(
+            @RequestParam("name") String albumName,
+            @RequestParam(value = "artist", required = false) String artist,
+            @RequestParam(value = "label", required = false) String label)
             throws CustomBadRequestException {
 
+        Map<String, String> params = new HashMap<>();
+        params.put("album", albumName);
+        params.put("artist", artist);
+        params.put("label", label);
+
         return new ResponseEntity<>(
-                this.albumSearchConnectorProxy.getAlbumByQuery(albumName),
+                this.albumSearchConnectorProxy.getAlbumByQuery(this.parameterFormatter.formatParams(params)),
                 HttpStatus.OK
         );
 

@@ -26,7 +26,7 @@ class DeezerSongConnectorProxyTest {
     void givenApiCodeWhenGetByApiCodeShouldReturnRelatedSongElement() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
-        artist.setId("1");
+        artist.setApiCode("1");
         artist.setName("Artist");
 
         SongElementDTO song = new SongElementDTO();
