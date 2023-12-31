@@ -11,10 +11,7 @@ import com.medialistmaker.movie.service.movie.MovieServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static java.util.Objects.isNull;
 
@@ -31,12 +28,14 @@ public class OmdbApiController {
     @Autowired
     MovieServiceImpl movieService;
 
-    @GetMapping("/names/{name}")
-    public ResponseEntity<MovieElementListDTO> getByMovieName(@PathVariable("name") String name)
+    @GetMapping
+    public ResponseEntity<MovieElementListDTO> browseByQueryAndFilter(
+            @RequestParam("name") String movieName,
+            @RequestParam(value = "year", required = false) String year)
             throws CustomBadRequestException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.omdbConnectorProxy.getByQuery(name),
+                this.omdbConnectorProxy.getByQuery(movieName, year),
                 HttpStatus.OK
         );
 

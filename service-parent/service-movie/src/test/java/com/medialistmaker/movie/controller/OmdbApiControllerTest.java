@@ -22,8 +22,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,21 +63,21 @@ class OmdbApiControllerTest {
         listDTO.setSearchResults(List.of(firstListItemDTO, secondListItemDTO));
 
         Mockito
-                .when(this.omdbConnectorProxy.getByQuery(anyString()))
+                .when(this.omdbConnectorProxy.getByQuery(anyString(), any()))
                 .thenReturn(listDTO);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get(
-                                        "/api/movies/omdbapi/names/{name}",
-                                        "test"
+                                        "/api/movies/omdbapi"
                                 )
+                                .param("name", "test")
                 )
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
                         jsonPath("$.totalResults", equalTo(listDTO.getTotalResults())),
-                        jsonPath("$.movieElementList", hasSize(2))
+                        jsonPath("$.searchResults", hasSize(2))
                 );
     }
 
@@ -86,13 +85,13 @@ class OmdbApiControllerTest {
     void givenMovieNameWhenGetByMovieNameAndApiNotAvailableShouldReturn400() throws Exception {
 
         Mockito
-                .when(this.omdbConnectorProxy.getByQuery(anyString()))
+                .when(this.omdbConnectorProxy.getByQuery(anyString(), any()))
                 .thenThrow(new CustomBadRequestException("Test", new ArrayList<>()));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get(
-                                        "/api/movies/omdbapi/names/{name}",
+                                        "/api/movies/omdbapi",
                                         "test"
                                 )
                 )
@@ -140,8 +139,7 @@ class OmdbApiControllerTest {
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.apiCode", equalTo(movieElement.getApiCode())),
-                        jsonPath("$.isAlreadyInList", equalTo(Boolean.TRUE))
+                        jsonPath("$.apiCode", equalTo(movieElement.getApiCode()))
                 );
     }
 
@@ -175,6 +173,33 @@ class OmdbApiControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         jsonPath("$.apiCode", equalTo(movieElement.getApiCode()))
+                );
+    }
+
+    @Test
+    void givenInvalidApiCodeWhenGetByApiCodeShouldThrowNotFoundExceptionAndReturn404() throws Exception {
+
+        MovieElementDTO movieElement = new MovieElementDTO();
+        movieElement.setApiCode(null);
+
+        Mockito
+                .when(this.omdbConnectorProxy.getByApiCode(anyString()))
+                .thenReturn(movieElement);
+
+        Mockito
+                .when(this.movieService.readByApiCode(anyString()))
+                .thenThrow(CustomNotFoundException.class);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get(
+                                        "/api/movies/omdbapi/apicodes/{apicode}",
+                                        "test"
+                                )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isNotFound()
                 );
     }
 

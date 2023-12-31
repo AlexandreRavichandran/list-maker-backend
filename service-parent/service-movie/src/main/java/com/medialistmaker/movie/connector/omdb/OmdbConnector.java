@@ -19,7 +19,11 @@ public interface OmdbConnector {
             throws CustomBadRequestException, ServiceNotAvailableException;
 
     @GetMapping
-    MovieElementListDTO getMoviesByQuery(@RequestParam("s") String query, @RequestParam("apiKey") String apiKey)
+    MovieElementListDTO getMoviesByQuery(
+            @RequestParam("s") String query,
+            @RequestParam("apiKey") String apiKey,
+            @RequestParam("type") String type,
+            @RequestParam(value = "y", required = false) String year)
             throws CustomBadRequestException, ServiceNotAvailableException;
 
 }

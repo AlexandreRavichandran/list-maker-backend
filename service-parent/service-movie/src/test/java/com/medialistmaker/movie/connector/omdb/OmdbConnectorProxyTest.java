@@ -1,7 +1,5 @@
 package com.medialistmaker.movie.connector.omdb;
 
-import com.medialistmaker.movie.connector.omdb.OmdbConnector;
-import com.medialistmaker.movie.connector.omdb.OmdbConnectorProxy;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListItemDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
@@ -13,11 +11,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class OmdbConnectorProxyTest {
@@ -61,13 +60,12 @@ class OmdbConnectorProxyTest {
         secondItem.setApiCode("XXXX");
 
         MovieElementListDTO movieElementListDTO = new MovieElementListDTO();
-        movieElementListDTO.setMovieElementList(List.of(firstItem, secondItem));
-        movieElementListDTO.setResponseStatus("200");
-        movieElementListDTO.setTotalResults("2");
+        movieElementListDTO.setSearchResults(List.of(firstItem, secondItem));
+        movieElementListDTO.setTotalResults(2);
 
-        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any())).thenReturn(movieElementListDTO);
+        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any(), anyString(), any())).thenReturn(movieElementListDTO);
 
-        MovieElementListDTO testGetByQuery = this.omdbConnectorProxy.getByQuery("test");
+        MovieElementListDTO testGetByQuery = this.omdbConnectorProxy.getByQuery("test", null);
 
         assertEquals(movieElementListDTO, testGetByQuery);
     }
@@ -85,8 +83,8 @@ class OmdbConnectorProxyTest {
     @Test
     void givenQueryWhenGetByQueryAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any())).thenThrow(CustomBadRequestException.class);
+        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any(), anyString(), any())).thenThrow(CustomBadRequestException.class);
 
-        assertThrows(CustomBadRequestException.class, () ->  this.omdbConnectorProxy.getByQuery("test"));
+        assertThrows(CustomBadRequestException.class, () -> this.omdbConnectorProxy.getByQuery("test", null));
     } 
 }

@@ -21,7 +21,7 @@ public class OmdbConnectorProxy {
         return this.omdbConnector.getMovieByApiCode(apiCode, omdbApiKey, "full");
     }
 
-    public MovieElementListDTO getByQuery(String query) throws CustomBadRequestException, ServiceNotAvailableException {
-        return this.omdbConnector.getMoviesByQuery(query, omdbApiKey);
+    public MovieElementListDTO getByQuery(String query, String year) throws CustomBadRequestException, ServiceNotAvailableException {
+        return this.omdbConnector.getMoviesByQuery(query, omdbApiKey, "movie", year);
     }
 }
