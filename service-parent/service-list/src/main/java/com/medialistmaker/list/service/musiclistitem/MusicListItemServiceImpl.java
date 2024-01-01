@@ -1,9 +1,7 @@
 package com.medialistmaker.list.service.musiclistitem;
 
 import com.medialistmaker.list.connector.music.MusicConnectorProxy;
-import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.domain.MusicListItem;
-import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.dto.music.MusicAddDTO;
 import com.medialistmaker.list.dto.music.MusicDTO;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
@@ -16,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +39,45 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     @Override
     public List<MusicListItem> getLatestAddedByAppUserId(Long appUserId) {
         return this.musicListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(appUserId);
+    }
+
+    @Override
+    public List<MusicListItem> editSortingOrder(Long appUserId, Long musicListItemId, Integer newSortingNumber)
+            throws CustomNotFoundException {
+
+        List<MusicListItem> musicListItems = this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
+
+        MusicListItem musicListItemToChange = this.musicListItemRepository.getReferenceById(musicListItemId);
+
+        if(isNull(musicListItemToChange)) {
+            throw new CustomNotFoundException("Music item not found");
+        }
+
+        Integer oldSortingNumber = musicListItemToChange.getSortingOrder();
+
+        if(oldSortingNumber < newSortingNumber) {
+            for (MusicListItem item : musicListItems) {
+                if(item.getSortingOrder() > oldSortingNumber && item.getSortingOrder() <= newSortingNumber) {
+                    item.setSortingOrder(item.getSortingOrder() -1);
+                }
+            }
+        }
+
+        if(oldSortingNumber > newSortingNumber ) {
+            for (MusicListItem item : musicListItems) {
+                if(item.getSortingOrder() < oldSortingNumber && item.getSortingOrder() >= newSortingNumber) {
+                    item.setSortingOrder(item.getSortingOrder() +1);
+                }
+            }
+        }
+
+        musicListItemToChange.setSortingOrder(newSortingNumber);
+
+        this.musicListItemRepository.save(musicListItemToChange);
+
+        musicListItems.sort(Comparator.comparingInt(MusicListItem::getSortingOrder));
+        return this.musicListItemRepository.saveAll(musicListItems);
+
     }
 
     @Override
@@ -85,7 +123,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.delete(itemToDelete);
 
-        this.updateOrder(1L);
+        this.updateAllMusicListItemSortingOrder(1L);
 
         Boolean isMovieUsedInAnotherList = this.isMusicUsedInOtherList(itemToDelete.getMusicId());
 
@@ -117,17 +155,6 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
     }
 
-    private Integer getNextSortingOrder(Long appUserId) {
-
-        MusicListItem appUserLastItem = this.musicListItemRepository.getFirstByAppUserIdOrderBySortingOrderDesc(appUserId);
-
-        if(nonNull(appUserLastItem)) {
-            return appUserLastItem.getSortingOrder() + 1;
-        }
-
-        return 1;
-    }
-
     public Boolean isMusicUsedInOtherList(Long musicId) {
 
         List<MusicListItem> musicMistItems = this.musicListItemRepository.getByMusicId(musicId);
@@ -136,12 +163,8 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
     }
 
-    private void deleteMusic(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException{
-        this.musicConnectorProxy.deleteById(movieId);
-    }
-
     @Override
-    public void updateOrder(Long appUserId) {
+    public void updateAllMusicListItemSortingOrder(Long appUserId) {
         List<MusicListItem> musicListItems = this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
 
         Integer i = 1;
@@ -153,6 +176,21 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.saveAll(musicListItems);
 
+    }
+
+    private Integer getNextSortingOrder(Long appUserId) {
+
+        MusicListItem appUserLastItem = this.musicListItemRepository.getFirstByAppUserIdOrderBySortingOrderDesc(appUserId);
+
+        if(nonNull(appUserLastItem)) {
+            return appUserLastItem.getSortingOrder() + 1;
+        }
+
+        return 1;
+    }
+
+    private void deleteMusic(Long movieId) throws CustomNotFoundException, ServiceNotAvailableException{
+        this.musicConnectorProxy.deleteById(movieId);
     }
 
     private Boolean isMusicAlreadyInAppUserList(Long musicId, Long appUserId) {

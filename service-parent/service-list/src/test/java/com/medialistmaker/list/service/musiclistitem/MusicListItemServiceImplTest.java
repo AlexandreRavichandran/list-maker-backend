@@ -251,7 +251,7 @@ class MusicListItemServiceImplTest {
 
         Mockito.when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(musicListItems);
 
-        this.musicListService.updateOrder(1L);
+        this.musicListService.updateAllMusicListItemSortingOrder(1L);
 
         Mockito.verify(this.musicListItemRepository).saveAll(musicListItems);
 
@@ -317,4 +317,93 @@ class MusicListItemServiceImplTest {
 
     }
 
+    @Test
+    void givenAppUserIdAndMusicItemIdAndNewSortingOrderOnTopWhenEditSortingOrderShouldChangeSortingOrderAndReturnAllList()
+            throws Exception {
+
+        MusicListItem firstItem = new MusicListItem();
+        firstItem.setId(1L);
+        firstItem.setMusicId(1L);
+        firstItem.setSortingOrder(1);
+        firstItem.setAppUserId(1L);
+        firstItem.setAddedAt(new Date());
+
+        MusicListItem secondItem = new MusicListItem();
+        secondItem.setId(2L);
+        secondItem.setMusicId(1L);
+        secondItem.setSortingOrder(2);
+        secondItem.setAppUserId(1L);
+        secondItem.setAddedAt(new Date());
+
+        MusicListItem thirdItem = new MusicListItem();
+        thirdItem.setId(3L);
+        thirdItem.setMusicId(1L);
+        thirdItem.setSortingOrder(3);
+        thirdItem.setAppUserId(1L);
+        thirdItem.setAddedAt(new Date());
+
+        Mockito
+                .when(this.musicListItemRepository.getReferenceById(anyLong()))
+                .thenReturn(thirdItem);
+
+        Mockito
+                .when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .thenReturn(List.of(firstItem, secondItem, thirdItem));
+
+        List<MusicListItem> testEditSortingOrder = this.musicListService.editSortingOrder(1L, 1L, 1);
+
+        assertEquals(1, thirdItem.getSortingOrder());
+        assertEquals(2, firstItem.getSortingOrder());
+        assertEquals(3, secondItem.getSortingOrder());
+    }
+
+    @Test
+    void givenAppUserIdAndMusicItemIdAndNewSortingOrderOnBottomWhenEditSortingOrderShouldChangeSortingOrderAndReturnAllList()
+            throws Exception {
+
+        MusicListItem firstItem = new MusicListItem();
+        firstItem.setId(1L);
+        firstItem.setMusicId(1L);
+        firstItem.setSortingOrder(1);
+        firstItem.setAppUserId(1L);
+        firstItem.setAddedAt(new Date());
+
+        MusicListItem secondItem = new MusicListItem();
+        secondItem.setId(2L);
+        secondItem.setMusicId(1L);
+        secondItem.setSortingOrder(2);
+        secondItem.setAppUserId(1L);
+        secondItem.setAddedAt(new Date());
+
+        MusicListItem thirdItem = new MusicListItem();
+        thirdItem.setId(3L);
+        thirdItem.setMusicId(1L);
+        thirdItem.setSortingOrder(3);
+        thirdItem.setAppUserId(1L);
+        thirdItem.setAddedAt(new Date());
+
+        Mockito
+                .when(this.musicListItemRepository.getReferenceById(anyLong()))
+                .thenReturn(firstItem);
+
+        Mockito
+                .when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .thenReturn(List.of(firstItem, secondItem, thirdItem));
+
+        List<MusicListItem> testEditSortingOrder = this.musicListService.editSortingOrder(1L, 1L, 3);
+
+        assertEquals(1, secondItem.getSortingOrder());
+        assertEquals(2, thirdItem.getSortingOrder());
+        assertEquals(3, firstItem.getSortingOrder());
+    }
+
+    @Test
+    void givenAppUserIdAndInvalidMusicItemIdAndNewSortingOrderWhenEditSortingOrderShouldThrowNotFoundException() {
+
+        Mockito
+                .when(this.musicListItemRepository.getReferenceById(anyLong()))
+                .thenReturn(null);
+
+        assertThrows(CustomNotFoundException.class, () -> this.musicListService.editSortingOrder(1L, 1L, 1));
+    }
 }

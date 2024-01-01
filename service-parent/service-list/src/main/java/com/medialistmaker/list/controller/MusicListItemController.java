@@ -62,6 +62,20 @@ public class MusicListItemController {
 
     }
 
+    @PutMapping("/{listItemId}")
+    public ResponseEntity<List<MusicListItemDTO>> editSortingOrder(
+            @PathVariable("listItemId") Long listItemId,
+            @RequestBody Integer nextSortingOrder) throws CustomNotFoundException {
+
+        return new ResponseEntity<>(
+                this.musicListService.editSortingOrder(1L, listItemId, nextSortingOrder)
+                        .stream()
+                        .map(listItem -> this.modelMapper.map(listItem, MusicListItemDTO.class))
+                        .toList(),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping
     public ResponseEntity<MusicListItemDTO> add(@RequestBody MusicListItemAddDTO musicListItemDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {

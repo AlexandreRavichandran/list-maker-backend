@@ -15,6 +15,8 @@ public interface MusicListItemService {
 
     List<MusicListItem> getLatestAddedByAppUserId(Long appUserId);
 
+    List<MusicListItem> editSortingOrder(Long appUserId, Long musicListItemId, Integer newSortingNumber) throws CustomNotFoundException;
+
     MusicListItem add(MusicListItemAddDTO listItemAddDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 
@@ -25,5 +27,5 @@ public interface MusicListItemService {
 
     Boolean isMusicUsedInOtherList(Long musicId);
 
-    void updateOrder(Long appUserId);
+    void updateAllMusicListItemSortingOrder(Long appUserId);
 }

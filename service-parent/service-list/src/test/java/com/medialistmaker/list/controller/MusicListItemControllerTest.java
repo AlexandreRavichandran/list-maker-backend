@@ -244,7 +244,6 @@ class MusicListItemControllerTest {
                 );
     }
 
-
     @Test
     void givenListItemIdWhenDeleteByIdShouldDeleteAndReturnRelatedListItemAndReturn200() throws Exception {
 
@@ -315,5 +314,80 @@ class MusicListItemControllerTest {
                         status().isOk(),
                         jsonPath("$", equalTo(Boolean.TRUE))
                 );
+    }
+
+    @Test
+    void givenAppUserIdAndMusicItemIdAndNewSortingOrderWhenEditSortingOrderShouldChangeSortingOrderAndReturnBothEditedMusicItemAndReturn200()
+            throws Exception {
+
+        MusicListItem musicListItemToEdit = new MusicListItem();
+        musicListItemToEdit.setId(1L);
+        musicListItemToEdit.setMusicId(1L);
+        musicListItemToEdit.setSortingOrder(1);
+        musicListItemToEdit.setAppUserId(1L);
+        musicListItemToEdit.setAddedAt(new Date());
+
+        MusicListItem musicListWithSameSortingOrder = new MusicListItem();
+        musicListWithSameSortingOrder.setId(2L);
+        musicListWithSameSortingOrder.setMusicId(1L);
+        musicListWithSameSortingOrder.setSortingOrder(2);
+        musicListWithSameSortingOrder.setAppUserId(1L);
+        musicListWithSameSortingOrder.setAddedAt(new Date());
+
+        Mockito
+                .when(this.musicItemServiceImpl.editSortingOrder(anyLong(), anyLong(), anyInt()))
+                .thenReturn(List.of(musicListItemToEdit, musicListWithSameSortingOrder));
+
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/lists/musics/{listItemId}","1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(1)
+                                )
+                )
+
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", hasSize(2))
+                );
+
+    }
+
+    @Test
+    void givenAppUserIdAndInvalidMusicItemIdAndNewSortingOrderWhenEditSortingOrderShouldThrowNotFoundException() throws Exception {
+
+        Mockito
+                .when(this.musicItemServiceImpl.editSortingOrder(anyLong(), anyLong(), anyInt()))
+                .thenThrow(CustomNotFoundException.class);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/lists/musics/{listItemId}","1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(1)
+                                )
+                )
+
+                .andDo(print())
+                .andExpectAll(
+                        status().isNotFound()
+                );
+
     }
 }
