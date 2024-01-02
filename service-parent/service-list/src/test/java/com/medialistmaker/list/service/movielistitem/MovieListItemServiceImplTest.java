@@ -304,4 +304,96 @@ class MovieListItemServiceImplTest {
                 () -> this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(1L, "test"));
 
     }
+
+    @Test
+    void givenAppUserIdAndMovieItemIdAndNewSortingOrderOnTopWhenEditSortingOrderShouldChangeSortingOrderAndReturnBothEditedMovieItem()
+            throws Exception {
+
+        MovieListItem firstItem = new MovieListItem();
+        firstItem.setId(1L);
+        firstItem.setMovieId(1L);
+        firstItem.setSortingOrder(1);
+        firstItem.setAppUserId(1L);
+        firstItem.setAddedAt(new Date());
+
+        MovieListItem secondItem = new MovieListItem();
+        secondItem.setId(2L);
+        secondItem.setMovieId(1L);
+        secondItem.setSortingOrder(2);
+        secondItem.setAppUserId(1L);
+        secondItem.setAddedAt(new Date());
+
+        MovieListItem thirdItem = new MovieListItem();
+        thirdItem.setId(3L);
+        thirdItem.setMovieId(1L);
+        thirdItem.setSortingOrder(3);
+        thirdItem.setAppUserId(1L);
+        thirdItem.setAddedAt(new Date());
+
+
+        Mockito
+                .when(this.movieListItemRepository.getReferenceById(anyLong()))
+                .thenReturn(thirdItem);
+
+        Mockito
+                .when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .thenReturn(List.of(firstItem, secondItem, thirdItem));
+
+        List<MovieListItem> testEditSortingOrder = this.movieListService.editSortingOrder(1L, 1L, 1);
+
+        assertEquals(1, thirdItem.getSortingOrder());
+        assertEquals(2, firstItem.getSortingOrder());
+        assertEquals(3, secondItem.getSortingOrder());
+    }
+
+    @Test
+    void givenAppUserIdAndMovieItemIdAndNewSortingOrderOnBottomWhenEditSortingOrderShouldChangeSortingOrderAndReturnBothEditedMovieItem()
+            throws Exception {
+
+        MovieListItem firstItem = new MovieListItem();
+        firstItem.setId(1L);
+        firstItem.setMovieId(1L);
+        firstItem.setSortingOrder(1);
+        firstItem.setAppUserId(1L);
+        firstItem.setAddedAt(new Date());
+
+        MovieListItem secondItem = new MovieListItem();
+        secondItem.setId(2L);
+        secondItem.setMovieId(1L);
+        secondItem.setSortingOrder(2);
+        secondItem.setAppUserId(1L);
+        secondItem.setAddedAt(new Date());
+
+        MovieListItem thirdItem = new MovieListItem();
+        thirdItem.setId(3L);
+        thirdItem.setMovieId(1L);
+        thirdItem.setSortingOrder(3);
+        thirdItem.setAppUserId(1L);
+        thirdItem.setAddedAt(new Date());
+
+
+        Mockito
+                .when(this.movieListItemRepository.getReferenceById(anyLong()))
+                .thenReturn(firstItem);
+
+        Mockito
+                .when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
+                .thenReturn(List.of(firstItem, secondItem, thirdItem));
+
+        List<MovieListItem> testEditSortingOrder = this.movieListService.editSortingOrder(1L, 1L, 3);
+
+        assertEquals(1, secondItem.getSortingOrder());
+        assertEquals(2, thirdItem.getSortingOrder());
+        assertEquals(3, firstItem.getSortingOrder());
+    }
+
+    @Test
+    void givenAppUserIdAndInvalidMovieItemIdAndNewSortingOrderWhenEditSortingOrderShouldThrowNotFoundException() {
+
+        Mockito
+                .when(this.movieListItemRepository.getReferenceById(anyLong()))
+                .thenReturn(null);
+
+        assertThrows(CustomNotFoundException.class, () -> this.movieListService.editSortingOrder(1L, 1L, 1));
+    }
 }

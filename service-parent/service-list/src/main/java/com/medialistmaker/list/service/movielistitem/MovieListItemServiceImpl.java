@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +43,46 @@ public class MovieListItemServiceImpl implements MovieListItemService {
     @Override
     public List<MovieListItem> getLatestAddedByAppUserId(Long appUserId) {
         return this.movieListItemRepository.getTop3ByAppUserIdOrderByAddedAtDesc(appUserId);
+    }
+
+    @Override
+    public List<MovieListItem> editSortingOrder(Long appUserId, Long musicListItemId, Integer newSortingNumber)
+            throws CustomNotFoundException {
+
+        List<MovieListItem> movieListItems = this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
+
+        MovieListItem movieListItemToChange = this.movieListItemRepository.getReferenceById(musicListItemId);
+
+        if (isNull(movieListItemToChange)) {
+            throw new CustomNotFoundException("Music item not found");
+        }
+
+        Integer oldSortingNumber = movieListItemToChange.getSortingOrder();
+
+        if (oldSortingNumber < newSortingNumber) {
+            for (MovieListItem item : movieListItems) {
+                if (item.getSortingOrder() > oldSortingNumber && item.getSortingOrder() <= newSortingNumber) {
+                    item.setSortingOrder(item.getSortingOrder() - 1);
+                }
+            }
+        }
+
+        if (oldSortingNumber > newSortingNumber) {
+            for (MovieListItem item : movieListItems) {
+                if (item.getSortingOrder() < oldSortingNumber && item.getSortingOrder() >= newSortingNumber) {
+                    item.setSortingOrder(item.getSortingOrder() + 1);
+                }
+            }
+        }
+
+        movieListItemToChange.setSortingOrder(newSortingNumber);
+
+        this.movieListItemRepository.save(movieListItemToChange);
+
+        movieListItems.sort(Comparator.comparingInt(MovieListItem::getSortingOrder));
+
+        return this.movieListItemRepository.saveAll(movieListItems);
+
     }
 
     @Override

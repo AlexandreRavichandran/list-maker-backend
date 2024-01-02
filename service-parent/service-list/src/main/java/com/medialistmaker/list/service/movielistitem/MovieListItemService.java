@@ -15,6 +15,8 @@ public interface MovieListItemService {
 
     List<MovieListItem> getLatestAddedByAppUserId(Long appUserId);
 
+    List<MovieListItem> editSortingOrder(Long appUserId, Long musicListItemId, Integer newSortingNumber) throws CustomNotFoundException;
+
     MovieListItem add(MovieListItemAddDTO movieListItemAdd)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 

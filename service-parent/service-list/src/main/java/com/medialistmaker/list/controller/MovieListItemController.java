@@ -62,6 +62,20 @@ public class MovieListItemController {
 
     }
 
+    @PutMapping("/{listItemId}")
+    public ResponseEntity<List<MovieListItemDTO>> editSortingOrder(
+            @PathVariable("listItemId") Long listItemId,
+            @RequestBody Integer nextSortingOrder) throws CustomNotFoundException {
+
+        return new ResponseEntity<>(
+                this.movieListService.editSortingOrder(1L, listItemId, nextSortingOrder)
+                        .stream()
+                        .map(listItem -> this.modelMapper.map(listItem, MovieListItemDTO.class))
+                        .toList(),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping
     public ResponseEntity<MovieListItemDTO> add(@RequestBody MovieListItemAddDTO listItemDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {

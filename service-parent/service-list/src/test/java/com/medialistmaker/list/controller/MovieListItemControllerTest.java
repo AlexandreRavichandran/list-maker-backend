@@ -25,8 +25,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -313,5 +312,80 @@ class MovieListItemControllerTest {
                         jsonPath("$", equalTo(Boolean.TRUE))
 
                 );
+    }
+
+    @Test
+    void givenAppUserIdAndMovieItemIdAndNewSortingOrderWhenEditSortingOrderShouldChangeSortingOrderAndReturnBothEditedMovieItemAndReturn200()
+            throws Exception {
+
+        MovieListItem movieListItemToEdit = new MovieListItem();
+        movieListItemToEdit.setId(1L);
+        movieListItemToEdit.setMovieId(1L);
+        movieListItemToEdit.setSortingOrder(1);
+        movieListItemToEdit.setAppUserId(1L);
+        movieListItemToEdit.setAddedAt(new Date());
+
+        MovieListItem movieListWithSameSortingOrder = new MovieListItem();
+        movieListWithSameSortingOrder.setId(2L);
+        movieListWithSameSortingOrder.setMovieId(1L);
+        movieListWithSameSortingOrder.setSortingOrder(2);
+        movieListWithSameSortingOrder.setAppUserId(1L);
+        movieListWithSameSortingOrder.setAddedAt(new Date());
+
+        Mockito
+                .when(this.movieItemServiceImpl.editSortingOrder(anyLong(), anyLong(), anyInt()))
+                .thenReturn(List.of(movieListItemToEdit, movieListWithSameSortingOrder));
+
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/lists/movies/{listItemId}", "1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(1)
+                                )
+                )
+
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$", hasSize(2))
+                );
+
+    }
+
+    @Test
+    void givenAppUserIdAndInvalidMovieItemIdAndNewSortingOrderWhenEditSortingOrderShouldThrowNotFoundException() throws Exception {
+
+        Mockito
+                .when(this.movieItemServiceImpl.editSortingOrder(anyLong(), anyLong(), anyInt()))
+                .thenThrow(CustomNotFoundException.class);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/lists/movies/{listItemId}", "1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        new ObjectMapper()
+                                                .configure(
+                                                        SerializationFeature.WRAP_ROOT_VALUE,
+                                                        false
+                                                )
+                                                .writeValueAsString(1)
+                                )
+                )
+
+                .andDo(print())
+                .andExpectAll(
+                        status().isNotFound()
+                );
+
     }
 }
