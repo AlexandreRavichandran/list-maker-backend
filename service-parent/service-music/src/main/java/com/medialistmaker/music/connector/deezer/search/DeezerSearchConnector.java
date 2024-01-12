@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface DeezerSearchConnector {
 
     @GetMapping("/album")
-    AlbumSearchListDTO getAlbumByQuery(@RequestParam("q") String query) throws CustomBadRequestException;
+    AlbumSearchListDTO getAlbumByQuery(@RequestParam("q") String query, @RequestParam("index") Integer index)
+            throws CustomBadRequestException;
 
     @GetMapping("/track")
     SongSearchListDTO getSongByQuery(@RequestParam("q") String query) throws CustomBadRequestException;

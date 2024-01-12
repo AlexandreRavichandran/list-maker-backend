@@ -22,7 +22,7 @@ public class AlbumElementDTO extends MusicElementDTO {
 
     private List<GenreDTO> genreList;
 
-    private String type;
+    private String elementType;
 
     @JsonProperty("pictureUrl")
     public String getPictureUrl() {
@@ -67,13 +67,13 @@ public class AlbumElementDTO extends MusicElementDTO {
         this.apiCode = apiCode;
     }
 
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    @JsonProperty("elementType")
+    public String getElementType() {
+        return elementType;
     }
 
     @JsonProperty("record_type")
-    public void setType(String type) {
-        this.type = type;
+    public void setElementType(String elementType) {
+        this.elementType = elementType;
     }
 }

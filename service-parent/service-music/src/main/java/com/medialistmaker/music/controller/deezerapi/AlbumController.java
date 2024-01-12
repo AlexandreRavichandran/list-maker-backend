@@ -49,7 +49,8 @@ public class AlbumController {
     public ResponseEntity<AlbumSearchListDTO> browseByQueryAndFilter(
             @RequestParam("name") String albumName,
             @RequestParam(value = "artist", required = false) String artist,
-            @RequestParam(value = "label", required = false) String label)
+            @RequestParam(value = "label", required = false) String label,
+            @RequestParam(value = "index", required = false) Integer currentIndex)
             throws CustomBadRequestException {
 
         Map<String, String> params = new HashMap<>();
@@ -57,8 +58,13 @@ public class AlbumController {
         params.put("artist", artist);
         params.put("label", label);
 
+        AlbumSearchListDTO searchListDTO = this.albumSearchConnectorProxy
+                .getAlbumByQuery(this.parameterFormatter.formatParams(params), currentIndex);
+
+        searchListDTO.setCurrentIndex(isNull(currentIndex) ? 1: currentIndex);
+
         return new ResponseEntity<>(
-                this.albumSearchConnectorProxy.getAlbumByQuery(this.parameterFormatter.formatParams(params)),
+                searchListDTO,
                 HttpStatus.OK
         );
 

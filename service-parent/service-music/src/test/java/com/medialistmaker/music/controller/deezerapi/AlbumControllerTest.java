@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AlbumControllerTest {
 
     @MockBean
-    DeezerSearchConnectorProxy searchConnectorProxy;
+    DeezerSearchConnectorProxy albumSearchConnectorProxy;
 
     @MockBean
     DeezerAlbumConnectorProxy albumConnectorProxy;
@@ -81,9 +81,8 @@ class AlbumControllerTest {
         Mockito.when(this.deezerFormatter.formatParams(anyMap())).thenReturn("query");
 
         Mockito
-                .when(this.searchConnectorProxy.getAlbumByQuery(anyString()))
+                .when(this.albumSearchConnectorProxy.getAlbumByQuery(anyString(), anyInt()))
                 .thenReturn(albumSearchListDTO);
-
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
@@ -92,6 +91,7 @@ class AlbumControllerTest {
                                 )
                                 .param("name", "test")
                                 .param("artist", "artist")
+                                .param("page", "0")
                 )
                 .andExpectAll(
                         status().isOk(),

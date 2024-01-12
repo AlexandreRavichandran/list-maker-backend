@@ -12,8 +12,12 @@ public class DeezerSearchConnectorProxy {
     @Autowired
     DeezerSearchConnector deezerSearchConnector;
 
+    public AlbumSearchListDTO getAlbumByQuery(String query, Integer index) throws CustomBadRequestException {
+        return this.deezerSearchConnector.getAlbumByQuery(query, index);
+    }
+
     public AlbumSearchListDTO getAlbumByQuery(String query) throws CustomBadRequestException {
-        return this.deezerSearchConnector.getAlbumByQuery(query);
+        return this.deezerSearchConnector.getAlbumByQuery(query, 0);
     }
 
     public SongSearchListDTO getSongByQuery(String query) throws CustomBadRequestException {

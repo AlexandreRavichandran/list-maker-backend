@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,24 +50,24 @@ class DeezerSearchConnectorProxyTest {
         AlbumSearchListDTO albumSearchListDTO = new AlbumSearchListDTO();
         albumSearchListDTO.setSearchResults(List.of(firstAlbum, secondAlbum));
 
-        Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString())).thenReturn(albumSearchListDTO);
+        Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString(), anyInt())).thenReturn(albumSearchListDTO);
 
-        AlbumSearchListDTO testGetByApiCode = this.deezerSearchConnectorProxy.getAlbumByQuery("test");
+        AlbumSearchListDTO testGetByApiCode = this.deezerSearchConnectorProxy.getAlbumByQuery("test", 0);
 
         assertNotNull(testGetByApiCode);
         assertEquals(albumSearchListDTO, testGetByApiCode);
-        Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString());
+        Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString(), anyInt());
 
     }
 
     @Test
     void givenQueryWhenGetAlbumByQueryAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString())).thenThrow(CustomBadRequestException.class);
+        Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString(), anyInt())).thenThrow(CustomBadRequestException.class);
 
-        assertThrows(CustomBadRequestException.class, () -> this.deezerSearchConnectorProxy.getAlbumByQuery("test"));
+        assertThrows(CustomBadRequestException.class, () -> this.deezerSearchConnectorProxy.getAlbumByQuery("test", 0));
 
-        Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString());
+        Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString(), anyInt());
 
     }
 
