@@ -15,8 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class OmdbConnectorProxyTest {
@@ -63,9 +62,9 @@ class OmdbConnectorProxyTest {
         movieElementListDTO.setSearchResults(List.of(firstItem, secondItem));
         movieElementListDTO.setTotalResults(2);
 
-        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any(), anyString(), any())).thenReturn(movieElementListDTO);
+        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any(), anyString(), anyString(), anyInt())).thenReturn(movieElementListDTO);
 
-        MovieElementListDTO testGetByQuery = this.omdbConnectorProxy.getByQuery("test", null);
+        MovieElementListDTO testGetByQuery = this.omdbConnectorProxy.getByQuery("test", "2023", 1);
 
         assertEquals(movieElementListDTO, testGetByQuery);
     }
@@ -83,8 +82,8 @@ class OmdbConnectorProxyTest {
     @Test
     void givenQueryWhenGetByQueryAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
 
-        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any(), anyString(), any())).thenThrow(CustomBadRequestException.class);
+        Mockito.when(this.omdbConnector.getMoviesByQuery(anyString(), any(), anyString(), anyString(), anyInt() )).thenThrow(CustomBadRequestException.class);
 
-        assertThrows(CustomBadRequestException.class, () -> this.omdbConnectorProxy.getByQuery("test", null));
+        assertThrows(CustomBadRequestException.class, () -> this.omdbConnectorProxy.getByQuery("test", "2023", 0));
     } 
 }

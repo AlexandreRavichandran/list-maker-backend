@@ -23,7 +23,8 @@ public interface OmdbConnector {
             @RequestParam("s") String query,
             @RequestParam("apiKey") String apiKey,
             @RequestParam("type") String type,
-            @RequestParam(value = "y", required = false) String year)
+            @RequestParam(value = "y", required = false) String year,
+            @RequestParam("page") Integer page)
             throws CustomBadRequestException, ServiceNotAvailableException;
 
 }

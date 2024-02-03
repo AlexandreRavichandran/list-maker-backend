@@ -12,6 +12,10 @@ public class MovieElementListDTO {
 
     private Integer totalResults;
 
+    protected Integer currentIndex;
+
+    protected Integer elementsPerPage;
+
     @JsonProperty("searchResults")
     public List<MovieElementListItemDTO> getSearchResults() {
         return searchResults;

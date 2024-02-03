@@ -19,6 +19,8 @@ import static java.util.Objects.isNull;
 @RequestMapping("/api/movies/omdbapi")
 public class OmdbApiController {
 
+    private static final Integer OMDB_ELEMENT_PER_PAGE = 10;
+
     @Autowired
     OmdbConnectorProxy omdbConnectorProxy;
 
@@ -31,11 +33,19 @@ public class OmdbApiController {
     @GetMapping
     public ResponseEntity<MovieElementListDTO> browseByQueryAndFilter(
             @RequestParam("name") String movieName,
-            @RequestParam(value = "year", required = false) String year)
+            @RequestParam(value = "year", required = false) String year,
+            @RequestParam("index") Integer index)
             throws CustomBadRequestException, ServiceNotAvailableException {
 
+        Integer page = index.equals(0) || index < OMDB_ELEMENT_PER_PAGE ? 1 : index / OMDB_ELEMENT_PER_PAGE;
+
+        MovieElementListDTO results = this.omdbConnectorProxy.getByQuery(movieName, year, page);
+
+        results.setCurrentIndex(index);
+        results.setElementsPerPage(OMDB_ELEMENT_PER_PAGE);
+
         return new ResponseEntity<>(
-                this.omdbConnectorProxy.getByQuery(movieName, year),
+                results,
                 HttpStatus.OK
         );
 

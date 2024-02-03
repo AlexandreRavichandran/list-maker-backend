@@ -63,7 +63,7 @@ class OmdbApiControllerTest {
         listDTO.setSearchResults(List.of(firstListItemDTO, secondListItemDTO));
 
         Mockito
-                .when(this.omdbConnectorProxy.getByQuery(anyString(), any()))
+                .when(this.omdbConnectorProxy.getByQuery(anyString(), any() , anyInt()))
                 .thenReturn(listDTO);
 
         this.mockMvc.perform(
@@ -72,6 +72,7 @@ class OmdbApiControllerTest {
                                         "/api/movies/omdbapi"
                                 )
                                 .param("name", "test")
+                                .param("index", "1")
                 )
                 .andDo(print())
                 .andExpectAll(
@@ -85,7 +86,7 @@ class OmdbApiControllerTest {
     void givenMovieNameWhenGetByMovieNameAndApiNotAvailableShouldReturn400() throws Exception {
 
         Mockito
-                .when(this.omdbConnectorProxy.getByQuery(anyString(), any()))
+                .when(this.omdbConnectorProxy.getByQuery(anyString(), anyString(), anyInt()))
                 .thenThrow(new CustomBadRequestException("Test", new ArrayList<>()));
 
         this.mockMvc.perform(
