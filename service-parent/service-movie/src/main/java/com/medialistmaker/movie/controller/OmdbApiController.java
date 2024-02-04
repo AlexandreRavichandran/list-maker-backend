@@ -1,13 +1,11 @@
 package com.medialistmaker.movie.controller;
 
-import com.medialistmaker.movie.connector.list.ListConnectorProxy;
 import com.medialistmaker.movie.connector.omdb.OmdbConnectorProxy;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.collection.MovieElementListDTO;
 import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
-import com.medialistmaker.movie.service.movie.MovieServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +22,6 @@ public class OmdbApiController {
     @Autowired
     OmdbConnectorProxy omdbConnectorProxy;
 
-    @Autowired
-    ListConnectorProxy listConnectorProxy;
-
-    @Autowired
-    MovieServiceImpl movieService;
-
     @GetMapping
     public ResponseEntity<MovieElementListDTO> browseByQueryAndFilter(
             @RequestParam("name") String movieName,
@@ -37,7 +29,10 @@ public class OmdbApiController {
             @RequestParam("index") Integer index)
             throws CustomBadRequestException, ServiceNotAvailableException {
 
-        Integer page = index.equals(0) || index < OMDB_ELEMENT_PER_PAGE ? 1 : index / OMDB_ELEMENT_PER_PAGE;
+        //To transform index to page, we have to add 10 (pagination start at 1)
+        Integer nextIndex = index + 10;
+
+        Integer page = nextIndex.equals(0) || nextIndex < OMDB_ELEMENT_PER_PAGE ? 1 : nextIndex / OMDB_ELEMENT_PER_PAGE;
 
         MovieElementListDTO results = this.omdbConnectorProxy.getByQuery(movieName, year, page);
 

@@ -61,7 +61,9 @@ public class AlbumController {
         AlbumSearchListDTO searchListDTO = this.albumSearchConnectorProxy
                 .getAlbumByQuery(this.parameterFormatter.formatParams(params), currentIndex);
 
-        searchListDTO.setCurrentIndex(isNull(currentIndex) ? 1: currentIndex);
+        searchListDTO.setCurrentIndex(currentIndex);
+
+        searchListDTO.setElementsPerPage(searchListDTO.getSearchResults().size());
 
         return new ResponseEntity<>(
                 searchListDTO,

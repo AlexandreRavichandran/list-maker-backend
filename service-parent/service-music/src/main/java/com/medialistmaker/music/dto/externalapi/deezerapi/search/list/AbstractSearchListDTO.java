@@ -14,6 +14,8 @@ public abstract class AbstractSearchListDTO<T> {
 
     protected Integer currentIndex;
 
+    protected Integer elementsPerPage;
+
     @JsonProperty("searchResults")
     public List<T> getSearchResults() {
         return searchResults;
