@@ -1,5 +1,6 @@
 package com.medialistmaker.list.controller;
 
+import com.medialistmaker.list.domain.MovieListItem;
 import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
 import com.medialistmaker.list.dto.movie.MovieListItemDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("api/lists/movies")
@@ -38,6 +41,22 @@ public class MovieListItemController {
         );
     }
 
+    @GetMapping("/random")
+    public ResponseEntity<MovieListItemDTO> getRandomInAppUserList() {
+
+        MovieListItem randomMovieLisItem = this.movieListService.getRandomInAppUserList(1L);
+
+        if(isNull(randomMovieLisItem)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(
+                this.modelMapper.map(randomMovieLisItem, MovieListItemDTO.class),
+                HttpStatus.OK
+        );
+
+    }
+
     @GetMapping("/latest")
     public ResponseEntity<List<MovieListItemDTO>> getLatestAddedByAppUserId() {
 
@@ -50,6 +69,7 @@ public class MovieListItemController {
                 HttpStatus.OK
         );
     }
+
 
     @GetMapping("/apicode/{apicode}")
     public ResponseEntity<Boolean> isMovieAlreadyInAppUserList(@PathVariable("apicode") String apiCode)

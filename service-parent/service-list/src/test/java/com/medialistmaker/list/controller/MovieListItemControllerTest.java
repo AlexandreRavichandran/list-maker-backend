@@ -86,6 +86,50 @@ class MovieListItemControllerTest {
     }
 
     @Test
+    void givenAppUserIdWhenGetRandomByAppUserIdShouldReturnRandomMovieListItemAndReturn200() throws Exception {
+
+        MovieListItem movieListItem = MovieListItem
+                .builder()
+                .id(1L)
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        Mockito.when(this.movieItemServiceImpl.getRandomInAppUserList(anyLong())).thenReturn(movieListItem);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/movies/random")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id", equalTo(movieListItem.getId().intValue()))
+                );
+
+    }
+
+    @Test
+    void givenAppUserIdWhenGetRandomByAppUserIdAndMovieListEmptyShouldReturnNullAndReturn404() throws Exception {
+
+        Mockito.when(this.movieItemServiceImpl.getRandomInAppUserList(anyLong())).thenReturn(null);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/movies/random")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isNotFound()
+                );
+
+    }
+
+    @Test
     void givenAppUserIdWhenGetLatestAddedByAppUserIdShouldReturnRelatedMovieListItemAndReturn200() throws Exception {
 
         MovieListItem firstMovieListItem = MovieListItem

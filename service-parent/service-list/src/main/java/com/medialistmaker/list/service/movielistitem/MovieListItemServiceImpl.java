@@ -2,6 +2,7 @@ package com.medialistmaker.list.service.movielistitem;
 
 import com.medialistmaker.list.connector.movie.MovieConnectorProxy;
 import com.medialistmaker.list.domain.MovieListItem;
+import com.medialistmaker.list.domain.MusicListItem;
 import com.medialistmaker.list.dto.movie.MovieAddDTO;
 import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
@@ -15,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -34,6 +33,8 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
     @Autowired
     MovieListItemRepository movieListItemRepository;
+
+    Random random = new Random();
 
     @Override
     public List<MovieListItem> getByAppUserId(Long appUserId) {
@@ -79,7 +80,9 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
         this.movieListItemRepository.save(movieListItemToChange);
 
-        movieListItems.sort(Comparator.comparingInt(MovieListItem::getSortingOrder));
+        List<MovieListItem> newMovieListItem = new ArrayList<>(movieListItems);
+
+        newMovieListItem.sort(Comparator.comparingInt(MovieListItem::getSortingOrder));
 
         return this.movieListItemRepository.saveAll(movieListItems);
 
@@ -190,6 +193,21 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         }
 
         this.movieListItemRepository.saveAll(movieListItems);
+
+    }
+
+    @Override
+    public MovieListItem getRandomInAppUserList(Long appUserId) {
+
+        List<MovieListItem> movieListItems = this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
+
+        if(movieListItems.isEmpty()) {
+            return null;
+        }
+
+        int randomIndex = this.random.nextInt(movieListItems.size());
+
+        return movieListItems.get(randomIndex);
 
     }
 

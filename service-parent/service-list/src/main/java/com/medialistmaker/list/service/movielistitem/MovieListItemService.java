@@ -27,4 +27,6 @@ public interface MovieListItemService {
     Boolean isMovieApiCodeAlreadyInAppUserMovieList(Long appUserId, String apiCode) throws ServiceNotAvailableException;
 
     void updateOrder(Long appUserId);
+
+    MovieListItem getRandomInAppUserList(Long appUserId);
 }

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +76,9 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.save(musicListItemToChange);
 
-        musicListItems.sort(Comparator.comparingInt(MusicListItem::getSortingOrder));
+        List<MusicListItem> newMusicListItem = new ArrayList<>(musicListItems);
+
+        newMusicListItem.sort(Comparator.comparingInt(MusicListItem::getSortingOrder));
         return this.musicListItemRepository.saveAll(musicListItems);
 
     }

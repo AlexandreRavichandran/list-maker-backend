@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -395,5 +396,56 @@ class MovieListItemServiceImplTest {
                 .thenReturn(null);
 
         assertThrows(CustomNotFoundException.class, () -> this.movieListService.editSortingOrder(1L, 1L, 1));
+    }
+
+    @Test
+    void givenAppUserIdWhenGetRandomMovieListItemShouldReturnRandomMovieListItem() {
+
+        MovieListItem firstMovieListItem = MovieListItem
+                .builder()
+                .movieId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MovieListItem secondMovieListItem = MovieListItem
+                .builder()
+                .movieId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MovieListItem thirdMovieListItem = MovieListItem
+                .builder()
+                .movieId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MovieListItem> movieListItemList = List.of(firstMovieListItem, secondMovieListItem, thirdMovieListItem);
+
+        Mockito.when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(movieListItemList);
+
+        MovieListItem testGetRandomByAppUserId = this.movieListService.getRandomInAppUserList(1L);
+
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        assertNotNull(testGetRandomByAppUserId);
+        assertTrue(movieListItemList.contains(testGetRandomByAppUserId));
+
+    }
+
+    @Test
+    void givenAppUserIdWhenGetRandomMovieListItemAndMovieListEmptyShouldReturnNull() {
+
+        Mockito.when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(emptyList());
+
+        MovieListItem testGetRandomByAppUserId = this.movieListService.getRandomInAppUserList(1L);
+
+        Mockito.verify(this.movieListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        assertNull(testGetRandomByAppUserId);
+
     }
 }
