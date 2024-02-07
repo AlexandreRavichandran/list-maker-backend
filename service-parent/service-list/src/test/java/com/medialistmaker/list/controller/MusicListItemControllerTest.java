@@ -86,6 +86,50 @@ class MusicListItemControllerTest {
     }
 
     @Test
+    void givenAppUserIdWhenGetRandomByAppUserIdShouldReturnRandomMusicListItemAndReturn200() throws Exception {
+
+        MusicListItem musicListItem = MusicListItem
+                .builder()
+                .id(1L)
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        Mockito.when(this.musicItemServiceImpl.getRandomInAppUserList(anyLong())).thenReturn(musicListItem);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/musics/random")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id", equalTo(musicListItem.getId().intValue()))
+                );
+
+    }
+
+    @Test
+    void givenAppUserIdWhenGetRandomByAppUserIdAndMusicListEmptyShouldReturnNullAndReturn404() throws Exception {
+
+        Mockito.when(this.musicItemServiceImpl.getRandomInAppUserList(anyLong())).thenReturn(null);
+
+        this.mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .get("/api/lists/musics/random")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isNotFound()
+                );
+
+    }
+
+    @Test
     void givenAppUserIdWhenGetLatestAddedByAppUserIdShouldReturnRelatedMusicListItemAndReturn200() throws Exception {
 
         MusicListItem firstMusicListItem = MusicListItem

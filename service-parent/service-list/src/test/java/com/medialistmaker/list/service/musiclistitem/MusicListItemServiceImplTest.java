@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -405,5 +406,56 @@ class MusicListItemServiceImplTest {
                 .thenReturn(null);
 
         assertThrows(CustomNotFoundException.class, () -> this.musicListService.editSortingOrder(1L, 1L, 1));
+    }
+
+    @Test
+    void givenAppUserIdWhenGetRandomMusicListItemShouldReturnRandomMusicListItem() {
+
+        MusicListItem firstMusicListItem= MusicListItem
+                .builder()
+                .musicId(1L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(1)
+                .build();
+
+        MusicListItem secondMusicListItem = MusicListItem
+                .builder()
+                .musicId(2L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(2)
+                .build();
+
+        MusicListItem thirdMusicListItem = MusicListItem
+                .builder()
+                .musicId(3L)
+                .appUserId(1L)
+                .addedAt(new Date())
+                .sortingOrder(3)
+                .build();
+
+        List<MusicListItem> musicListItemList = List.of(firstMusicListItem, secondMusicListItem, thirdMusicListItem);
+
+        Mockito.when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(musicListItemList);
+
+        MusicListItem testGetRandomByAppUserId = this.musicListService.getRandomInAppUserList(1L);
+
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        assertNotNull(testGetRandomByAppUserId);
+        assertTrue(musicListItemList.contains(testGetRandomByAppUserId));
+
+    }
+
+    @Test
+    void givenAppUserIdWhenGetRandomMusicListItemAndMovieListEmptyShouldReturnNull() {
+
+        Mockito.when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong())).thenReturn(emptyList());
+
+        MusicListItem testGetRandomByAppUserId = this.musicListService.getRandomInAppUserList(1L);
+
+        Mockito.verify(this.musicListItemRepository).getByAppUserIdOrderBySortingOrderAsc(anyLong());
+        assertNull(testGetRandomByAppUserId);
+
     }
 }

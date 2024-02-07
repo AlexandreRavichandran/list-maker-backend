@@ -28,4 +28,6 @@ public interface MusicListItemService {
     Boolean isMusicUsedInOtherList(Long musicId);
 
     void updateAllMusicListItemSortingOrder(Long appUserId);
+
+    MusicListItem getRandomInAppUserList(Long appUserId);
 }

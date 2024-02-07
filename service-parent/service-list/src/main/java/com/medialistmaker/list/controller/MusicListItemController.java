@@ -1,5 +1,6 @@
 package com.medialistmaker.list.controller;
 
+import com.medialistmaker.list.domain.MusicListItem;
 import com.medialistmaker.list.dto.music.MusicListItemAddDTO;
 import com.medialistmaker.list.dto.music.MusicListItemDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("api/lists/musics")
@@ -36,6 +39,22 @@ public class MusicListItemController {
                         .toList(),
                 HttpStatus.OK
         );
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<MusicListItemDTO> getRandomInAppUserList() {
+
+        MusicListItem randomMusicLisItem = this.musicListService.getRandomInAppUserList(1L);
+
+        if(isNull(randomMusicLisItem)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(
+                this.modelMapper.map(randomMusicLisItem, MusicListItemDTO.class),
+                HttpStatus.OK
+        );
+
     }
 
     @GetMapping("/latest")

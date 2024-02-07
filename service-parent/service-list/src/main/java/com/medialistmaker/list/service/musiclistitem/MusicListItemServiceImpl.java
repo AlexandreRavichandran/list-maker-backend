@@ -14,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -31,6 +28,8 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
     @Autowired
     MusicConnectorProxy musicConnectorProxy;
+
+    Random random = new Random();
 
     @Override
     public List<MusicListItem> getByAppUserId(Long appUserId) {
@@ -179,6 +178,20 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.saveAll(musicListItems);
 
+    }
+
+    @Override
+    public MusicListItem getRandomInAppUserList(Long appUserId) {
+
+        List<MusicListItem> musicListItems = this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
+
+        if(musicListItems.isEmpty()) {
+            return null;
+        }
+
+        int randomIndex = this.random.nextInt(musicListItems.size());
+
+        return musicListItems.get(randomIndex);
     }
 
     private Integer getNextSortingOrder(Long appUserId) {
