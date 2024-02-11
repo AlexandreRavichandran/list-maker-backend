@@ -84,7 +84,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
         newMovieListItem.sort(Comparator.comparingInt(MovieListItem::getSortingOrder));
 
-        return this.movieListItemRepository.saveAll(movieListItems);
+        return this.movieListItemRepository.saveAll(newMovieListItem);
 
     }
 

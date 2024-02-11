@@ -78,7 +78,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         List<MusicListItem> newMusicListItem = new ArrayList<>(musicListItems);
 
         newMusicListItem.sort(Comparator.comparingInt(MusicListItem::getSortingOrder));
-        return this.musicListItemRepository.saveAll(musicListItems);
+        return this.musicListItemRepository.saveAll(newMusicListItem);
 
     }
 
