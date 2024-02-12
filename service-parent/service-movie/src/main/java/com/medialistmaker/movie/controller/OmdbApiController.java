@@ -39,6 +39,10 @@ public class OmdbApiController {
         results.setCurrentIndex(index);
         results.setElementsPerPage(OMDB_ELEMENT_PER_PAGE);
 
+        if(isNull(results.getSearchResults()) || results.getSearchResults().isEmpty()) {
+            results.setTotalResults(0);
+        }
+
         return new ResponseEntity<>(
                 results,
                 HttpStatus.OK
