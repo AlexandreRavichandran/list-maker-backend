@@ -15,5 +15,6 @@ public class ErrorDTO {
     }
 
     private String message;
+
     private List<String> errorList;
 }

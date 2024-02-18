@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     CustomEntityValidator<AppUser> appUserEntityValidator;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public AppUser getByUsername(String username) throws CustomNotFoundException {
@@ -54,6 +58,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new CustomEntityDuplicationException("Already used");
         }
 
+        appUser.setPassword(this.passwordEncoder.encode(appUser.getPassword()));
         return this.appUserRepository.save(appUser);
 
     }
@@ -67,7 +72,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new UsernameNotFoundException("Bad credentials");
         }
 
-        return new User(appUser.getUsername(), appUser.getPassword(), new ArrayList<>());
+        return new User(appUser.getUsername().toLowerCase(), appUser.getPassword(), new ArrayList<>());
 
     }
 }

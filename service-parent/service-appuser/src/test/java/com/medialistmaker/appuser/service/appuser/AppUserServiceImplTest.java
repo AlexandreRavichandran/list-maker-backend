@@ -11,9 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
@@ -26,6 +28,9 @@ class AppUserServiceImplTest {
 
     @Mock
     AppUserRepository appUserRepository;
+
+    @Spy
+    BCryptPasswordEncoder passwordEncoder;
 
     @Mock
     CustomEntityValidator<AppUser> appUserEntityValidator;

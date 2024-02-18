@@ -1,11 +1,13 @@
 package com.medialistmaker.appuser.controller;
 
+import com.medialistmaker.appuser.domain.AppUser;
+import com.medialistmaker.appuser.dto.AppUserDTO;
+import com.medialistmaker.appuser.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.appuser.service.appuser.AppUserServiceImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,17 +20,15 @@ public class AppUserController {
     @Autowired
     AppUserServiceImpl appUserService;
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserDetails> getByUsername(@PathVariable("username") String username) {
+    @Autowired
+    ModelMapper modelMapper;
 
-        try {
-            return new ResponseEntity<>(
-                    this.appUserService.loadUserByUsername(username),
-                    HttpStatus.OK
-            );
-        } catch (UsernameNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/username/{username}")
+    public ResponseEntity<AppUserDTO> getByUsername(@PathVariable("username") String username) throws CustomNotFoundException {
+
+        AppUser user = this.appUserService.getByUsername(username);
+
+        return new ResponseEntity<>(this.modelMapper.map(user, AppUserDTO.class), HttpStatus.OK);
 
     }
 }
