@@ -1,4 +1,4 @@
-package com.medialistmaker.list.configuration;
+package com.medialistmaker.list.configuration.feign;
 
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
