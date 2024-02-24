@@ -10,6 +10,8 @@ public interface AppUserService extends UserDetailsService {
 
     AppUser getByUsername(String username) throws CustomNotFoundException;
 
+    AppUser getById(Long appUserId) throws CustomNotFoundException;
+
     AppUser add(AppUser appUser) throws CustomBadRequestException, CustomEntityDuplicationException;
 
 }

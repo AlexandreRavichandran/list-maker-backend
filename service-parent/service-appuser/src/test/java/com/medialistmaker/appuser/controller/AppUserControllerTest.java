@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -71,5 +72,47 @@ class AppUserControllerTest {
                 .andExpect(
                         status().isNotFound()
                 );
+    }
+
+    @Test
+    void givenIdWhenGetByIdShouldReturnUserAndReturn200() throws Exception {
+
+        AppUser user = new AppUser();
+        user.setId(1L);
+        user.setUsername("test");
+        user.setPassword("password");
+
+        Mockito.when(this.appUserService.getById(anyLong())).thenReturn(user);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get(
+                                "/api/appusers/{id}",
+                                1L
+                        )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id", equalTo(user.getId().intValue()))
+                );
+
+    }
+
+    @Test
+    void givenInvalidIdWhenGetByIdShouldReturn404() throws Exception {
+
+        Mockito.when(this.appUserService.getById(anyLong())).thenThrow(CustomNotFoundException.class);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get(
+                                "/api/appusers/{id}",
+                                1L
+                        )
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isNotFound()
+                );
+
     }
 }

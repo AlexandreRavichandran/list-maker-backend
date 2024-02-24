@@ -1,8 +1,11 @@
 package com.medialistmaker.appuser.utils;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JwtTokenServiceTest {
 
-    private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzA4Mjc1NzY4LCJpYXQiOjE3MDgyNTc3Njh9.Ye5E2CAVHd1cVQqmCaFP1j32Ln_9Ai1vVG9-xw2YdTsoUpBmlv07lCyzeUiA3HfqM9Xd5LtpYXgSC9v8IqVnoA";
+    private static final String SECRET_KEY = "test";
 
     private JwtTokenService tokenService;
 
@@ -23,11 +26,22 @@ class JwtTokenServiceTest {
     @Test
     void givenTokenWhenGetExpirationDateShouldReturnExpirationDate() throws Exception {
 
-        Date testDate = this.tokenService.getTokenExpirationDate(TOKEN);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-        Date realDate = dateFormat.parse("18/02/2024 18:02:48");
-        assertEquals(realDate, testDate);
+        Date expirationDate = formatter.parse("01/01/2999 23:59:59");
+
+        String token = Jwts
+                .builder()
+                .setClaims(new HashMap<>())
+                .setSubject("username")
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+                .compact();
+
+        Date testDate = this.tokenService.getTokenExpirationDate(token);
+
+        assertEquals(expirationDate, testDate);
 
     }
 

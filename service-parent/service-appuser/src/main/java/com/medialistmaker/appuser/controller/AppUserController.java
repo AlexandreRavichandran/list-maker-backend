@@ -31,4 +31,13 @@ public class AppUserController {
         return new ResponseEntity<>(this.modelMapper.map(user, AppUserDTO.class), HttpStatus.OK);
 
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AppUserDTO> getById(@PathVariable("id") Long appUserId) throws CustomNotFoundException {
+
+        AppUser user = this.appUserService.getById(appUserId);
+
+        return new ResponseEntity<>(this.modelMapper.map(user, AppUserDTO.class), HttpStatus.OK);
+
+    }
 }

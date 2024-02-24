@@ -44,6 +44,19 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public AppUser getById(Long appUserId) throws CustomNotFoundException {
+
+        AppUser appUser = this.appUserRepository.getReferenceById(appUserId);
+
+        if(isNull(appUser)) {
+            throw new CustomNotFoundException("Not found");
+        }
+
+        return appUser;
+
+    }
+
+    @Override
     public AppUser add(AppUser appUser) throws CustomBadRequestException, CustomEntityDuplicationException {
 
         List<String> appUserErrorList = this.appUserEntityValidator.validateEntity(appUser);

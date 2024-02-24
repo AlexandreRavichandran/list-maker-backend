@@ -21,6 +21,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,6 +64,32 @@ class AppUserServiceImplTest {
         Mockito.when(this.appUserRepository.getByUsername(anyString())).thenReturn(null);
 
         assertThrows(CustomNotFoundException.class, () -> this.appUserService.getByUsername("test"));
+
+    }
+
+    @Test
+    void givenIdWhenGetByIdShouldReturnRelatedAppUser() throws CustomNotFoundException {
+
+        AppUser user = AppUser
+                .builder()
+                .username("test")
+                .password("test")
+                .build();
+
+        Mockito.when(this.appUserRepository.getReferenceById(anyLong())).thenReturn(user);
+
+        AppUser testGetById = this.appUserService.getById(anyLong());
+
+        assertEquals(user, testGetById);
+
+    }
+
+    @Test
+    void givenInvalidIdWhenGetByIdShouldThrowNotFoundException() {
+
+        Mockito.when(this.appUserRepository.getReferenceById(anyLong())).thenReturn(null);
+
+        assertThrows(CustomNotFoundException.class, () -> this.appUserService.getById(1L));
 
     }
 
