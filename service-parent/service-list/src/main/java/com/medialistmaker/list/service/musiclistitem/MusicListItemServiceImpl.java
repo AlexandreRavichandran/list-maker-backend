@@ -92,7 +92,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
                     listItemAddDTO.getApiCode(), listItemAddDTO.getType()
             );
 
-            if (Boolean.TRUE.equals(this.isMusicAlreadyInAppUserList(musicToAdd.getId(), 1L))) {
+            if (Boolean.TRUE.equals(this.isMusicAlreadyInAppUserList(musicToAdd.getId(), listItemAddDTO.getAppUserId()))) {
                 throw new CustomEntityDuplicationException("This music is already in your list");
             }
 
@@ -100,7 +100,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
             log.info("Music does not exist yet");
         }
 
-        MusicListItem musicListItemToAdd = this.createMusicListItem(1L);
+        MusicListItem musicListItemToAdd = this.createMusicListItem(listItemAddDTO.getAppUserId());
 
         try {
             MusicAddDTO musicAddDTO = new MusicAddDTO();
@@ -115,7 +115,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     }
 
     @Override
-    public MusicListItem deleteById(Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException {
+    public MusicListItem deleteById(Long appUserId, Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
         MusicListItem itemToDelete = this.musicListItemRepository.getReferenceById(musicListId);
 
@@ -125,7 +125,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         this.musicListItemRepository.delete(itemToDelete);
 
-        this.updateAllMusicListItemSortingOrder(1L);
+        this.updateAllMusicListItemSortingOrder(appUserId);
 
         Boolean isMovieUsedInAnotherList = this.isMusicUsedInOtherList(itemToDelete.getMusicId());
 
@@ -223,7 +223,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
         return MusicListItem
                 .builder()
                 .appUserId(appUserId)
-                .sortingOrder(this.getNextSortingOrder(1L))
+                .sortingOrder(this.getNextSortingOrder(appUserId))
                 .addedAt(new Date())
                 .build();
     }

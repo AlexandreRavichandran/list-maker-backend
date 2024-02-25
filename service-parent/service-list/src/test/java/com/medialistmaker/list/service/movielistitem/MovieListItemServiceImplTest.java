@@ -119,6 +119,7 @@ class MovieListItemServiceImplTest {
 
         MovieListItemAddDTO listItemAddDTO = new MovieListItemAddDTO();
         listItemAddDTO.setApiCode("XXX");
+        listItemAddDTO.setAppUserId(1L);
 
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setId(1L);
@@ -150,6 +151,7 @@ class MovieListItemServiceImplTest {
 
         MovieListItemAddDTO listItemAddDTO = new MovieListItemAddDTO();
         listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setAppUserId(1L);
 
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setId(1L);
@@ -176,6 +178,7 @@ class MovieListItemServiceImplTest {
 
         MovieListItemAddDTO listItemAddDTO = new MovieListItemAddDTO();
         listItemAddDTO.setApiCode("XXXX");
+        listItemAddDTO.setAppUserId(1L);
 
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setId(1L);
@@ -212,7 +215,7 @@ class MovieListItemServiceImplTest {
 
         Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItem);
 
-        MovieListItem testDeleteById = this.movieListService.deleteById(1L);
+        MovieListItem testDeleteById = this.movieListService.deleteById(1L, 1L);
 
         Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
         assertEquals(movieListItem, testDeleteById);
@@ -223,7 +226,7 @@ class MovieListItemServiceImplTest {
 
         Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(null);
 
-        assertThrows(CustomNotFoundException.class, () -> this.movieListService.deleteById(1L));
+        assertThrows(CustomNotFoundException.class, () -> this.movieListService.deleteById(1L, 1L));
 
         Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
     }

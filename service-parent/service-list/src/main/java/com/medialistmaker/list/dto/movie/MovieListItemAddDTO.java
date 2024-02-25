@@ -7,4 +7,6 @@ public class MovieListItemAddDTO {
 
     private String apiCode;
 
+    private Long appUserId;
+
 }

@@ -20,7 +20,7 @@ public interface MovieListItemService {
     MovieListItem add(MovieListItemAddDTO movieListItemAdd)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 
-    MovieListItem deleteById(Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException;
+    MovieListItem deleteById(Long appUserId, Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
     Boolean isMovieIdAlreadyUsedInOtherList(Long movieId);
 

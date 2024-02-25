@@ -9,17 +9,24 @@ import com.medialistmaker.list.exception.entityduplicationexception.CustomEntity
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.movielistitem.MovieListItemServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MovieListItemController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 class MovieListItemControllerTest {
 
     @Autowired
@@ -41,6 +49,17 @@ class MovieListItemControllerTest {
 
     @MockBean
     MovieListItemServiceImpl movieItemServiceImpl;
+
+    @BeforeEach
+    void beforeAllTests() {
+
+        UserDetails userDetails = new User("1", "password", new ArrayList<>());
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, "test");
+
+        SecurityContextHolder.getContext().setAuthentication(token);
+
+    }
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMovieListItemAndReturn200() throws Exception {
@@ -185,6 +204,7 @@ class MovieListItemControllerTest {
 
         MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
         movieListItemAddDTO.setApiCode("XXXXX");
+        movieListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenReturn(movieListItem);
 
@@ -214,6 +234,7 @@ class MovieListItemControllerTest {
 
         MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
         movieListItemAddDTO.setApiCode("XXXXX");
+        movieListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenThrow(CustomBadRequestException.class);
 
@@ -241,6 +262,7 @@ class MovieListItemControllerTest {
 
         MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
         movieListItemAddDTO.setApiCode("XXXXX");
+        movieListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenThrow(CustomEntityDuplicationException.class);
 
@@ -268,6 +290,7 @@ class MovieListItemControllerTest {
 
         MovieListItemAddDTO movieListItemAddDTO = new MovieListItemAddDTO();
         movieListItemAddDTO.setApiCode("XXXXX");
+        movieListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.movieItemServiceImpl.add(movieListItemAddDTO)).thenThrow(ServiceNotAvailableException.class);
 
@@ -302,7 +325,7 @@ class MovieListItemControllerTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.movieItemServiceImpl.deleteById(anyLong())).thenReturn(movieListItem);
+        Mockito.when(this.movieItemServiceImpl.deleteById(anyLong(), anyLong())).thenReturn(movieListItem);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
@@ -321,7 +344,7 @@ class MovieListItemControllerTest {
     @Test
     void givenInvalidListItemIdWhenDeleteByIdShouldDeleteAndReturn404() throws Exception {
 
-        Mockito.when(this.movieItemServiceImpl.deleteById(anyLong())).thenThrow(new CustomNotFoundException("Error"));
+        Mockito.when(this.movieItemServiceImpl.deleteById(anyLong(), anyLong())).thenThrow(new CustomNotFoundException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders

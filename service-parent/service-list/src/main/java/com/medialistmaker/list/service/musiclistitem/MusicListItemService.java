@@ -20,7 +20,7 @@ public interface MusicListItemService {
     MusicListItem add(MusicListItemAddDTO listItemAddDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException;
 
-    MusicListItem deleteById(Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException;
+    MusicListItem deleteById(Long appUserId, Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException;
 
     Boolean isMusicApiCodeAndTypeAlreadyInAppUserMovieList(Long appUserId, String apiCode, Integer type)
             throws ServiceNotAvailableException;

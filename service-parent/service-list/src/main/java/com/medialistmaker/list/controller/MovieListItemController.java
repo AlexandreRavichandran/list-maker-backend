@@ -20,7 +20,7 @@ import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("api/lists/movies")
-public class MovieListItemController {
+public class MovieListItemController extends AbstractController {
 
     @Autowired
     ModelMapper modelMapper;
@@ -33,7 +33,7 @@ public class MovieListItemController {
 
         return new ResponseEntity<>(
                 this.movieListService
-                        .getByAppUserId(1L)
+                        .getByAppUserId(this.getCurrentLoggedAppUserId())
                         .stream()
                         .map(listItem -> this.modelMapper.map(listItem, MovieListItemDTO.class))
                         .toList(),
@@ -44,9 +44,9 @@ public class MovieListItemController {
     @GetMapping("/random")
     public ResponseEntity<MovieListItemDTO> getRandomInAppUserList() {
 
-        MovieListItem randomMovieLisItem = this.movieListService.getRandomInAppUserList(1L);
+        MovieListItem randomMovieLisItem = this.movieListService.getRandomInAppUserList(this.getCurrentLoggedAppUserId());
 
-        if(isNull(randomMovieLisItem)) {
+        if (isNull(randomMovieLisItem)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -62,7 +62,7 @@ public class MovieListItemController {
 
         return new ResponseEntity<>(
                 this.movieListService
-                        .getLatestAddedByAppUserId(1L)
+                        .getLatestAddedByAppUserId(this.getCurrentLoggedAppUserId())
                         .stream()
                         .map(listItem -> this.modelMapper.map(listItem, MovieListItemDTO.class))
                         .toList(),
@@ -76,7 +76,7 @@ public class MovieListItemController {
             throws ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(1L, apiCode),
+                this.movieListService.isMovieApiCodeAlreadyInAppUserMovieList(this.getCurrentLoggedAppUserId(), apiCode),
                 HttpStatus.OK
         );
 
@@ -88,7 +88,7 @@ public class MovieListItemController {
             @RequestBody Integer nextSortingOrder) throws CustomNotFoundException {
 
         return new ResponseEntity<>(
-                this.movieListService.editSortingOrder(1L, listItemId, nextSortingOrder)
+                this.movieListService.editSortingOrder(this.getCurrentLoggedAppUserId(), listItemId, nextSortingOrder)
                         .stream()
                         .map(listItem -> this.modelMapper.map(listItem, MovieListItemDTO.class))
                         .toList(),
@@ -99,6 +99,8 @@ public class MovieListItemController {
     @PostMapping
     public ResponseEntity<MovieListItemDTO> add(@RequestBody MovieListItemAddDTO listItemDTO)
             throws CustomBadRequestException, CustomEntityDuplicationException, ServiceNotAvailableException {
+
+        listItemDTO.setAppUserId(this.getCurrentLoggedAppUserId());
 
         return new ResponseEntity<>(
                 this.modelMapper.map(this.movieListService.add(listItemDTO), MovieListItemDTO.class),
@@ -111,7 +113,11 @@ public class MovieListItemController {
             throws CustomNotFoundException, ServiceNotAvailableException {
 
         return new ResponseEntity<>(
-                this.modelMapper.map(this.movieListService.deleteById(listItemId), MovieListItemDTO.class),
+                this.modelMapper.map(
+                        this.movieListService.deleteById(
+                                this.getCurrentLoggedAppUserId(),
+                                listItemId
+                        ), MovieListItemDTO.class),
                 HttpStatus.OK
         );
     }

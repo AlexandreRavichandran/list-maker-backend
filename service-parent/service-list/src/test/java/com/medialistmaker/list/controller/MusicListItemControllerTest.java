@@ -9,17 +9,24 @@ import com.medialistmaker.list.exception.entityduplicationexception.CustomEntity
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.musiclistitem.MusicListItemServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MusicListItemController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 class MusicListItemControllerTest {
 
     @Autowired
@@ -41,6 +49,17 @@ class MusicListItemControllerTest {
 
     @MockBean
     MusicListItemServiceImpl musicItemServiceImpl;
+
+    @BeforeEach
+    void beforeAllTests() {
+
+        UserDetails userDetails = new User("1", "password", new ArrayList<>());
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, "test");
+
+        SecurityContextHolder.getContext().setAuthentication(token);
+
+    }
 
     @Test
     void givenAppUserIdWhenGetByAppUserIdShouldReturnRelatedMusicListItemAndReturn200() throws Exception {
@@ -185,6 +204,7 @@ class MusicListItemControllerTest {
 
         MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
         musicListItemAddDTO.setApiCode("XXXXX");
+        musicListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenReturn(musicListItem);
 
@@ -212,6 +232,7 @@ class MusicListItemControllerTest {
 
         MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
         musicListItemAddDTO.setApiCode("XXXXX");
+        musicListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenThrow(CustomBadRequestException.class);
 
@@ -239,6 +260,7 @@ class MusicListItemControllerTest {
 
         MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
         musicListItemAddDTO.setApiCode("XXXXX");
+        musicListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenThrow(CustomEntityDuplicationException.class);
 
@@ -266,6 +288,7 @@ class MusicListItemControllerTest {
 
         MusicListItemAddDTO musicListItemAddDTO = new MusicListItemAddDTO();
         musicListItemAddDTO.setApiCode("XXXXX");
+        musicListItemAddDTO.setAppUserId(1L);
 
         Mockito.when(this.musicItemServiceImpl.add(musicListItemAddDTO)).thenThrow(ServiceNotAvailableException.class);
 
@@ -300,7 +323,7 @@ class MusicListItemControllerTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.musicItemServiceImpl.deleteById(anyLong())).thenReturn(musicListItem);
+        Mockito.when(this.musicItemServiceImpl.deleteById(anyLong(), anyLong())).thenReturn(musicListItem);
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
@@ -319,7 +342,7 @@ class MusicListItemControllerTest {
     @Test
     void givenInvalidListItemIdWhenDeleteByIdShouldDeleteAndReturn404() throws Exception {
 
-        Mockito.when(this.musicItemServiceImpl.deleteById(anyLong())).thenThrow(new CustomNotFoundException("Error"));
+        Mockito.when(this.musicItemServiceImpl.deleteById(anyLong(), anyLong())).thenThrow(new CustomNotFoundException("Error"));
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders
@@ -346,13 +369,13 @@ class MusicListItemControllerTest {
                 .thenReturn(Boolean.TRUE);
 
         this.mockMvc.perform(
-                MockMvcRequestBuilders
-                        .get("/api/lists/musics/apicode/{apicode}",
-                                "test"
-                        )
-                        .param("type", "1")
+                        MockMvcRequestBuilders
+                                .get("/api/lists/musics/apicode/{apicode}",
+                                        "test"
+                                )
+                                .param("type", "1")
 
-        )
+                )
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
@@ -386,7 +409,7 @@ class MusicListItemControllerTest {
         this.mockMvc
                 .perform(
                         MockMvcRequestBuilders
-                                .put("/api/lists/musics/{listItemId}","1")
+                                .put("/api/lists/musics/{listItemId}", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         new ObjectMapper()
@@ -416,7 +439,7 @@ class MusicListItemControllerTest {
         this.mockMvc
                 .perform(
                         MockMvcRequestBuilders
-                                .put("/api/lists/musics/{listItemId}","1")
+                                .put("/api/lists/musics/{listItemId}", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         new ObjectMapper()

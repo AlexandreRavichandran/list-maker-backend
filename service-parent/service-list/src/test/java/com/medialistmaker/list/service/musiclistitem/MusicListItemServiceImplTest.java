@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.Date;
 import java.util.List;
 
@@ -120,6 +119,7 @@ class MusicListItemServiceImplTest {
         MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
         listItemAddDTO.setApiCode("XXXX");
         listItemAddDTO.setType(1);
+        listItemAddDTO.setAppUserId(1L);
 
         MusicDTO musicDTO = new MusicDTO();
         musicDTO.setId(1L);
@@ -153,6 +153,7 @@ class MusicListItemServiceImplTest {
         MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
         listItemAddDTO.setApiCode("XXXX");
         listItemAddDTO.setType(1);
+        listItemAddDTO.setAppUserId(1L);
 
         MusicDTO musicDTO = new MusicDTO();
         musicDTO.setId(1L);
@@ -178,6 +179,7 @@ class MusicListItemServiceImplTest {
         MusicListItemAddDTO listItemAddDTO = new MusicListItemAddDTO();
         listItemAddDTO.setApiCode("XXXX");
         listItemAddDTO.setType(2);
+        listItemAddDTO.setAppUserId(1L);
 
         MusicDTO musicDTO = new MusicDTO();
         musicDTO.setId(1L);
@@ -215,7 +217,7 @@ class MusicListItemServiceImplTest {
 
         Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
 
-        MusicListItem testDeleteById = this.musicListService.deleteById(1L);
+        MusicListItem testDeleteById = this.musicListService.deleteById(1L, 1L);
 
         Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
         assertEquals(musicListItem, testDeleteById);
@@ -263,7 +265,7 @@ class MusicListItemServiceImplTest {
 
         Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
 
-        assertThrows(CustomNotFoundException.class, () -> this.musicListService.deleteById(1L));
+        assertThrows(CustomNotFoundException.class, () -> this.musicListService.deleteById(1L, 1L));
 
         Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
     }

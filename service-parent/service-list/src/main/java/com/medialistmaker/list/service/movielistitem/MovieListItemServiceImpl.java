@@ -2,7 +2,6 @@ package com.medialistmaker.list.service.movielistitem;
 
 import com.medialistmaker.list.connector.movie.MovieConnectorProxy;
 import com.medialistmaker.list.domain.MovieListItem;
-import com.medialistmaker.list.domain.MusicListItem;
 import com.medialistmaker.list.dto.movie.MovieAddDTO;
 import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.dto.movie.MovieListItemAddDTO;
@@ -95,7 +94,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         try {
             MovieDTO movieToAdd = this.movieConnectorProxy.getByApiCode(movieListItem.getApiCode());
 
-            if (Boolean.TRUE.equals(this.isMovieAlreadyInAppUserList(1L, movieToAdd.getId()))) {
+            if (Boolean.TRUE.equals(this.isMovieAlreadyInAppUserList(movieListItem.getAppUserId(), movieToAdd.getId()))) {
                 throw new CustomEntityDuplicationException("This movie is already in your list");
             }
 
@@ -103,7 +102,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
             log.info("Movie not exist yet");
         }
 
-        MovieListItem movieListItemToAdd = this.createMovieListItem(1L);
+        MovieListItem movieListItemToAdd = this.createMovieListItem(movieListItem.getAppUserId());
 
         try {
             MovieAddDTO movieAddDTO = new MovieAddDTO();
@@ -117,7 +116,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
     }
 
     @Override
-    public MovieListItem deleteById(Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException {
+    public MovieListItem deleteById(Long appUserId, Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
         MovieListItem itemToDelete = this.movieListItemRepository.getReferenceById(movieListId);
 
@@ -127,7 +126,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
         this.movieListItemRepository.delete(itemToDelete);
 
-        this.updateOrder(1L);
+        this.updateOrder(appUserId);
 
         Boolean isMovieUsedInAnotherList = this.isMovieIdAlreadyUsedInOtherList(itemToDelete.getMovieId());
 
@@ -223,7 +222,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
         return MovieListItem
                 .builder()
                 .appUserId(appUserId)
-                .sortingOrder(this.getNextSortingOrder(1L))
+                .sortingOrder(this.getNextSortingOrder(appUserId))
                 .addedAt(new Date())
                 .build();
 

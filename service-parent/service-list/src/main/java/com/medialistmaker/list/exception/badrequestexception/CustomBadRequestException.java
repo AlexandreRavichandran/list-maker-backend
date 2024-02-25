@@ -1,11 +1,13 @@
 package com.medialistmaker.list.exception.badrequestexception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
+@Getter
 public class CustomBadRequestException extends Exception {
 
     private List<String> errorList;
@@ -19,7 +21,4 @@ public class CustomBadRequestException extends Exception {
         super(message);
     }
 
-    public List<String> getErrorList() {
-        return this.errorList;
-    }
 }
