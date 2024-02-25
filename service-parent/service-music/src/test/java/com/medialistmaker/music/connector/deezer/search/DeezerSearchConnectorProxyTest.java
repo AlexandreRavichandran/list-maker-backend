@@ -29,7 +29,7 @@ class DeezerSearchConnectorProxyTest {
     DeezerSearchConnectorProxy deezerSearchConnectorProxy;
 
     @Test
-    void givenQueryWhenGetAlbumByQueryShouldReturnRelatedSearchList() throws Exception {
+    void givenQueryAndIndexWhenGetAlbumByQueryShouldReturnRelatedSearchList() throws Exception {
 
         ArtistElementDTO artist = new ArtistElementDTO();
         artist.setApiCode("1");
@@ -61,7 +61,7 @@ class DeezerSearchConnectorProxyTest {
     }
 
     @Test
-    void givenQueryWhenGetAlbumByQueryAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
+    void givenQueryAndIndexWhenGetAlbumByQueryAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
 
         Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString(), anyInt())).thenThrow(CustomBadRequestException.class);
 
@@ -70,6 +70,50 @@ class DeezerSearchConnectorProxyTest {
         Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString(), anyInt());
 
     }
+
+    @Test
+    void givenQueryWhenGetAlbumByQueryShouldReturnRelatedSearchList() throws Exception {
+
+        ArtistElementDTO artist = new ArtistElementDTO();
+        artist.setApiCode("1");
+        artist.setName("Artist");
+
+        AlbumSearchElementDTO firstAlbum = new AlbumSearchElementDTO();
+        firstAlbum.setApiCode("1L");
+        firstAlbum.setTitle("Album 1");
+        firstAlbum.setPictureUrl("test.com");
+        firstAlbum.setArtist(artist);
+
+        AlbumSearchElementDTO secondAlbum = new AlbumSearchElementDTO();
+        secondAlbum.setApiCode("2L");
+        secondAlbum.setTitle("Album 2");
+        secondAlbum.setPictureUrl("test.com");
+        secondAlbum.setArtist(artist);
+
+        AlbumSearchListDTO albumSearchListDTO = new AlbumSearchListDTO();
+        albumSearchListDTO.setSearchResults(List.of(firstAlbum, secondAlbum));
+
+        Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString(), anyInt())).thenReturn(albumSearchListDTO);
+
+        AlbumSearchListDTO testGetByApiCode = this.deezerSearchConnectorProxy.getAlbumByQuery("test");
+
+        assertNotNull(testGetByApiCode);
+        assertEquals(albumSearchListDTO, testGetByApiCode);
+        Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString(), anyInt());
+
+    }
+
+    @Test
+    void givenQueryWhenGetAlbumByQueryAndApiNotAvailableShouldThrowBadRequestException() throws Exception {
+
+        Mockito.when(this.deezerSearchConnector.getAlbumByQuery(anyString(), anyInt())).thenThrow(CustomBadRequestException.class);
+
+        assertThrows(CustomBadRequestException.class, () -> this.deezerSearchConnectorProxy.getAlbumByQuery("test"));
+
+        Mockito.verify(this.deezerSearchConnector).getAlbumByQuery(anyString(), anyInt());
+
+    }
+
 
     @Test
     void givenQueryWhenGetSongByQueryShouldReturnRelatedSearchList() throws Exception {

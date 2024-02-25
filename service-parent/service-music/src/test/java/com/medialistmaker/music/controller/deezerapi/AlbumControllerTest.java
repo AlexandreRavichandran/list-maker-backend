@@ -92,6 +92,7 @@ class AlbumControllerTest {
                                 .param("name", "test")
                                 .param("artist", "artist")
                                 .param("page", "0")
+                                .param("index", "0")
                 )
                 .andExpectAll(
                         status().isOk(),
