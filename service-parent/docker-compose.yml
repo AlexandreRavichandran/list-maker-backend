@@ -1,4 +1,5 @@
 services:
+  
   postgres:
     container_name: postgres
     image: postgres
@@ -31,8 +32,97 @@ services:
       - postgres
     restart: unless-stopped
 
+  registry:
+    image: alexandreravichandran/medialistmaker-service-registry
+    container_name: registry
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+
+  gateway:
+    image: alexandreravichandran/medialistmaker-service-gateway
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - registry
+
+  appuser:
+    image: alexandreravichandran/medialistmaker-service-appuser
+    container_name: appuser
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - registry
+
+  list:
+    image: alexandreravichandran/medialistmaker-service-list
+    container_name: list
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - registry
+
+  movie:
+    image: alexandreravichandran/medialistmaker-service-movie
+    container_name: movie
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - registry
+
+  music:
+    image: alexandreravichandran/medialistmaker-service-music
+    container_name: music
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    depends_on:
+      - registry
+
+  frontend:
+    image: alexandreravichandran/medialistmaker-frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/app
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./dist:/usr/share/nginx/html
+    depends_on:
+      - frontend
+
 networks:
   postgres:
+    driver: bridge
+  spring:
     driver: bridge
 
 volumes:
