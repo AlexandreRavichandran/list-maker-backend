@@ -1,0 +1,27 @@
+server:
+  port: 8081
+application:
+  title: 'Media list maker'
+  version: 1.0.0
+spring:
+  application:
+    name: movie
+  datasource:
+    username: "medialistmaker"
+    url: jdbc:postgresql://postgres:5432/movie
+    password: "medialistmaker"
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: "true"
+    hibernate:
+      ddl-auto: update
+    show-sql: "true"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://registry:8761/eureka
+
+omdb:
+  apikey: af9d7d26

@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  main.allow-circular-references: true
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTION
+            allowedHeaders: "*"
+      routes:
+        - id: movie
+          uri: lb://MOVIE
+          predicates:
+            - Path=/api/movies/**
+        - id: music
+          uri: lb://MUSIC
+          predicates:
+            - Path=/api/musics/**
+        - id: list
+          uri: lb://LIST
+          predicates:
+            - Path=/api/lists/**
+        - id: appuser
+          uri: lb://APPUSER
+          predicates:
+            - Path=/api/login, /api/register
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://registry:8761/eureka

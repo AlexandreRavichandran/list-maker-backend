@@ -7,9 +7,9 @@ spring:
   application:
     name: appuser
   datasource:
-    username: "ecommicroservice"
+    username: "medialistmaker"
     url: jdbc:postgresql://localhost:5432/appuser
-    password: "ecommicroservice"
+    password: "medialistmaker"
   jpa:
     properties:
       hibernate:
