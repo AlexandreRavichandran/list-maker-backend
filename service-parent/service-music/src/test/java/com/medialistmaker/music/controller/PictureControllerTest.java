@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,14 +27,14 @@ class PictureControllerTest {
     MockMvc mockMvc;
 
     @Test
-    void whenGetRandomPictureShouldReturnRandomInputStreamResourceAndReturn200() throws Exception {
+    void whenGetRandomIllustrationShouldReturnRandomInputStreamResourceAndReturn200() throws Exception {
 
-        InputStream inputStream = this.getClass().getResourceAsStream("/music_posters/lunatic.jpg");
+        InputStream inputStream = this.getClass().getResourceAsStream("/music_illustrations/lunatic.jpg");
 
         Mockito.when(this.fileUtils.getRandomFileInFolder(anyString())).thenReturn(inputStream);
 
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/musics/pictures/random")
+                        MockMvcRequestBuilders.get("/api/musics/pictures/illustrations/random")
                 )
                 .andDo(print())
                 .andExpectAll(
@@ -45,13 +44,46 @@ class PictureControllerTest {
     }
 
     @Test
-    void whenGetRandomPictureAndNoPictureAvailableShouldReturn404() throws Exception {
+    void whenGetRandomIllustrationAndNoPictureAvailableShouldReturn404() throws Exception {
 
 
         Mockito.when(this.fileUtils.getRandomFileInFolder(anyString())).thenReturn(null);
 
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/musics/pictures/random")
+                        MockMvcRequestBuilders.get("/api/musics/pictures/illustrations/random")
+                )
+                .andDo(print())
+                .andExpect(
+                        status().isNotFound()
+                );
+
+    }
+
+    @Test
+    void whenGetRandomPosterShouldReturnRandomInputStreamResourceAndReturn200() throws Exception {
+
+        InputStream inputStream = this.getClass().getResourceAsStream("/music_posters/2001.jpg");
+
+        Mockito.when(this.fileUtils.getRandomFileInFolder(anyString())).thenReturn(inputStream);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/musics/pictures/posters/random")
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.IMAGE_JPEG_VALUE)
+                );
+    }
+
+    @Test
+    void whenGetRandomPosterAndNoPictureAvailableShouldReturn404() throws Exception {
+
+
+        Mockito.when(this.fileUtils.getRandomFileInFolder(anyString())).thenReturn(null);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/musics/pictures/posters/random")
                 )
                 .andDo(print())
                 .andExpect(

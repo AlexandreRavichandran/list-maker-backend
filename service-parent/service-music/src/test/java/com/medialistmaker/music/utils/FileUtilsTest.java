@@ -22,7 +22,7 @@ class FileUtilsTest {
     @Test
     void givenFolderPathWhenGetRandomFileInFolderShouldReturnInputStream() throws Exception {
 
-        InputStream testGetRandomFile = this.fileUtils.getRandomFileInFolder("/music_posters");
+        InputStream testGetRandomFile = this.fileUtils.getRandomFileInFolder("/music_illustrations");
 
         assertNotNull(testGetRandomFile);
     }
@@ -40,7 +40,7 @@ class FileUtilsTest {
     void givenDirectoryPathWhenGetFilesInsideDirectoryByDirectoryPathShouldReturnAllFilesInDirectory() throws Exception {
 
         String[] testGetListOfFilesInsideFolder =
-                this.fileUtils.getFilesInsideDirectoryByDirectoryPath("/music_posters");
+                this.fileUtils.getFilesInsideDirectoryByDirectoryPath("/music_illustrations");
 
         assertNotNull(testGetListOfFilesInsideFolder);
         assertNotEquals(0, testGetListOfFilesInsideFolder.length);

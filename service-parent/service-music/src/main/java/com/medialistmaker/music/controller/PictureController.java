@@ -23,8 +23,20 @@ public class PictureController {
     @Autowired
     FileUtils fileUtils;
 
-    @GetMapping(value = "/random", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<InputStreamResource> getRandomPicture() throws URISyntaxException, CustomNotFoundException {
+    @GetMapping(value = "/illustrations/random", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<InputStreamResource> getRandomIllustrationPicture() throws URISyntaxException, CustomNotFoundException {
+
+        InputStream stream = this.fileUtils.getRandomFileInFolder("/music_illustrations");
+
+        if(isNull(stream)) {
+            throw new CustomNotFoundException("Picture not found");
+        }
+
+        return new ResponseEntity<>(new InputStreamResource(stream), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/posters/random", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<InputStreamResource> getRandomPosterPicture() throws URISyntaxException, CustomNotFoundException {
 
         InputStream stream = this.fileUtils.getRandomFileInFolder("/music_posters");
 
@@ -33,5 +45,6 @@ public class PictureController {
         }
 
         return new ResponseEntity<>(new InputStreamResource(stream), HttpStatus.OK);
+
     }
 }
