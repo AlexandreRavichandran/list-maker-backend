@@ -1,7 +1,9 @@
 package com.medialistmaker.list.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medialistmaker.list.connector.appuser.AppUserConnectorProxy;
 import com.medialistmaker.list.dto.AppUserDTO;
+import com.medialistmaker.list.dto.ErrorDTO;
 import com.medialistmaker.list.utils.JwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,8 +44,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String username = null;
 
         if(isNull(authorizationHeader)) {
-            this.manageAuthenticationFailure(response);
-            return;
+                this.manageAuthenticationFailure(response);
+                return;
         }
 
         token = authorizationHeader.substring(7);
@@ -86,7 +88,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     }
 
-    private void manageAuthenticationFailure(HttpServletResponse response) {
+    private void manageAuthenticationFailure(HttpServletResponse response) throws IOException {
+
+        ErrorDTO errorDTO = new ErrorDTO("Unauthorized", new ArrayList<>());
+
+        response.getWriter().print(new ObjectMapper().writeValueAsString(errorDTO));
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
