@@ -68,9 +68,10 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser isUsernameAlreadyUsed = this.appUserRepository.getByUsername(appUser.getUsername());
 
         if (nonNull(isUsernameAlreadyUsed)) {
-            throw new CustomEntityDuplicationException("Already used");
+            throw new CustomEntityDuplicationException("This username is already used");
         }
 
+        appUser.setUsername(appUser.getUsername().toLowerCase());
         appUser.setPassword(this.passwordEncoder.encode(appUser.getPassword()));
         return this.appUserRepository.save(appUser);
 

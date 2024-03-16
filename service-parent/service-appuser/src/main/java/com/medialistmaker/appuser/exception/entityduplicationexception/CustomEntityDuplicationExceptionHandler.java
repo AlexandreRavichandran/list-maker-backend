@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class CustomEntityDuplicationExceptionHandler {
 
-    @ExceptionHandler(CustomBadRequestException.class)
+    @ExceptionHandler(CustomEntityDuplicationException.class)
     public ResponseEntity<ErrorDTO> generateCustomEntityDuplicationException(CustomEntityDuplicationException e) {
         ErrorDTO errorDTO = ErrorDTO
                 .builder()
