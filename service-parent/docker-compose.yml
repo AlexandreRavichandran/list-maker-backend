@@ -9,6 +9,7 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
+      - ./table_init.sql:/docker-entrypoint-initdb.d/table_init.sql
     ports:
       - "5432:5432"
     networks:
@@ -52,7 +53,8 @@ services:
     networks:
       - spring
     depends_on:
-      - registry
+      registry:
+        condition: service_started
 
   appuser:
     image: alexandreravichandran/medialistmaker-service-appuser
@@ -63,8 +65,12 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - spring
+      - postgres
     depends_on:
-      - registry
+      registry:
+        condition: service_started
+      postgres:
+        condition: service_started
 
   list:
     image: alexandreravichandran/medialistmaker-service-list
@@ -75,8 +81,12 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - spring
+      - postgres
     depends_on:
-      - registry
+      registry:
+        condition: service_started
+      postgres:
+        condition: service_started
 
   movie:
     image: alexandreravichandran/medialistmaker-service-movie
@@ -87,8 +97,12 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - spring
+      - postgres
     depends_on:
-      - registry
+      registry:
+        condition: service_started
+      postgres:
+        condition: service_started
 
   music:
     image: alexandreravichandran/medialistmaker-service-music
@@ -99,25 +113,20 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
       - spring
+      - postgres
     depends_on:
-      - registry
+      registry:
+        condition: service_started
+      postgres:
+        condition: service_started
 
   frontend:
     image: alexandreravichandran/medialistmaker-frontend
     ports:
-      - "4200:4200"
+      - "4200:80"
     volumes:
       - .:/app
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./dist:/usr/share/nginx/html
-    depends_on:
-      - frontend
 
 networks:
   postgres:

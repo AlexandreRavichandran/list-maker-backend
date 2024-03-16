@@ -1,0 +1,9 @@
+CREATE DATABASE appuser;
+
+CREATE DATABASE music;
+
+CREATE DATABASE movie;
+
+CREATE DATABASE list;
+
+CREATE DATABASE database_test;
