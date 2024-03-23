@@ -6,6 +6,7 @@ import com.medialistmaker.appuser.exception.entityduplicationexception.CustomEnt
 import com.medialistmaker.appuser.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.appuser.repository.AppUserRepository;
 import com.medialistmaker.appuser.utils.CustomEntityValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,11 +15,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
+@Slf4j
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
@@ -43,6 +46,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser appUser = this.appUserRepository.getByUsername(username);
 
         if(isNull(appUser)) {
+            log.error("User {} not found", username);
             throw new CustomNotFoundException("Not found");
         }
 
@@ -52,13 +56,14 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUser getById(Long appUserId) throws CustomNotFoundException {
 
-        AppUser appUser = this.appUserRepository.getReferenceById(appUserId);
+        Optional<AppUser> appUser = this.appUserRepository.findById(appUserId);
 
-        if(isNull(appUser)) {
+        if(appUser.isEmpty()) {
+            log.error("User with id {} not found", appUserId);
             throw new CustomNotFoundException("Not found");
         }
 
-        return appUser;
+        return appUser.get();
 
     }
 

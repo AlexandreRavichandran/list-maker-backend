@@ -23,6 +23,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -132,23 +133,23 @@ class MusicServiceImplTest {
                 .releasedAt(2000)
                 .build();
 
-        Mockito.when(this.musicRepository.getReferenceById(anyLong())).thenReturn(music);
+        Mockito.when(this.musicRepository.findById(anyLong())).thenReturn(Optional.of(music));
 
         Music testReadById = this.musicService.readById(1L);
 
         assertNotNull(testReadById);
         assertEquals(music, testReadById);
-        Mockito.verify(this.musicRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicRepository).findById(anyLong());
 
     }
 
     @Test
     void givenInvalidIdWhenReadByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.musicRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.musicRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.musicService.readById(1L));
-        Mockito.verify(this.musicRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicRepository).findById(anyLong());
 
     }
 
@@ -208,6 +209,7 @@ class MusicServiceImplTest {
 
         Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
         Mockito.when(this.albumConnectorProxy.getByApiCode(anyString())).thenReturn(albumElementDTO);
+        Mockito.when(this.musicEntityValidator.validateEntity(any())).thenReturn(new ArrayList<>());
         Mockito.when(this.musicRepository.save(music)).thenReturn(music);
 
         Music testAddByApiCode = this.musicService.addByApiCode(1, "test");
@@ -243,6 +245,7 @@ class MusicServiceImplTest {
 
         Mockito.when(this.musicRepository.getByApiCodeAndType(anyString(), anyInt())).thenReturn(null);
         Mockito.when(this.songConnectorProxy.getByApiCode(anyString())).thenReturn(songElementDTO);
+        Mockito.when(this.musicEntityValidator.validateEntity(any())).thenReturn(new ArrayList<>());
         Mockito.when(this.musicRepository.save(music)).thenReturn(music);
 
         Music testAddByApiCode = this.musicService.addByApiCode(2, "test");
@@ -321,11 +324,11 @@ class MusicServiceImplTest {
                 .releasedAt(2000)
                 .build();
 
-        Mockito.when(this.musicRepository.getReferenceById(anyLong())).thenReturn(music);
+        Mockito.when(this.musicRepository.findById(anyLong())).thenReturn(Optional.of(music));
 
         Music testDeleteById = this.musicService.deleteById(1L);
 
-        Mockito.verify(this.musicRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicRepository).findById(anyLong());
         Mockito.verify(this.musicRepository).delete(music);
         assertNotNull(testDeleteById);
         assertEquals(music, testDeleteById);
@@ -335,11 +338,11 @@ class MusicServiceImplTest {
     @Test
     void givenInvalidIdWhenDeleteByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.musicRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.musicRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.musicService.deleteById(1L));
 
-        Mockito.verify(this.musicRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicRepository).findById(anyLong());
 
     }
 }

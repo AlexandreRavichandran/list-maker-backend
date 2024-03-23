@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -52,11 +51,14 @@ public class MusicListItemServiceImpl implements MusicListItemService {
 
         List<MusicListItem> musicListItems = this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
 
-        MusicListItem musicListItemToChange = this.musicListItemRepository.getReferenceById(musicListItemId);
+        Optional<MusicListItem> musicListItem = this.musicListItemRepository.findById(musicListItemId);
 
-        if(isNull(musicListItemToChange)) {
+        if(musicListItem.isEmpty()) {
             throw new CustomNotFoundException("Music item not found");
         }
+
+        MusicListItem musicListItemToChange = musicListItem.get();
+
 
         Integer oldSortingNumber = musicListItemToChange.getSortingOrder();
 
@@ -122,11 +124,13 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     @Override
     public MusicListItem deleteById(Long appUserId, Long musicListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
-        MusicListItem itemToDelete = this.musicListItemRepository.getReferenceById(musicListId);
+        Optional<MusicListItem> musicListItem = this.musicListItemRepository.findById(musicListId);
 
-        if (isNull(itemToDelete)) {
+        if (musicListItem.isEmpty()) {
             throw new CustomNotFoundException("Not found");
         }
+
+        MusicListItem itemToDelete = musicListItem.get();
 
         this.musicListItemRepository.delete(itemToDelete);
 
@@ -144,7 +148,7 @@ public class MusicListItemServiceImpl implements MusicListItemService {
     public Boolean isMusicApiCodeAndTypeAlreadyInAppUserMovieList(Long appUserId, String apiCode, Integer type)
             throws ServiceNotAvailableException {
 
-        Boolean isMusicApiCodeAlreadyInAppUserMovieList = null;
+        boolean isMusicApiCodeAlreadyInAppUserMovieList;
 
         try {
             MusicDTO musicDTO = this.musicConnectorProxy.getMusicByApiCodeAndType(apiCode, type);

@@ -4,13 +4,14 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 @Getter
 public class CustomBadRequestException extends Exception {
 
-    private List<String> errorList;
+    private final List<String> errorList;
 
     public CustomBadRequestException(String message, List<String> errorList) {
         super(message);
@@ -18,7 +19,7 @@ public class CustomBadRequestException extends Exception {
     }
 
     public CustomBadRequestException(String message) {
-        super(message);
+        this(message, new ArrayList<>());
     }
 
 }

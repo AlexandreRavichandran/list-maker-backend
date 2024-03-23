@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -213,22 +214,22 @@ class MovieListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(movieListItem);
+        Mockito.when(this.movieListItemRepository.findById(anyLong())).thenReturn(Optional.of(movieListItem));
 
         MovieListItem testDeleteById = this.movieListService.deleteById(1L, 1L);
 
-        Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieListItemRepository).findById(anyLong());
         assertEquals(movieListItem, testDeleteById);
     }
 
     @Test
     void givenInvalidIdWhenDeleteByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.movieListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.movieListItemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.movieListService.deleteById(1L, 1L));
 
-        Mockito.verify(this.movieListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieListItemRepository).findById(anyLong());
     }
 
     @Test
@@ -336,8 +337,8 @@ class MovieListItemServiceImplTest {
 
 
         Mockito
-                .when(this.movieListItemRepository.getReferenceById(anyLong()))
-                .thenReturn(thirdItem);
+                .when(this.movieListItemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(thirdItem));
 
         Mockito
                 .when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
@@ -377,8 +378,8 @@ class MovieListItemServiceImplTest {
 
 
         Mockito
-                .when(this.movieListItemRepository.getReferenceById(anyLong()))
-                .thenReturn(firstItem);
+                .when(this.movieListItemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(firstItem));
 
         Mockito
                 .when(this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
@@ -395,8 +396,8 @@ class MovieListItemServiceImplTest {
     void givenAppUserIdAndInvalidMovieItemIdAndNewSortingOrderWhenEditSortingOrderShouldThrowNotFoundException() {
 
         Mockito
-                .when(this.movieListItemRepository.getReferenceById(anyLong()))
-                .thenReturn(null);
+                .when(this.movieListItemRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.movieListService.editSortingOrder(1L, 1L, 1));
     }

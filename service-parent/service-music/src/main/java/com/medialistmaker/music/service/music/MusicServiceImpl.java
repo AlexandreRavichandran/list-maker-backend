@@ -1,6 +1,6 @@
 package com.medialistmaker.music.service.music;
 
-import com.medialistmaker.music.connector.deezer.DeezerConnector;
+import com.medialistmaker.music.connector.deezer.DeezerConnectorElement;
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.song.DeezerSongConnectorProxy;
 import com.medialistmaker.music.domain.Music;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -67,14 +68,14 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public Music readById(Long musicId) throws CustomNotFoundException {
 
-        Music music = this.musicRepository.getReferenceById(musicId);
+        Optional<Music> music = this.musicRepository.findById(musicId);
 
-        if(isNull(music)) {
+        if(music.isEmpty()) {
             log.error("Music with id {} not found", musicId);
             throw new CustomNotFoundException("Not found");
         }
 
-        return music;
+        return music.get();
 
     }
 
@@ -114,7 +115,6 @@ public class MusicServiceImpl implements MusicService {
             throw new CustomBadRequestException("Music not exists");
         }
 
-        //TODO Find alternative
         Music music = this.modelMapper.map(musicElementDTO, Music.class);
         music.setApiCode(musicElementDTO.getApiCode());
         music.setId(null);
@@ -138,21 +138,21 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public Music deleteById(Long id) throws CustomNotFoundException {
 
-        Music music = this.musicRepository.getReferenceById(id);
+        Optional<Music> music = this.musicRepository.findById(id);
 
-        if(isNull(music)) {
+        if(music.isEmpty()) {
             log.error("Error on deleting music with id {}: Music not exists", id);
             throw new CustomNotFoundException("Not found");
         }
 
-        this.musicRepository.delete(music);
+        this.musicRepository.delete(music.get());
 
-        return music;
+        return music.get();
     }
 
-    private DeezerConnector getConnectorByType(Integer type) throws UnsupportedTypeException {
+    private DeezerConnectorElement getConnectorByType(Integer type) throws UnsupportedTypeException {
 
-        DeezerConnector connector;
+        DeezerConnectorElement connector;
 
         connector = switch (type) {
             case 1 -> this.deezerAlbumConnectorProxy;

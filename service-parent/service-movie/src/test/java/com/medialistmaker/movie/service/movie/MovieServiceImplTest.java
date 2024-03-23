@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -80,11 +81,11 @@ class MovieServiceImplTest {
                 .apiCode("MOVIE")
                 .build();
 
-        Mockito.when(this.movieRepository.getReferenceById(anyLong())).thenReturn(movie);
+        Mockito.when(this.movieRepository.findById(anyLong())).thenReturn(Optional.of(movie));
 
         Movie testGetById = this.movieService.readById(movie.getId());
 
-        Mockito.verify(this.movieRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieRepository).findById(anyLong());
         assertNotNull(testGetById);
         assertEquals(movie, testGetById);
     }
@@ -92,10 +93,10 @@ class MovieServiceImplTest {
     @Test
     void givenInvalidIdWhenReadByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.movieRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.movieRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.movieService.readById(1L));
-        Mockito.verify(this.movieRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieRepository).findById(anyLong());
 
     }
 
@@ -141,11 +142,11 @@ class MovieServiceImplTest {
                 .apiCode("MOVIE")
                 .build();
 
-        Mockito.when(this.movieRepository.getReferenceById(anyLong())).thenReturn(movie);
+        Mockito.when(this.movieRepository.findById(anyLong())).thenReturn(Optional.of(movie));
 
         Movie testDeleteById = this.movieService.deleteById(1L);
 
-        Mockito.verify(this.movieRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieRepository).findById(anyLong());
         Mockito.verify(this.movieRepository).delete(movie);
 
         assertNotNull(testDeleteById);
@@ -156,11 +157,11 @@ class MovieServiceImplTest {
     @Test
     void givenInvalidIdWhenDeleteByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.movieRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.movieRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.movieService.deleteById(1L));
 
-        Mockito.verify(this.movieRepository).getReferenceById(anyLong());
+        Mockito.verify(this.movieRepository).findById(anyLong());
 
     }
 
@@ -183,6 +184,7 @@ class MovieServiceImplTest {
 
         Mockito.when(this.movieRepository.getByApiCode(anyString())).thenReturn(null);
         Mockito.when(this.connectorProxy.getByApiCode(anyString())).thenReturn(elementDTO);
+        Mockito.when(this.movieEntityValidator.validateEntity(any())).thenReturn(new ArrayList<>());
         Mockito.when(this.movieRepository.save(any())).thenReturn(movie);
 
         Movie testAddByApiCode = this.movieService.addByApiCode("test");

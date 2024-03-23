@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -54,14 +55,14 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie readById(Long movieId) throws CustomNotFoundException {
 
-        Movie movie = this.movieRepository.getReferenceById(movieId);
+        Optional<Movie> movie = this.movieRepository.findById(movieId);
 
-        if (isNull(movie)) {
+        if (movie.isEmpty()) {
             log.error("Movie with id {} not found", movieId);
-            throw new CustomNotFoundException("NOT FOUND");
+            throw new CustomNotFoundException("Not found");
         }
 
-        return movie;
+        return movie.get();
 
     }
 
@@ -113,16 +114,16 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie deleteById(Long movieId) throws CustomNotFoundException {
 
-        Movie movie = this.movieRepository.getReferenceById(movieId);
+        Optional<Movie> movie = this.movieRepository.findById(movieId);
 
-        if (isNull(movie)) {
+        if (movie.isEmpty()) {
             log.error("Error on deleting movie with id {}: Movie not exists", movieId);
             throw new CustomNotFoundException("Not found");
         }
 
-        this.movieRepository.delete(movie);
+        this.movieRepository.delete(movie.get());
 
-        return movie;
+        return movie.get();
 
     }
 }

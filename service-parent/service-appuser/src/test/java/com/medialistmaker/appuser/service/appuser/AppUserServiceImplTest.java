@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +77,7 @@ class AppUserServiceImplTest {
                 .password("test")
                 .build();
 
-        Mockito.when(this.appUserRepository.getReferenceById(anyLong())).thenReturn(user);
+        Mockito.when(this.appUserRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         AppUser testGetById = this.appUserService.getById(anyLong());
 
@@ -87,7 +88,7 @@ class AppUserServiceImplTest {
     @Test
     void givenInvalidIdWhenGetByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.appUserRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.appUserRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.appUserService.getById(1L));
 

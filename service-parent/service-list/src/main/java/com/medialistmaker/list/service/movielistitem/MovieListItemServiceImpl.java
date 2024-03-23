@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -52,11 +51,13 @@ public class MovieListItemServiceImpl implements MovieListItemService {
 
         List<MovieListItem> movieListItems = this.movieListItemRepository.getByAppUserIdOrderBySortingOrderAsc(appUserId);
 
-        MovieListItem movieListItemToChange = this.movieListItemRepository.getReferenceById(musicListItemId);
+        Optional<MovieListItem> movieListItem = this.movieListItemRepository.findById(musicListItemId);
 
-        if (isNull(movieListItemToChange)) {
+        if (movieListItem.isEmpty()) {
             throw new CustomNotFoundException("Music item not found");
         }
+
+        MovieListItem movieListItemToChange = movieListItem.get();
 
         Integer oldSortingNumber = movieListItemToChange.getSortingOrder();
 
@@ -119,11 +120,13 @@ public class MovieListItemServiceImpl implements MovieListItemService {
     @Override
     public MovieListItem deleteById(Long appUserId, Long movieListId) throws CustomNotFoundException, ServiceNotAvailableException {
 
-        MovieListItem itemToDelete = this.movieListItemRepository.getReferenceById(movieListId);
+        Optional<MovieListItem> movieListItem = this.movieListItemRepository.findById(movieListId);
 
-        if (isNull(itemToDelete)) {
+        if (movieListItem.isEmpty()) {
             throw new CustomNotFoundException("Not found");
         }
+
+        MovieListItem itemToDelete = movieListItem.get();
 
         this.movieListItemRepository.delete(itemToDelete);
 

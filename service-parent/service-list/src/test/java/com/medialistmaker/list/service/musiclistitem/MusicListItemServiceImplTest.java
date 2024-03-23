@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -216,11 +216,11 @@ class MusicListItemServiceImplTest {
                 .sortingOrder(1)
                 .build();
 
-        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(musicListItem);
+        Mockito.when(this.musicListItemRepository.findById(anyLong())).thenReturn(Optional.of(musicListItem));
 
         MusicListItem testDeleteById = this.musicListService.deleteById(1L, 1L);
 
-        Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicListItemRepository).findById(anyLong());
         assertEquals(musicListItem, testDeleteById);
     }
 
@@ -264,11 +264,11 @@ class MusicListItemServiceImplTest {
     @Test
     void givenInvalidIdWhenDeleteByIdShouldThrowNotFoundException() {
 
-        Mockito.when(this.musicListItemRepository.getReferenceById(anyLong())).thenReturn(null);
+        Mockito.when(this.musicListItemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.musicListService.deleteById(1L, 1L));
 
-        Mockito.verify(this.musicListItemRepository).getReferenceById(anyLong());
+        Mockito.verify(this.musicListItemRepository).findById(anyLong());
     }
 
     @Test
@@ -347,8 +347,8 @@ class MusicListItemServiceImplTest {
         thirdItem.setAddedAt(new Date());
 
         Mockito
-                .when(this.musicListItemRepository.getReferenceById(anyLong()))
-                .thenReturn(thirdItem);
+                .when(this.musicListItemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(thirdItem));
 
         Mockito
                 .when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
@@ -387,8 +387,8 @@ class MusicListItemServiceImplTest {
         thirdItem.setAddedAt(new Date());
 
         Mockito
-                .when(this.musicListItemRepository.getReferenceById(anyLong()))
-                .thenReturn(firstItem);
+                .when(this.musicListItemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(firstItem));
 
         Mockito
                 .when(this.musicListItemRepository.getByAppUserIdOrderBySortingOrderAsc(anyLong()))
@@ -405,8 +405,8 @@ class MusicListItemServiceImplTest {
     void givenAppUserIdAndInvalidMusicItemIdAndNewSortingOrderWhenEditSortingOrderShouldThrowNotFoundException() {
 
         Mockito
-                .when(this.musicListItemRepository.getReferenceById(anyLong()))
-                .thenReturn(null);
+                .when(this.musicListItemRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         assertThrows(CustomNotFoundException.class, () -> this.musicListService.editSortingOrder(1L, 1L, 1));
     }

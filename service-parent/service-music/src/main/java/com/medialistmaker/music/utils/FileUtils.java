@@ -13,6 +13,8 @@ import static java.util.Objects.isNull;
 @Component
 public class FileUtils {
 
+    private final Random random = new Random();
+
     public InputStream getRandomFileInFolder(String path) throws URISyntaxException {
 
         String[] pictures = this.getFilesInsideDirectoryByDirectoryPath(path);
@@ -40,8 +42,7 @@ public class FileUtils {
         if (files.length == 1) {
             return files[0];
         } else {
-            Random random = new Random();
-            return files[random.nextInt(files.length)];
+            return files[this.random.nextInt(files.length)];
         }
     }
 }

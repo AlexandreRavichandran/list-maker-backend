@@ -1,7 +1,6 @@
 package com.medialistmaker.appuser.exception.entityduplicationexception;
 
 import com.medialistmaker.appuser.dto.ErrorDTO;
-import com.medialistmaker.appuser.exception.badrequestexception.CustomBadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
