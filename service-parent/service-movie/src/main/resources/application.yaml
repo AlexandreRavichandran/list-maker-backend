@@ -24,4 +24,4 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 omdb:
-  apikey: af9d7d26
+  apikey: pleasefill

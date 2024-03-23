@@ -24,4 +24,4 @@ eureka:
       defaultZone: http://registry:8761/eureka
 
 omdb:
-  apikey: af9d7d26
+  apikey: pleasefill
