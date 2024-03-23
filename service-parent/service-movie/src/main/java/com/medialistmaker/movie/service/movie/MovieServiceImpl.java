@@ -10,7 +10,6 @@ import com.medialistmaker.movie.repository.MovieRepository;
 import com.medialistmaker.movie.utils.CustomEntityValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -23,17 +22,25 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class MovieServiceImpl implements MovieService {
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
 
-    @Autowired
-    OmdbConnectorProxy omdbConnectorProxy;
+    private final OmdbConnectorProxy omdbConnectorProxy;
 
-    @Autowired
-    CustomEntityValidator<Movie> movieValidator;
+    private final CustomEntityValidator<Movie> movieValidator;
+
+    public MovieServiceImpl(
+            ModelMapper modelMapper,
+            MovieRepository movieRepository,
+            OmdbConnectorProxy omdbConnectorProxy,
+            CustomEntityValidator<Movie> movieValidator
+    ) {
+        this.modelMapper = modelMapper;
+        this.movieRepository = movieRepository;
+        this.omdbConnectorProxy = omdbConnectorProxy;
+        this.movieValidator = movieValidator;
+    }
 
     @Override
     public List<Movie> browseByIds(List<Long> movieIds) {

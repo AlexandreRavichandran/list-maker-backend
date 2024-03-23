@@ -11,7 +11,6 @@ import com.medialistmaker.appuser.exception.notfoundexception.CustomNotFoundExce
 import com.medialistmaker.appuser.service.appuser.AppUserServiceImpl;
 import com.medialistmaker.appuser.utils.JwtTokenService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,17 +30,25 @@ import java.util.HashMap;
 @RequestMapping("/api")
 public class AuthController {
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    AppUserServiceImpl appUserService;
+    private final AppUserServiceImpl appUserService;
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    JwtTokenService tokenService;
+    private final JwtTokenService tokenService;
+
+    public AuthController(
+            ModelMapper modelMapper,
+            AppUserServiceImpl appUserService,
+            AuthenticationManager authenticationManager,
+            JwtTokenService tokenService
+    ) {
+        this.modelMapper = modelMapper;
+        this.appUserService = appUserService;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDTO> login(@RequestBody JwtRequestDTO credentials)

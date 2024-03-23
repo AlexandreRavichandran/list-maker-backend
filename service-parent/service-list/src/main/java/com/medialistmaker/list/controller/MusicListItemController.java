@@ -9,7 +9,6 @@ import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundExcepti
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.musiclistitem.MusicListItemServiceImpl;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +21,17 @@ import static java.util.Objects.isNull;
 @RequestMapping("api/lists/musics")
 public class MusicListItemController extends AbstractController {
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    MusicListItemServiceImpl musicListService;
+    private final MusicListItemServiceImpl musicListService;
+
+    public MusicListItemController(
+            ModelMapper modelMapper,
+            MusicListItemServiceImpl musicListService
+    ) {
+        this.modelMapper = modelMapper;
+        this.musicListService = musicListService;
+    }
 
     @GetMapping
     public ResponseEntity<List<MusicListItemDTO>> getByAppUserId() {

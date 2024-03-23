@@ -11,7 +11,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -26,12 +25,16 @@ import java.util.ArrayList;
 import static java.util.Objects.isNull;
 
 @Component
-@AllArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-    AppUserConnectorProxy userConnectorProxy;
+    private final AppUserConnectorProxy userConnectorProxy;
 
-    JwtTokenService service;
+    private final JwtTokenService service;
+
+    public JwtAuthenticationFilter(AppUserConnectorProxy userConnectorProxy, JwtTokenService service) {
+        this.userConnectorProxy = userConnectorProxy;
+        this.service = service;
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -40,8 +43,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String authorizationHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
+        String token;
+        String username;
 
         if(isNull(authorizationHeader)) {
                 this.manageAuthenticationFailure(response);

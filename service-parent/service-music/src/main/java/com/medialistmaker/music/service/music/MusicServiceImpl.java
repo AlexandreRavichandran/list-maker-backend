@@ -13,7 +13,6 @@ import com.medialistmaker.music.repository.MusicRepository;
 import com.medialistmaker.music.utils.CustomEntityValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -26,20 +25,29 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class MusicServiceImpl implements MusicService {
 
-    @Autowired
-    MusicRepository musicRepository;
+    private final MusicRepository musicRepository;
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    DeezerAlbumConnectorProxy deezerAlbumConnectorProxy;
+    private final DeezerAlbumConnectorProxy deezerAlbumConnectorProxy;
 
-    @Autowired
-    DeezerSongConnectorProxy deezerSongConnectorProxy;
+    private final DeezerSongConnectorProxy deezerSongConnectorProxy;
 
-    @Autowired
-    CustomEntityValidator<Music> musicEntityValidator;
+    private final CustomEntityValidator<Music> musicEntityValidator;
+
+    public MusicServiceImpl(
+            MusicRepository musicRepository,
+            ModelMapper modelMapper,
+            DeezerAlbumConnectorProxy deezerAlbumConnectorProxy,
+            DeezerSongConnectorProxy deezerSongConnectorProxy,
+            CustomEntityValidator<Music> musicEntityValidator
+    ) {
+        this.musicRepository = musicRepository;
+        this.modelMapper = modelMapper;
+        this.deezerAlbumConnectorProxy = deezerAlbumConnectorProxy;
+        this.deezerSongConnectorProxy = deezerSongConnectorProxy;
+        this.musicEntityValidator = musicEntityValidator;
+    }
 
     @Override
     public List<Music> browseByIds(List<Long> musicIds) {

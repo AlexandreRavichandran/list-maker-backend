@@ -2,7 +2,6 @@ package com.medialistmaker.music.controller;
 
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.utils.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,8 +19,13 @@ import static java.util.Objects.isNull;
 @RequestMapping("/api/musics/pictures")
 public class PictureController {
 
-    @Autowired
-    FileUtils fileUtils;
+    private final FileUtils fileUtils;
+
+    public PictureController(
+            FileUtils fileUtils
+    ) {
+        this.fileUtils = fileUtils;
+    }
 
     @GetMapping(value = "/illustrations/random", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<InputStreamResource> getRandomIllustrationPicture() throws URISyntaxException, CustomNotFoundException {

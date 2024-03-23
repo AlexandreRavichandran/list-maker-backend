@@ -6,7 +6,6 @@ import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.SongSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +14,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/musics/deezerapi/songs")
 public class SongController {
 
-    @Autowired
-    DeezerSearchConnectorProxy songConnectorProxy;
+    private final DeezerSearchConnectorProxy songConnectorProxy;
 
-    @Autowired
-    DeezerSongConnector deezerSongConnector;
+    private final DeezerSongConnector deezerSongConnector;
+
+    public SongController(
+            DeezerSearchConnectorProxy songConnectorProxy,
+            DeezerSongConnector deezerSongConnector
+    ) {
+        this.songConnectorProxy = songConnectorProxy;
+        this.deezerSongConnector = deezerSongConnector;
+    }
 
     @GetMapping
     public ResponseEntity<SongSearchListDTO> getBySongName(@RequestParam("name") String songName)

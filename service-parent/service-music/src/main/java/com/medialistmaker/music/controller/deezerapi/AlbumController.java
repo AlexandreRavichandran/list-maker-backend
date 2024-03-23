@@ -2,7 +2,6 @@ package com.medialistmaker.music.controller.deezerapi;
 
 import com.medialistmaker.music.connector.deezer.album.DeezerAlbumConnectorProxy;
 import com.medialistmaker.music.connector.deezer.search.DeezerSearchConnectorProxy;
-import com.medialistmaker.music.connector.list.ListConnectorProxy;
 import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.SongElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
@@ -10,10 +9,8 @@ import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearc
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
-import com.medialistmaker.music.service.music.MusicServiceImpl;
 import com.medialistmaker.music.utils.DeezerParameterFormatter;
 import com.medialistmaker.music.utils.MathUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,23 +24,25 @@ import static java.util.Objects.isNull;
 @RequestMapping("/api/musics/deezerapi/albums")
 public class AlbumController {
 
-    @Autowired
-    DeezerSearchConnectorProxy albumSearchConnectorProxy;
+    private final DeezerSearchConnectorProxy albumSearchConnectorProxy;
 
-    @Autowired
-    DeezerAlbumConnectorProxy albumConnectorProxy;
+    private final DeezerAlbumConnectorProxy albumConnectorProxy;
 
-    @Autowired
-    ListConnectorProxy listConnectorProxy;
+    private final MathUtils mathUtils;
 
-    @Autowired
-    MathUtils mathUtils;
+    private final DeezerParameterFormatter parameterFormatter;
 
-    @Autowired
-    MusicServiceImpl musicService;
-
-    @Autowired
-    DeezerParameterFormatter parameterFormatter;
+    public AlbumController(
+            DeezerSearchConnectorProxy albumSearchConnectorProxy,
+            DeezerAlbumConnectorProxy albumConnectorProxy,
+            MathUtils mathUtils,
+            DeezerParameterFormatter parameterFormatter
+    ) {
+        this.albumSearchConnectorProxy = albumSearchConnectorProxy;
+        this.albumConnectorProxy = albumConnectorProxy;
+        this.mathUtils = mathUtils;
+        this.parameterFormatter = parameterFormatter;
+    }
 
     @GetMapping
     public ResponseEntity<AlbumSearchListDTO> browseByQueryAndFilter(

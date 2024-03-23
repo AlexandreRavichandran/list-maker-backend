@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;

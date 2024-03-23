@@ -6,7 +6,6 @@ import com.medialistmaker.movie.dto.externalapi.omdbapi.item.MovieElementDTO;
 import com.medialistmaker.movie.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.movie.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.movie.exception.servicenotavailableexception.ServiceNotAvailableException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +18,13 @@ public class OmdbApiController {
 
     private static final Integer OMDB_ELEMENT_PER_PAGE = 10;
 
-    @Autowired
-    OmdbConnectorProxy omdbConnectorProxy;
+    private final OmdbConnectorProxy omdbConnectorProxy;
+
+    public OmdbApiController(
+            OmdbConnectorProxy omdbConnectorProxy
+    ) {
+        this.omdbConnectorProxy = omdbConnectorProxy;
+    }
 
     @GetMapping
     public ResponseEntity<MovieElementListDTO> browseByQueryAndFilter(

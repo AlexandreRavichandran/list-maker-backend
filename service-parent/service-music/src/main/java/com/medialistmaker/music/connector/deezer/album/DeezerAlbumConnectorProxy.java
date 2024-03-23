@@ -5,15 +5,19 @@ import com.medialistmaker.music.dto.externalapi.deezerapi.AlbumElementDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.TrackListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.music.exception.servicenotavailableexception.ServiceNotAvailableException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Component
 public class DeezerAlbumConnectorProxy implements DeezerConnector<AlbumElementDTO> {
 
-    @Autowired
-    DeezerAlbumConnector deezerAlbumConnector;
+    private final DeezerAlbumConnector deezerAlbumConnector;
+
+    public DeezerAlbumConnectorProxy(
+            DeezerAlbumConnector deezerAlbumConnector
+    ) {
+        this.deezerAlbumConnector = deezerAlbumConnector;
+    }
 
     public AlbumElementDTO getByApiCode(String apiCode) throws CustomBadRequestException, ServiceNotAvailableException {
         return this.deezerAlbumConnector.getByApiCode(apiCode);

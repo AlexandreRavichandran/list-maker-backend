@@ -5,14 +5,18 @@ import com.medialistmaker.list.dto.movie.MovieDTO;
 import com.medialistmaker.list.exception.badrequestexception.CustomBadRequestException;
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MovieConnectorProxy {
 
-    @Autowired
-    MovieConnector movieConnector;
+    private final MovieConnector movieConnector;
+
+    public MovieConnectorProxy(
+            MovieConnector movieConnector
+    ) {
+        this.movieConnector = movieConnector;
+    }
 
     public MovieDTO saveByApiCode(MovieAddDTO movieAddDTO) throws CustomBadRequestException, ServiceNotAvailableException {
         return this.movieConnector.saveByApiCode(movieAddDTO);

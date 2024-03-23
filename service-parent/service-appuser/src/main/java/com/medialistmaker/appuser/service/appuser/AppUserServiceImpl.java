@@ -6,7 +6,6 @@ import com.medialistmaker.appuser.exception.entityduplicationexception.CustomEnt
 import com.medialistmaker.appuser.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.appuser.repository.AppUserRepository;
 import com.medialistmaker.appuser.utils.CustomEntityValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,14 +21,21 @@ import static java.util.Objects.nonNull;
 @Service
 public class AppUserServiceImpl implements AppUserService {
 
-    @Autowired
-    AppUserRepository appUserRepository;
+    private final AppUserRepository appUserRepository;
 
-    @Autowired
-    CustomEntityValidator<AppUser> appUserEntityValidator;
+    private final CustomEntityValidator<AppUser> appUserEntityValidator;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public AppUserServiceImpl(
+            AppUserRepository appUserRepository,
+            CustomEntityValidator<AppUser> appUserEntityValidator,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.appUserRepository = appUserRepository;
+        this.appUserEntityValidator = appUserEntityValidator;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public AppUser getByUsername(String username) throws CustomNotFoundException {

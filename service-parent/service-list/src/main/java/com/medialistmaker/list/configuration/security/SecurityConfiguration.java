@@ -1,7 +1,6 @@
 package com.medialistmaker.list.configuration.security;
 
 import com.medialistmaker.list.filter.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,8 +13,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    @Autowired
-    JwtAuthenticationFilter filter;
+    private final JwtAuthenticationFilter filter;
+
+    public SecurityConfiguration(
+            JwtAuthenticationFilter filter
+    ) {
+        this.filter = filter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

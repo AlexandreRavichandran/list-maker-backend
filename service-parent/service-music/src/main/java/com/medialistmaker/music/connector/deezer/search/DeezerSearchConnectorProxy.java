@@ -3,14 +3,18 @@ package com.medialistmaker.music.connector.deezer.search;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.AlbumSearchListDTO;
 import com.medialistmaker.music.dto.externalapi.deezerapi.search.list.SongSearchListDTO;
 import com.medialistmaker.music.exception.badrequestexception.CustomBadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeezerSearchConnectorProxy {
 
-    @Autowired
-    DeezerSearchConnector deezerSearchConnector;
+    private final DeezerSearchConnector deezerSearchConnector;
+
+    public DeezerSearchConnectorProxy(
+            DeezerSearchConnector deezerSearchConnector
+    ) {
+        this.deezerSearchConnector = deezerSearchConnector;
+    }
 
     public AlbumSearchListDTO getAlbumByQuery(String query, Integer index) throws CustomBadRequestException {
         return this.deezerSearchConnector.getAlbumByQuery(query, index);

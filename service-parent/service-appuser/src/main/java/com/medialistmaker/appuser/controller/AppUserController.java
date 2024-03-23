@@ -5,7 +5,6 @@ import com.medialistmaker.appuser.dto.AppUserDTO;
 import com.medialistmaker.appuser.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.appuser.service.appuser.AppUserServiceImpl;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/appusers")
 public class AppUserController {
 
-    @Autowired
-    AppUserServiceImpl appUserService;
+    private final AppUserServiceImpl appUserService;
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    public AppUserController(
+            AppUserServiceImpl appUserService,
+            ModelMapper modelMapper
+    ) {
+        this.appUserService = appUserService;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping("/username/{username}")
     public ResponseEntity<AppUserDTO> getByUsername(@PathVariable("username") String username) throws CustomNotFoundException {

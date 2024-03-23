@@ -10,9 +10,7 @@ import com.medialistmaker.list.exception.entityduplicationexception.CustomEntity
 import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundException;
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.repository.MovieListItemRepository;
-import com.medialistmaker.list.utils.CustomEntityValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,16 +22,19 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class MovieListItemServiceImpl implements MovieListItemService {
 
-    @Autowired
-    CustomEntityValidator<MovieListItem> movieListItemEntityValidator;
+    private final MovieConnectorProxy movieConnectorProxy;
 
-    @Autowired
-    MovieConnectorProxy movieConnectorProxy;
+    private final MovieListItemRepository movieListItemRepository;
 
-    @Autowired
-    MovieListItemRepository movieListItemRepository;
+    private final Random random = new Random();
 
-    Random random = new Random();
+    public MovieListItemServiceImpl(
+            MovieConnectorProxy movieConnectorProxy,
+            MovieListItemRepository movieListItemRepository
+    ) {
+        this.movieConnectorProxy = movieConnectorProxy;
+        this.movieListItemRepository = movieListItemRepository;
+    }
 
     @Override
     public List<MovieListItem> getByAppUserId(Long appUserId) {
@@ -147,7 +148,7 @@ public class MovieListItemServiceImpl implements MovieListItemService {
     @Override
     public Boolean isMovieApiCodeAlreadyInAppUserMovieList(Long appUserId, String apiCode) throws ServiceNotAvailableException {
 
-        Boolean isMovieApiCodeAlreadyInAppUserMovieList = null;
+        boolean isMovieApiCodeAlreadyInAppUserMovieList;
 
         try {
             MovieDTO movieDTO = this.movieConnectorProxy.getByApiCode(apiCode);

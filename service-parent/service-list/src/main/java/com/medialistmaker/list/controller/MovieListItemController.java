@@ -9,7 +9,6 @@ import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundExcepti
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.service.movielistitem.MovieListItemServiceImpl;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +21,17 @@ import static java.util.Objects.isNull;
 @RequestMapping("api/lists/movies")
 public class MovieListItemController extends AbstractController {
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    MovieListItemServiceImpl movieListService;
+    private final MovieListItemServiceImpl movieListService;
+
+    public MovieListItemController(
+            ModelMapper modelMapper,
+            MovieListItemServiceImpl movieListService
+    ) {
+        this.modelMapper = modelMapper;
+        this.movieListService = movieListService;
+    }
 
     @GetMapping
     public ResponseEntity<List<MovieListItemDTO>> getByAppUserId() {

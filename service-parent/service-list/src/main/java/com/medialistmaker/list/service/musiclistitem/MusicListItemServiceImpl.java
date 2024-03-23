@@ -11,7 +11,6 @@ import com.medialistmaker.list.exception.notfoundexception.CustomNotFoundExcepti
 import com.medialistmaker.list.exception.servicenotavailableexception.ServiceNotAvailableException;
 import com.medialistmaker.list.repository.MusicListItemRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,13 +22,19 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class MusicListItemServiceImpl implements MusicListItemService {
 
-    @Autowired
-    MusicListItemRepository musicListItemRepository;
+    private final MusicListItemRepository musicListItemRepository;
 
-    @Autowired
-    MusicConnectorProxy musicConnectorProxy;
+    private final MusicConnectorProxy musicConnectorProxy;
 
-    Random random = new Random();
+    private final Random random = new Random();
+
+    public MusicListItemServiceImpl(
+            MusicListItemRepository musicListItemRepository,
+            MusicConnectorProxy musicConnectorProxy
+    ) {
+        this.musicListItemRepository = musicListItemRepository;
+        this.musicConnectorProxy = musicConnectorProxy;
+    }
 
     @Override
     public List<MusicListItem> getByAppUserId(Long appUserId) {
