@@ -95,6 +95,7 @@ services:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - omdb.apiKey= OMDB_API_KEY
     networks:
       - spring
       - postgres
