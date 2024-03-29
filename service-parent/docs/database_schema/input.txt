@@ -1,0 +1,35 @@
+
+
+-------------  Insert this in https://www.mocodo.net/ -------------
+
+
+
+MOVIE: id, title, api_code, picture_url, released_at
+:
+:
+:
+:
+
+CONTAINS, 0N MOVIE_LIST_ITEM, 1N MOVIE
+MOVIE_LIST_ITEM: id, sorting_order, added_at
+CAN HAVE, 11 APPUSER, 11 MOVIE_LIST_ITEM
+:
+:
+
+:
+:
+APPUSER: id, username, password
+:
+:
+
+:
+:
+CAN HAVE2, 11 APPUSER, 11 MUSIC_LIST_ITEM
+:
+:
+
+:
+:
+MUSIC_LIST_ITEM: id, sorting_order, added_at
+CONTAINS2, 0N MUSIC_LIST_ITEM, 1N MUSIC
+MUSIC: id, title, artist_name, released_at, api_code, type
