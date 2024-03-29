@@ -19,6 +19,10 @@ cd media-list-maker-backend/service-parent
 docker compose up
 ```  
 
+Resources
+----------
+
+You can find the database scheme [here](https://github.com/AlexandreRavichandran/media-list-maker-backend/blob/master/service-parent/docs/database_schema/database_schema.svg).
 
 
 ### Warning:
